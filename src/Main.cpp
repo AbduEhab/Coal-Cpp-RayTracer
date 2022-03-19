@@ -1,7 +1,8 @@
-#include "Constants.h"
+#include "Engine.h"
 
 int main(int, char **)
 {
-    std::cout << "Hello, world!\n"
-              << std::endl;
+    auto v1 = COAL::Vector();
+
+    std::cout << COAL::BLUE << std::endl;
 }

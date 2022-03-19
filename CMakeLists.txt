@@ -16,7 +16,7 @@ add_library(project_options INTERFACE)
 if(MSVC)
      target_compile_options(project_warnings INTERFACE /W4 /WX "/permissive-")
 else()
-     # target_compile_features(project_options INTERFACE cxx_std_17) # Set standard later for now
+     target_compile_features(project_options INTERFACE cxx_std_20)
      target_include_directories(project_options INTERFACE include external)
 
      target_compile_options(project_warnings
@@ -72,7 +72,7 @@ enable_testing()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # <-- Set standard here -->
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 # <----------------------->
 

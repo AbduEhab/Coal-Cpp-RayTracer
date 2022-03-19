@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Constants.h"
+#include "Logger.h"
 
 namespace COAL
 {
 
+    const std::string BINARY_DIRECTORY(std::string(get_current_dir_name()) + "/");
+
     std::string read_file(const std::string &filepath)
     {
-        DebugPrint(std::string("Reading file: ") + filepath);
+        COAL::debug_print(std::string("Reading file: ") + filepath);
 
         std::string result;
         std::ifstream in(filepath, std::ios::in | std::ios::binary);
@@ -25,13 +28,13 @@ namespace COAL
             else
             {
                 // ToDO: handle failure to read from file
-                std::cout << "-1" << std::endl;
+                COAL::debug_print(-1);
             }
         }
         else
         {
             // ToDO: handle failure to open file
-            std::cout << "-2" << std::endl;
+            COAL::debug_print(-2);
         }
 
         return result;
@@ -53,14 +56,14 @@ namespace COAL
             { // handle empty string case
 
                 return -1;
-                DebugPrint("failed to Write to file (cannot write empty string)");
+                COAL::debug_print("failed to Write to file (cannot write empty string)");
             }
         }
         else
         { // handle failure to open file
 
             return -2;
-            DebugPrint("failed to Write to file (cannot open file)");
+            COAL::debug_print("failed to Write to file (cannot open file)");
         }
 
         return 1;
