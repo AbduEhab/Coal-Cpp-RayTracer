@@ -1,26 +1,53 @@
 #pragma once
 
-#include "Tuple.h"
-
 namespace COAL
 {
 
-    class Vector : public Tuple
+    class Vector
     {
 
     public:
-        [[nodiscard]] constexpr Vector() : Tuple() {}
+        [[nodiscard]] constexpr Vector() : x(0), y(0), z(0), w(0){};
 
-        [[nodiscard]] constexpr Vector(double x, double y, double z) : Tuple(x, y, z, 0) {}
+        [[nodiscard]] constexpr Vector(double x, double y, double z) : x(x), y(y), z(z), w(0){};
 
-        [[nodiscard]] constexpr int operator==(Vector &rhs) const noexcept
+        [[nodiscard]] constexpr Vector &operator=(const Vector &vector)
+        {
+            x = vector.x;
+            y = vector.y;
+            z = vector.z;
+            return *this;
+        }
+
+        [[nodiscard]] int operator==(Vector &rhs) const noexcept
         {
             return (std::abs(x - rhs.x) <= 0.00001) && (std::abs(y - rhs.y) <= 0.00001) && (std::abs(z - rhs.z) <= 0.00001) && (rhs.w == 0);
         }
 
-        [[nodiscard]] constexpr Vector operator-() const noexcept
+        [[nodiscard]] Vector operator-() const noexcept
         {
             return Vector(-x, -y, -z);
+        }
+
+        // [] operator
+        [[nodiscard]] constexpr double operator[](const char i) const noexcept
+        {
+            assert(i >= 0 && i < 3);
+
+            switch (i)
+            {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+                return z;
+            default:
+                break;
+            }
+
+            assert(false);
+            return -1;
         }
 
         [[nodiscard]] constexpr Vector &operator+=(const double rhs) noexcept
@@ -71,68 +98,79 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] constexpr Vector operator+(const Vector &rhs) const noexcept
+        [[nodiscard]] Vector operator+(const Vector &rhs) const noexcept
         {
             return Vector(x + rhs.x, y + rhs.y, z + rhs.z);
         }
 
-        [[nodiscard]] constexpr Vector operator+(const double rhs) const noexcept
+        [[nodiscard]] Vector operator+(const double rhs) const noexcept
         {
             return Vector(x + rhs, y + rhs, z + rhs);
         }
 
-        [[nodiscard]] constexpr Vector operator-(const double rhs) const noexcept
+        [[nodiscard]] Vector operator-(const double rhs) const noexcept
         {
             return Vector(x - rhs, y - rhs, z - rhs);
         }
 
-        [[nodiscard]] constexpr Vector operator-(const Vector &rhs) const noexcept
+        [[nodiscard]] Vector operator-(const Vector &rhs) const noexcept
         {
             return Vector(x - rhs.x, y - rhs.y, z - rhs.z);
         }
 
-        [[nodiscard]] constexpr Vector operator*(const float factor) const noexcept
+        [[nodiscard]] Vector operator*(const float factor) const noexcept
         {
             return Vector(x * factor, y * factor, z * factor);
         }
 
-        [[nodiscard]] constexpr Vector operator/(const float factor) const noexcept
+        [[nodiscard]] Vector operator/(const float factor) const noexcept
         {
             return Vector(x / factor, y / factor, z / factor);
         }
 
-        [[nodiscard]] constexpr double magnitude(const Tuple &vector) const noexcept
+        friend std::ostream &operator<<(std::ostream &os, const Vector &vector)
         {
-            return std::sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z +
-                             vector.w * vector.w);
+            os << "(" << vector.x << ", " << vector.y << ", " << vector.z << ")";
+            return os;
         }
 
-        [[nodiscard]] constexpr Vector normalize() const noexcept
+        [[nodiscard]] double magnitude() const noexcept
         {
-            double mag = magnitude(*this);
-
-            return *this / mag;
+            return std::sqrt(x * x + y * y + z * z +
+                             w * w);
         }
 
-        [[nodiscard]] constexpr float dot(const Vector &b) const noexcept
+        [[nodiscard]] Vector normalize() const noexcept
+        {
+            double mag = magnitude();
+
+            return *this / (float)mag;
+        }
+
+        [[nodiscard]] constexpr double dot(const Vector &b) const noexcept
         {
             return x * b.x + y * b.y + z * b.z + w * b.w;
         }
 
-        [[nodiscard]] constexpr Vector cross(const Vector &b) const noexcept
+        [[nodiscard]] Vector cross(const Vector &b) const noexcept
         {
             return Vector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x);
         }
 
-        [[nodiscard]] constexpr Vector reflect(const Vector &b) noexcept
-        { // return subtract(b.multiply(2 * dot(b)))
-            return *this - (b * (2 * this->dot(b)));
+        // reflection
+        [[nodiscard]] Vector reflect(const Vector &b) const noexcept
+        {
+            return Vector(x - 2 * b.x, y - 2 * b.y, z - 2 * b.z);
         }
-    };
 
-    [[nodiscard]] std::ostream &operator<<(std::ostream &os, const Vector &dt)
-    {
-        os << "<" << dt.x << ", " << dt.y << ", " << dt.z << ">";
-        return os;
+        // [[nodiscard]] constexpr Vector reflect(const Vector &b) noexcept
+        // { // return subtract(b.multiply(2 * dot(b)))
+        //     return *this - (b * (2 * this->dot(b)));
+        // }
+
+        double x;
+        double y;
+        double z;
+        double w;
     };
 }

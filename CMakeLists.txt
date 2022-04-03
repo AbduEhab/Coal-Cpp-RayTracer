@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Change "Temp-Projekt" to your project name
-project(Temp-Projekt VERSION 0.2.0)
+project(Cpp_RayTracer VERSION 0.2.0)
 
 #----------------------------------------------------------------------------------------------
 # Part till line 39 is taken from @lefticus

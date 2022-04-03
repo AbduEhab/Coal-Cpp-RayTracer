@@ -1,18 +1,17 @@
 #pragma once
 
-#include "Tuple.h"
 #include "Vector.h"
 
 namespace COAL
 {
-    class Point : public Tuple
+    class Point
     {
     public:
-        [[nodiscard]] constexpr Point() : Tuple(0, 0, 0, 1){};
+        [[nodiscard]] constexpr Point() : x(0), y(0), z(0), w(1){};
 
-        [[nodiscard]] constexpr Point(double x, double y, double z) : Tuple(x, y, z, 1) {}
+        [[nodiscard]] constexpr Point(double x, double y, double z) : x(x), y(y), z(z), w(0){};
 
-        [[nodiscard]] constexpr int operator==(Point &rhs) const noexcept
+        [[nodiscard]] int operator==(Point &rhs) const noexcept
         {
             return (std::abs(x - rhs.x) <= 0.00001) && (std::abs(y - rhs.y) <= 0.00001) && (std::abs(z - rhs.z) <= 0.00001) && (rhs.w == 1);
         }
@@ -42,15 +41,21 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] constexpr Vector operator-(const Point &rhs) const noexcept
+        [[nodiscard]] Vector operator-(const Point &rhs) const noexcept
         {
             return Vector(x - rhs.x, y - rhs.y, z - rhs.z);
         }
+
+        friend std::ostream &operator<<(std::ostream &os, const Point &dt)
+        {
+            os << "(" << dt.x << ", " << dt.y << ", " << dt.z << ")";
+            return os;
+        };
+
+        double x;
+        double y;
+        double z;
+        double w;
     };
 
-    [[nodiscard]] std::ostream &operator<<(std::ostream &os, const Point &dt)
-    {
-        os << "(" << dt.x << ", " << dt.y << ", " << dt.z << ")";
-        return os;
-    };
 }

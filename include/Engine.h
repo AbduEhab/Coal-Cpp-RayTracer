@@ -13,3 +13,11 @@
 
 #include "Lights/Light.h"
 #include "Lights/PointLight.h"
+
+#include "Patterns/Pattern.h"
+
+#include "Shapes/Shape.h"
+
+#include "Material.h"
+
+#include "Intersection.h"

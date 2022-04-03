@@ -4,17 +4,10 @@
 #include "Tuples/Point.h"
 #include "Tuples/Vector.h"
 
-namespace CLOAL
+namespace COAL
 {
     class Matrix4
     {
-    private:
-        class Matrix3
-        {
-            [[nodiscard]] constexpr Matrix3(){};
-
-            double _matrix[3][3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-        };
 
     public:
         [[nodiscard]] constexpr Matrix4(){};
@@ -35,55 +28,198 @@ namespace CLOAL
                     this->_matrix[i][j] = array[i][j];
         }
 
-        [[nodiscard]] constexpr int operator==(const Matrix4 &b) const noexcept
+        // == operator
+        [[nodiscard]] constexpr bool operator==(const Matrix4 &other) const noexcept
         {
             for (char i = 0; i < 4; i++)
                 for (char j = 0; j < 4; j++)
-                    if (std::abs(_matrix[i][j] - b._matrix[i][j]) > 0.00001)
-                        return 1;
+                    if ((std::abs(this->_matrix[i][j] - other._matrix[i][j]) <= 0.00001))
+                        return false;
 
-            return 0;
+            return true;
         }
 
-        [[nodiscard]] constexpr COAL::Point operator*(const COAL::Point &p) const noexcept
+        // != operator
+        [[nodiscard]] constexpr bool operator!=(const Matrix4 &other) const noexcept
         {
-            double res[4] = {};
-
-            double mb[4] = {p.x, p.y, p.z, 1};
-
-            for (int i = 0; i < 3; i++)
-            {
-                double temp = 0;
-                for (int j = 0; j < 4; j++)
-                {
-                    temp += _matrix[i][j] * mb[j];
-                }
-                res[i] = temp;
-            }
-
-            return COAL::Point(res[0], res[1], res[2]);
+            return !(*this == other);
         }
 
-        [[nodiscard]] constexpr COAL::Vector operator*(const COAL::Vector &v) const noexcept
+        // + operator
+        [[nodiscard]] constexpr Matrix4 operator+(const Matrix4 &other) const noexcept
         {
-            double res[4] = {};
+            Matrix4 result;
 
-            double mb[4] = {v.x, v.y, v.z, 0};
+            for (char i = 0; i < 4; i++)
+                for (char j = 0; j < 4; j++)
+                    result._matrix[i][j] = this->_matrix[i][j] + other._matrix[i][j];
 
-            for (int i = 0; i < 3; i++)
-            {
-                double temp = 0;
-                for (int j = 0; j < 4; j++)
-                {
-                    temp += _matrix[i][j] * mb[j];
-                }
-                res[i] = temp;
-            }
-
-            return COAL::Vector(res[0], res[1], res[2]);
+            return result;
         }
 
+        // - operator
+        [[nodiscard]] constexpr Matrix4 operator-(const Matrix4 &other) const noexcept
+        {
+            Matrix4 result;
+
+            for (char i = 0; i < 4; i++)
+                for (char j = 0; j < 4; j++)
+                    result._matrix[i][j] = this->_matrix[i][j] - other._matrix[i][j];
+
+            return result;
+        }
+
+        // * operator
+        [[nodiscard]] constexpr Matrix4 operator*(const Matrix4 &other) const noexcept
+        {
+            Matrix4 result;
+
+            for (char i = 0; i < 4; i++)
+                for (char j = 0; j < 4; j++)
+                    result._matrix[i][j] = this->_matrix[i][0] * other._matrix[0][j] +
+                                           this->_matrix[i][1] * other._matrix[1][j] +
+                                           this->_matrix[i][2] * other._matrix[2][j] +
+                                           this->_matrix[i][3] * other._matrix[3][j];
+
+            return result;
+        }
+
+        // * operator
+        [[nodiscard]] constexpr Matrix4 operator*(const double &other) const noexcept
+        {
+            Matrix4 result;
+
+            for (char i = 0; i < 4; i++)
+                for (char j = 0; j < 4; j++)
+                    result._matrix[i][j] = this->_matrix[i][j] * other;
+
+            return result;
+        }
+
+        // multiply vector3 by matrix and return a vector3
+        [[nodiscard]] constexpr COAL::Vector operator*(const COAL::Vector &other) const noexcept
+        {
+            COAL::Vector result;
+
+            result.x = this->_matrix[0][0] * other.x + this->_matrix[0][1] * other.y +
+                       this->_matrix[0][2] * other.z + this->_matrix[0][3];
+            result.y = this->_matrix[1][0] * other.x + this->_matrix[1][1] * other.y +
+                       this->_matrix[1][2] * other.z + this->_matrix[1][3];
+            result.z = this->_matrix[2][0] * other.x + this->_matrix[2][1] * other.y +
+                       this->_matrix[2][2] * other.z + this->_matrix[2][3];
+
+            return result;
+        }
+
+        // *= operator
+        [[nodiscard]] constexpr Matrix4 &operator*=(const Matrix4 &other) noexcept
+        {
+            *this = *this * other;
+
+            return *this;
+        }
+
+        // *= operator
+        [[nodiscard]] constexpr Matrix4 &operator*=(const double &other) noexcept
+        {
+            *this = *this * other;
+
+            return *this;
+        }
+
+        // *= operator
+        [[nodiscard]] constexpr Matrix4 &operator+=(const Matrix4 &other) noexcept
+        {
+            *this = *this + other;
+
+            return *this;
+        }
+
+        // *= operator
+        [[nodiscard]] constexpr Matrix4 &operator-=(const Matrix4 &other) noexcept
+        {
+            *this = *this - other;
+
+            return *this;
+        }
+
+        // [] operator
+        [[nodiscard]] constexpr const double &operator[](const int index) const noexcept
+        {
+            return this->_matrix[index / 4][index % 4];
+        }
+
+        // [] operator
+        [[nodiscard]] constexpr const double &operator()(const int row, const int column) const noexcept
+        {
+            return this->_matrix[row][column];
+        }
+
+        // transpose
         [[nodiscard]] constexpr Matrix4 transpose() const noexcept
+        {
+            Matrix4 result;
+
+            for (char i = 0; i < 4; i++)
+                for (char j = 0; j < 4; j++)
+                    result._matrix[i][j] = this->_matrix[j][i];
+
+            return result;
+        }
+
+        // determinant
+        [[nodiscard]] constexpr double determinant() const noexcept
+        {
+            return this->_matrix[0][0] * this->_matrix[1][1] * this->_matrix[2][2] * this->_matrix[3][3] +
+                   this->_matrix[0][0] * this->_matrix[1][2] * this->_matrix[2][3] * this->_matrix[3][1] +
+                   this->_matrix[0][0] * this->_matrix[1][3] * this->_matrix[2][1] * this->_matrix[3][2] +
+                   this->_matrix[0][1] * this->_matrix[1][0] * this->_matrix[2][3] * this->_matrix[3][2] +
+                   this->_matrix[0][1] * this->_matrix[1][2] * this->_matrix[2][0] * this->_matrix[3][3] +
+                   this->_matrix[0][1] * this->_matrix[1][3] * this->_matrix[2][2] * this->_matrix[3][0] +
+                   this->_matrix[0][2] * this->_matrix[1][0] * this->_matrix[2][1] * this->_matrix[3][3] +
+                   this->_matrix[0][2] * this->_matrix[1][1] * this->_matrix[2][3] * this->_matrix[3][0] +
+                   this->_matrix[0][2] * this->_matrix[1][3] * this->_matrix[2][0] * this->_matrix[3][1] +
+                   this->_matrix[0][3] * this->_matrix[1][0] * this->_matrix[2][2] * this->_matrix[3][1] +
+                   this->_matrix[0][3] * this->_matrix[1][1] * this->_matrix[2][0] * this->_matrix[3][2] +
+                   this->_matrix[0][3] * this->_matrix[1][2] * this->_matrix[2][1] * this->_matrix[3][0] -
+                   this->_matrix[0][0] * this->_matrix[1][1] * this->_matrix[2][3] * this->_matrix[3][2] -
+                   this->_matrix[0][0] * this->_matrix[1][2] * this->_matrix[2][1] * this->_matrix[3][3] -
+                   this->_matrix[0][0] * this->_matrix[1][3] * this->_matrix[2][2] * this->_matrix[3][1] -
+                   this->_matrix[0][1] * this->_matrix[1][0] * this->_matrix[2][2] * this->_matrix[3][3] -
+                   this->_matrix[0][1] * this->_matrix[1][2] * this->_matrix[2][3] * this->_matrix[3][0] -
+                   this->_matrix[0][1] * this->_matrix[1][3] * this->_matrix[2][0] * this->_matrix[3][2] -
+                   this->_matrix[0][2] * this->_matrix[1][0] * this->_matrix[2][3] * this->_matrix[3][1] -
+                   this->_matrix[0][2] * this->_matrix[1][1] * this->_matrix[2][0] * this->_matrix[3][3] -
+                   this->_matrix[0][2] * this->_matrix[1][3] * this->_matrix[2][1] * this->_matrix[3][0] -
+                   this->_matrix[0][3] * this->_matrix[1][0] * this->_matrix[2][1] * this->_matrix[3][2] -
+                   this->_matrix[0][3] * this->_matrix[1][1] * this->_matrix[2][2] * this->_matrix[3][0] -
+                   this->_matrix[0][3] * this->_matrix[1][2] * this->_matrix[2][0] * this->_matrix[3][1];
+        }
+
+        // matrix sub-determinant
+        [[nodiscard]] constexpr double sub_determinant(int i, int j) const noexcept
+        {
+            double det = 0;
+
+            double temp[3][3] = {};
+
+            for (char k = 0; k < 3; k++)
+            {
+                for (char l = 0; l < 3; l++)
+                {
+                    temp[k][l] = _matrix[(k + 1) % 3][(l + 1) % 3];
+                }
+            }
+
+            det += _matrix[i][j] * temp[0][0] * sub_determinant(0, 0);
+            det -= _matrix[i][j] * temp[0][1] * sub_determinant(0, 1);
+            det += _matrix[i][j] * temp[0][2] * sub_determinant(0, 2);
+
+            return det;
+        }
+
+        // matrix cofactor
+        [[nodiscard]] constexpr Matrix4 cofactor() const noexcept
         {
             Matrix4 temp = Matrix4();
 
@@ -91,52 +227,59 @@ namespace CLOAL
             {
                 for (char j = 0; j < 4; j++)
                 {
-                    temp._matrix[i][j] = _matrix[j][i];
+                    temp._matrix[i][j] = sub_determinant(i, j);
                 }
             }
+
             return temp;
         }
 
-        [[nodiscard]] constexpr double determinant()  noexcept
+        // matrix adjugate
+        [[nodiscard]] constexpr Matrix4 adjugate() const noexcept
         {
-            return determinantHelper(*this);
-        }
+            Matrix4 temp = cofactor();
 
-    private:
-        [[nodiscard]] constexpr double determinantHelper(Matrix4 &matrix) const noexcept
-        {
-            double res = 0;
-
-            for (int i = 0; i < 4; i++)
+            for (char i = 0; i < 4; i++)
             {
-                if (i % 2 == 0)
-                    res += matrix[i][0] * determinantHelper(matrix.subMatrix(i, 0));
-                else
-                    res -= matrix[i][0] * determinantHelper(matrix.subMatrix(i, 0));
+                for (char j = 0; j < 4; j++)
+                {
+                    temp._matrix[i][j] = temp._matrix[i][j] * ((i + j) % 2 == 0 ? 1 : -1);
+                }
             }
-            return res;
+
+            return temp;
         }
 
-        [[nodiscard]] constexpr Matrix3 subMatrix(int a, int b) const noexcept
+        // matrix inverse
+        [[nodiscard]] constexpr Matrix4 inverse() const noexcept
         {
+            return adjugate().transpose();
         }
-        //     Matrix temp = new Matrix(this.size - 1);
-        //     boolean aReplaced = false;
-        //     boolean bReplaced = false;
-        //     for (int i = 0; i < size; i++) {
-        //         bReplaced = false;
-        //         if (i != a)
-        //             for (int j = 0; j < size; j++) {
-        //                 if (j != b)
-        //                     temp.setElement(aReplaced ? i - 1 : i, bReplaced ? j - 1 : j, matrix[i][j]);
-        //                 else
-        //                     bReplaced = true;
-        //             }
-        //         else
-        //             aReplaced = true;
-        //     }
-        //     return temp;
-        // }
+
+        // << operator
+        friend std::ostream &operator<<(std::ostream &os, const Matrix4 &m)
+        {
+            os << "[" << m._matrix[0][0] << " " << m._matrix[0][1] << " " << m._matrix[0][2] << " " << m._matrix[0][3] << "]" << std::endl;
+            os << "[" << m._matrix[1][0] << " " << m._matrix[1][1] << " " << m._matrix[1][2] << " " << m._matrix[1][3] << "]" << std::endl;
+            os << "[" << m._matrix[2][0] << " " << m._matrix[2][1] << " " << m._matrix[2][2] << " " << m._matrix[2][3] << "]" << std::endl;
+            os << "[" << m._matrix[3][0] << " " << m._matrix[3][1] << " " << m._matrix[3][2] << " " << m._matrix[3][3] << "]" << std::endl;
+
+            return os;
+        }
+
+        // >> operator
+        friend std::istream &operator>>(std::istream &is, Matrix4 &m)
+        {
+            for (char i = 0; i < 4; i++)
+            {
+                for (char j = 0; j < 4; j++)
+                {
+                    is >> m._matrix[i][j];
+                }
+            }
+
+            return is;
+        }
 
     private:
         double _matrix[4][4] = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};

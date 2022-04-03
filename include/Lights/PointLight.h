@@ -13,7 +13,7 @@ namespace COAL
 
         [[nodiscard]] constexpr PointLight(COAL::Color &intensity, COAL::Point &position) : Light(intensity, position) {}
 
-        [[nodiscard]] constexpr int equals(PointLight &p) const
+        [[nodiscard]] int equals(PointLight &p) const
         {
             return intensity == p.intensity && position == p.position;
         }

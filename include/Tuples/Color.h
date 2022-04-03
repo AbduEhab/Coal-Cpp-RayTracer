@@ -1,105 +1,110 @@
 #pragma once
 
-#include "Tuple.h"
+#include "Constants.h"
 
 namespace COAL
 {
-    class Color : public Tuple
+    class Color
     {
     public:
-        [[nodiscard]] constexpr Color() : Tuple(x, y, z, 0){};
+        [[nodiscard]] constexpr Color() : r(0), g(0), b(0), a(1){};
 
         [[nodiscard]] constexpr Color(double red, double green, double blue)
-            : Tuple(red > 255 ? 255 : red, green > 255 ? 255 : green, blue > 255 ? 255 : blue, 0) {}
+            : r(red > 255 ? 255 : red), g(green > 255 ? 255 : green), b(blue > 255 ? 255 : blue), a(0){};
 
-        [[nodiscard]] constexpr int operator==(const Color &rhs) const noexcept
+        [[nodiscard]] int operator==(const Color &rhs) const noexcept
         {
-            return (std::abs(x - rhs.x) <= 0.00001) && (std::abs(y - rhs.y) <= 0.00001) && (std::abs(z - rhs.z) <= 0.00001) && (rhs.w == 0);
+            return (std::abs(r - rhs.r) <= 0.00001) && (std::abs(g - rhs.g) <= 0.00001) && (std::abs(b - rhs.b) <= 0.00001) && (rhs.a == 0);
         }
 
         [[nodiscard]] constexpr Color &operator+=(const double rhs) noexcept
         {
-            x = x + rhs;
-            y = y + rhs;
-            z = z + rhs;
+            r = r + rhs;
+            g = g + rhs;
+            b = b + rhs;
             return *this;
         }
 
         [[nodiscard]] constexpr Color &operator+=(const Color &rhs) noexcept
         {
-            x += rhs.x;
-            y += rhs.y;
-            z += rhs.z;
+            r += rhs.r;
+            g += rhs.g;
+            b += rhs.b;
             return *this;
         }
 
         [[nodiscard]] constexpr Color &operator-=(const double rhs) noexcept
         {
-            x = x - rhs;
-            y = y - rhs;
-            z = z - rhs;
+            r = r - rhs;
+            g = g - rhs;
+            b = b - rhs;
             return *this;
         }
 
         [[nodiscard]] constexpr Color &operator-=(const Color &rhs) noexcept
         {
-            x -= rhs.x;
-            y -= rhs.y;
-            z -= rhs.z;
+            r -= rhs.r;
+            g -= rhs.g;
+            b -= rhs.b;
             return *this;
         }
 
         [[nodiscard]] constexpr Color &operator*=(float factor) noexcept
         {
-            x *= factor;
-            y *= factor;
-            z *= factor;
+            r *= factor;
+            g *= factor;
+            b *= factor;
             return *this;
         }
 
         [[nodiscard]] constexpr Color &operator*=(const Color &rhs) noexcept
         {
-            x *= rhs.x;
-            y *= rhs.y;
-            z *= rhs.z;
+            r *= rhs.r;
+            g *= rhs.g;
+            b *= rhs.b;
             return *this;
         }
 
         [[nodiscard]] constexpr Color operator+(const Color &rhs) const noexcept
         {
-            return Color(x + rhs.x, y + rhs.y, z + rhs.z);
+            return Color(r + rhs.r, g + rhs.g, b + rhs.b);
         }
 
         [[nodiscard]] constexpr Color operator+(const double rhs) const noexcept
         {
-            return Color(x + rhs, y + rhs, z + rhs);
+            return Color(r + rhs, g + rhs, b + rhs);
         }
 
         [[nodiscard]] constexpr Color operator-(const double rhs) const noexcept
         {
-            return Color(x - rhs, y - rhs, z - rhs);
+            return Color(r - rhs, g - rhs, b - rhs);
         }
 
         [[nodiscard]] constexpr Color operator-(const Color &rhs) const noexcept
         {
-            return Color(x - rhs.x, y - rhs.y, z - rhs.z);
+            return Color(r - rhs.r, g - rhs.g, b - rhs.b);
         }
 
         [[nodiscard]] constexpr Color operator*(const float factor) const noexcept
         {
-            return Color(x * factor, y * factor, z * factor);
+            return Color(r * factor, g * factor, b * factor);
         }
 
         [[nodiscard]] constexpr Color operator*(const Color &rhs) const noexcept
         {
-            return Color(x * rhs.x, y * rhs.y, z * rhs.z);
+            return Color(r * rhs.r, g * rhs.g, b * rhs.b);
         }
-    };
 
-    [[nodiscard]] std::ostream &operator<<(std::ostream &os, const Color &dt)
-    {
-        os << "(" << dt.x << ", " << dt.y << ", " << dt.z << ")";
-        return os;
+        friend std::ostream &operator<<(std::ostream &os, const Color &dt)
+        {
+            os << "(" << dt.r << ", " << dt.g << ", " << dt.b << ")";
+            return os;
+        };
+
+        double r;
+        double g;
+        double b;
+        double a;
     };
 
     static constexpr const Color BLACK = Color(0, 0, 0);

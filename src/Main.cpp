@@ -6,3 +6,4 @@ int main(int, char **)
 
     std::cout << COAL::BLUE << std::endl;
 }
+

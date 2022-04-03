@@ -6,8 +6,6 @@
 namespace COAL
 {
 
-    const std::string BINARY_DIRECTORY(std::string(get_current_dir_name()) + "/");
-
     std::string read_file(const std::string &filepath)
     {
         COAL::debug_print(std::string("Reading file: ") + filepath);
