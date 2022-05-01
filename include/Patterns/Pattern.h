@@ -1,15 +1,16 @@
 #pragma once
 
 #include "Matrix.h"
-
+#include "Shapes/Shape.h"
 #include "Tuples/Color.h"
 #include "Tuples/Point.h"
 
 namespace COAL
 {
-    class Pattern
+    struct Shape;
+
+    struct Pattern
     {
-    public:
         [[nodiscard]] constexpr Pattern(){};
 
         // init pattern with first and second color
@@ -27,9 +28,15 @@ namespace COAL
             m_transform = transform;
         }
 
-        [[nodiscard]] virtual COAL::Color color_at(COAL::Point p) const
+        [[nodiscard]] virtual COAL::Color color_at(const COAL::Point &p) const = 0;
+
+        [[nodiscard]] COAL::Color colot_at(const Shape &s, const COAL::Point &p) const;
+
+        // == operator
+        friend bool operator==(const Pattern &lhs, const Pattern &rhs)
         {
-            
+            return lhs.m_first_color == rhs.m_first_color && lhs.m_second_color == rhs.m_second_color &&
+                   lhs.m_transform == rhs.m_transform;
         }
 
         // << operator
@@ -39,9 +46,9 @@ namespace COAL
             return os;
         }
 
-    protected:
         COAL::Matrix4 m_transform = COAL::IDENTITY;
         COAL::Color m_first_color = COAL::WHITE;
         COAL::Color m_second_color = COAL::BLACK;
     };
+
 } // namespace COAL

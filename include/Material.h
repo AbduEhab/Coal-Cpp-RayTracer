@@ -1,18 +1,20 @@
 #pragma once
 
 #include "Patterns/Pattern.h"
+#include "Shapes/Shape.h"
 #include "Tuples/Color.h"
 
 namespace COAL
 {
-    class Material
-    {
-    public:
-        [[nodiscard]] constexpr Material()
-        {
-        }
 
-        [[nodiscard]] constexpr Material(COAL::Color &color, double ambient, double diffuse, double specular, double shininess, COAL::Pattern &pattern, double reflectiveness, double transparency, double refractiveIndex)
+    struct Shape;
+
+    struct Material
+    {
+
+        [[nodiscard]] constexpr Material() : m_pattern(nullptr){};
+
+        [[nodiscard]] constexpr Material(COAL::Color &color, double ambient, double diffuse, double specular, double shininess, COAL::Pattern *pattern, double reflectiveness, double transparency, double refractiveIndex) : m_pattern(pattern)
         {
             if (color.r < 0 || color.r > 255 || color.g < 0 || color.g > 255 || color.b < 0 || color.b > 255)
             {
@@ -59,14 +61,62 @@ namespace COAL
                 std::cout << "invalid shininess recived " << __FUNCTION__ << std::endl;
             }
 
-            m_pattern = pattern;
-
             m_reflectiveness = reflectiveness > 1 ? 1 : reflectiveness < 0 ? 0
                                                                            : reflectiveness;
 
             m_transparency = transparency >= 0 ? transparency : 0;
 
             m_refractive_index = refractiveIndex >= 0 ? refractiveIndex : 0;
+        }
+
+        // lighting
+        [[nodiscard]] Color lighting(const Light &light, const Shape &shape, const Point &point, const Vector &eyev, const Vector &normalv, const bool inShadow) const
+        {
+            Color effColor;
+
+            if (m_pattern)
+            {
+                effColor = m_pattern->colot_at(shape, point) * light.intensity;
+            }
+            else
+            {
+                effColor = m_color * light.intensity;
+            }
+
+            Vector lightv = (light.position - point).normalize();
+
+            Color ambient = effColor * m_ambient;
+
+            double lightDotNormal = lightv.dot(normalv);
+
+            Color diffuse;
+            Color specular;
+
+            if (!inShadow && lightDotNormal >= 0)
+            {
+                diffuse = effColor * m_diffuse * lightDotNormal;
+
+                Vector reflectv = -lightv.reflect(normalv);
+                double reflectDotEye = reflectv.dot(eyev);
+
+                if (reflectDotEye <= 0)
+                {
+                    specular = Color(0, 0, 0);
+                }
+                else
+                {
+                    double factor = std::pow(reflectDotEye, m_shininess);
+                    specular = light.intensity * m_specular * factor;
+                }
+            }
+
+            return ambient + diffuse + specular;
+        }
+
+        // == operator
+        [[nodiscard]] bool operator==(const Material &rhs) const noexcept
+        {
+            return (m_color == rhs.m_color) && (m_ambient == rhs.m_ambient) && (m_diffuse == rhs.m_diffuse) && (m_specular == rhs.m_specular) && (m_shininess == rhs.m_shininess) && (m_reflectiveness == rhs.m_reflectiveness) && (m_transparency == rhs.m_transparency) && (m_refractive_index == rhs.m_refractive_index);
         }
 
         // << operator
@@ -84,9 +134,112 @@ namespace COAL
             return os;
         }
 
+        // getters
+        [[nodiscard]] constexpr double get_ambient() const noexcept { return m_ambient; }
+        [[nodiscard]] constexpr double get_diffuse() const noexcept { return m_diffuse; }
+        [[nodiscard]] constexpr double get_specular() const noexcept { return m_specular; }
+        [[nodiscard]] constexpr double get_shininess() const noexcept { return m_shininess; }
+        [[nodiscard]] constexpr double get_reflectiveness() const noexcept { return m_reflectiveness; }
+        [[nodiscard]] constexpr double get_transparency() const noexcept { return m_transparency; }
+        [[nodiscard]] constexpr double get_refractive_index() const noexcept { return m_refractive_index; }
+        [[nodiscard]] constexpr Color get_color() const noexcept { return m_color; }
+        [[nodiscard]] constexpr const Pattern *get_pattern() const noexcept { return m_pattern; }
+
+        // setters
+        constexpr Material &set_ambient(double ambient) noexcept
+        {
+            if (ambient >= 0 && ambient <= 1)
+            {
+                this->m_ambient = ambient;
+            }
+            else
+            {
+                std::cout << "invalid ambient recived " << __FUNCTION__ << std::endl;
+            }
+
+            return *this;
+        }
+
+        constexpr Material &set_diffuse(double diffuse) noexcept
+        {
+            if (diffuse >= 0 && diffuse <= 1)
+            {
+                this->m_diffuse = diffuse;
+            }
+            else
+            {
+                std::cout << "invalid diffuse recived " << __FUNCTION__ << std::endl;
+            }
+            return *this;
+        }
+
+        constexpr Material &set_specular(double specular) noexcept
+        {
+            if (specular >= 0 && specular <= 1)
+            {
+                this->m_specular = specular;
+            }
+            else
+            {
+                std::cout << "invalid specular recived " << __FUNCTION__ << std::endl;
+            }
+
+            return *this;
+        }
+
+        constexpr Material &set_shininess(double shininess) noexcept
+        {
+            if (shininess >= 0)
+            {
+                this->m_shininess = shininess;
+            }
+            else
+            {
+                std::cout << "invalid shininess recived " << __FUNCTION__ << std::endl;
+            }
+
+            return *this;
+        }
+
+        constexpr Material &set_reflectiveness(double reflectiveness) noexcept
+        {
+            m_reflectiveness = reflectiveness > 1 ? 1 : reflectiveness < 0 ? 0
+                                                                           : reflectiveness;
+
+            return *this;
+        }
+
+        constexpr Material &set_transparency(double transparency) noexcept
+        {
+            m_transparency = transparency >= 0 ? transparency : 0;
+
+            return *this;
+        }
+
+        constexpr Material &set_refractive_index(double refractiveIndex) noexcept
+        {
+            m_refractive_index = refractiveIndex >= 0 ? refractiveIndex : 0;
+
+            return *this;
+        }
+
+        constexpr Material &set_color(Color color) noexcept
+        {
+            m_color = color;
+
+            return *this;
+        }
+
+        constexpr Material &set_pattern(Pattern *pattern) noexcept
+        {
+            m_pattern = pattern;
+
+            return *this;
+        }
+
     private:
-        COAL::Color m_color = COAL::Color(1.0, 1.0, 1.0);
-        COAL::Pattern m_pattern;
+        Color m_color = COAL::WHITE;
+        const Pattern *m_pattern;
         double m_ambient = 0.1;
         double m_diffuse = 0.9;
         double m_specular = 0.9;

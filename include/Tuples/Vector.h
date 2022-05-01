@@ -3,25 +3,16 @@
 namespace COAL
 {
 
-    class Vector
+    struct Vector
     {
 
-    public:
         [[nodiscard]] constexpr Vector() : x(0), y(0), z(0), w(0){};
 
         [[nodiscard]] constexpr Vector(double x, double y, double z) : x(x), y(y), z(z), w(0){};
 
-        [[nodiscard]] constexpr Vector &operator=(const Vector &vector)
+        [[nodiscard]] int operator==(const Vector &rhs) const noexcept
         {
-            x = vector.x;
-            y = vector.y;
-            z = vector.z;
-            return *this;
-        }
-
-        [[nodiscard]] int operator==(Vector &rhs) const noexcept
-        {
-            return (std::abs(x - rhs.x) <= 0.00001) && (std::abs(y - rhs.y) <= 0.00001) && (std::abs(z - rhs.z) <= 0.00001) && (rhs.w == 0);
+            return (std::abs(x - rhs.x) <= kEpsilon) && (std::abs(y - rhs.y) <= kEpsilon) && (std::abs(z - rhs.z) <= kEpsilon) && (rhs.w == 0);
         }
 
         [[nodiscard]] Vector operator-() const noexcept
@@ -82,7 +73,7 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] constexpr Vector &operator*=(float factor) noexcept
+        [[nodiscard]] constexpr Vector &operator*=(double factor) noexcept
         {
             x *= factor;
             y *= factor;
@@ -90,7 +81,7 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] constexpr Vector &operator/=(float factor) noexcept
+        [[nodiscard]] constexpr Vector &operator/=(double factor) noexcept
         {
             x /= factor;
             y /= factor;
@@ -118,12 +109,12 @@ namespace COAL
             return Vector(x - rhs.x, y - rhs.y, z - rhs.z);
         }
 
-        [[nodiscard]] Vector operator*(const float factor) const noexcept
+        [[nodiscard]] Vector operator*(const double factor) const noexcept
         {
             return Vector(x * factor, y * factor, z * factor);
         }
 
-        [[nodiscard]] Vector operator/(const float factor) const noexcept
+        [[nodiscard]] Vector operator/(const double factor) const noexcept
         {
             return Vector(x / factor, y / factor, z / factor);
         }

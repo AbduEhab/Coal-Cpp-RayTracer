@@ -4,16 +4,15 @@
 
 namespace COAL
 {
-    class Point
+    struct Point
     {
-    public:
         [[nodiscard]] constexpr Point() : x(0), y(0), z(0), w(1){};
 
         [[nodiscard]] constexpr Point(double x, double y, double z) : x(x), y(y), z(z), w(0){};
 
-        [[nodiscard]] int operator==(Point &rhs) const noexcept
+        [[nodiscard]] bool operator==(const Point &rhs) const noexcept
         {
-            return (std::abs(x - rhs.x) <= 0.00001) && (std::abs(y - rhs.y) <= 0.00001) && (std::abs(z - rhs.z) <= 0.00001) && (rhs.w == 1);
+            return (std::abs(x - rhs.x) <= kEpsilon) && (std::abs(y - rhs.y) <= kEpsilon) && (std::abs(z - rhs.z) <= kEpsilon) && (rhs.w == 1);
         }
 
         [[nodiscard]] constexpr Point &operator+=(const double rhs) noexcept
@@ -41,9 +40,97 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] Vector operator-(const Point &rhs) const noexcept
+        // - point
+        [[nodiscard]] constexpr Point operator-() const noexcept
+        {
+            return Point(-x, -y, -z);
+        }
+
+        // subtract a point from a point
+        [[nodiscard]] constexpr Vector operator-(const Point &rhs) const noexcept
         {
             return Vector(x - rhs.x, y - rhs.y, z - rhs.z);
+        }
+
+        // subtract a vector from a point
+        [[nodiscard]] constexpr Point operator-(const Vector &rhs) const noexcept
+        {
+            return Point(x - rhs.x, y - rhs.y, z - rhs.z);
+        }
+
+        // add a point to a Vector
+        [[nodiscard]] constexpr Point operator+(const Vector &rhs) const noexcept
+        {
+            return Point(x + rhs.x, y + rhs.y, z + rhs.z);
+        }
+
+        // [] operator
+        [[nodiscard]] constexpr double operator[](const char i) const noexcept
+        {
+            assert(i >= 0 && i < 3);
+
+            switch (i)
+            {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+                return z;
+            default:
+                break;
+            }
+
+            assert(false);
+            return -1;
+        }
+
+        [[nodiscard]] constexpr Point &operator*=(const double rhs) noexcept
+        {
+            x = x * rhs;
+            y = y * rhs;
+            z = z * rhs;
+            return *this;
+        }
+
+        [[nodiscard]] constexpr Point &operator/=(const double rhs) noexcept
+        {
+            x = x / rhs;
+            y = y / rhs;
+            z = z / rhs;
+            return *this;
+        }
+
+        [[nodiscard]] constexpr Point &operator*=(const Point &rhs) noexcept
+        {
+            x = x * rhs.x;
+            y = y * rhs.y;
+            z = z * rhs.z;
+            return *this;
+        }
+
+        [[nodiscard]] constexpr Point &operator/=(const Point &rhs) noexcept
+        {
+            x = x / rhs.x;
+            y = y / rhs.y;
+            z = z / rhs.z;
+            return *this;
+        }
+
+        [[nodiscard]] constexpr Point &operator*=(const Vector &rhs) noexcept
+        {
+            x = x * rhs.x;
+            y = y * rhs.y;
+            z = z * rhs.z;
+            return *this;
+        }
+
+        [[nodiscard]] constexpr Point &operator/=(const Vector &rhs) noexcept
+        {
+            x = x / rhs.x;
+            y = y / rhs.y;
+            z = z / rhs.z;
+            return *this;
         }
 
         friend std::ostream &operator<<(std::ostream &os, const Point &dt)

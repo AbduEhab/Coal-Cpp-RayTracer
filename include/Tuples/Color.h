@@ -4,9 +4,8 @@
 
 namespace COAL
 {
-    class Color
+    struct Color
     {
-    public:
         [[nodiscard]] constexpr Color() : r(0), g(0), b(0), a(1){};
 
         [[nodiscard]] constexpr Color(double red, double green, double blue)
@@ -14,7 +13,7 @@ namespace COAL
 
         [[nodiscard]] int operator==(const Color &rhs) const noexcept
         {
-            return (std::abs(r - rhs.r) <= 0.00001) && (std::abs(g - rhs.g) <= 0.00001) && (std::abs(b - rhs.b) <= 0.00001) && (rhs.a == 0);
+            return (std::abs(r - rhs.r) <= kEpsilon) && (std::abs(g - rhs.g) <= kEpsilon) && (std::abs(b - rhs.b) <= kEpsilon) && (rhs.a == 0);
         }
 
         [[nodiscard]] constexpr Color &operator+=(const double rhs) noexcept
@@ -85,7 +84,7 @@ namespace COAL
             return Color(r - rhs.r, g - rhs.g, b - rhs.b);
         }
 
-        [[nodiscard]] constexpr Color operator*(const float factor) const noexcept
+        [[nodiscard]] constexpr Color operator*(const double factor) const noexcept
         {
             return Color(r * factor, g * factor, b * factor);
         }

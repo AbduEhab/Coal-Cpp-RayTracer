@@ -6,10 +6,9 @@
 
 namespace COAL
 {
-    class Matrix4
+    struct Matrix4
     {
 
-    public:
         [[nodiscard]] constexpr Matrix4(){};
 
         [[nodiscard]] constexpr Matrix4(const double *array, int array_size)
@@ -27,6 +26,43 @@ namespace COAL
                 for (char j = 0; j < 4; j++)
                     this->_matrix[i][j] = array[i][j];
         }
+
+        [[nodiscard]] constexpr Matrix4(const std::vector<std::vector<double>> &values)
+        {
+            for (char i = 0; i < 4; i++)
+                for (char j = 0; j < 4; j++)
+                    this->_matrix[i][j] = values[i][j];
+        }
+
+        // constructor for (double, double, double, int, double, double, double, int, double, double, double, double, double, double, double, double)
+        [[nodiscard]] constexpr Matrix4(const double a00, const double a01, const double a02, const double a03, const double a10, const double a11, const double a12, const double a13, const double a20, const double a21, const double a22, const double a23, const double a30, const double a31, const double a32, const double a33)
+        {
+            this->_matrix[0][0] = a00;
+            this->_matrix[0][1] = a01;
+            this->_matrix[0][2] = a02;
+            this->_matrix[0][3] = a03;
+            this->_matrix[1][0] = a10;
+            this->_matrix[1][1] = a11;
+            this->_matrix[1][2] = a12;
+            this->_matrix[1][3] = a13;
+            this->_matrix[2][0] = a20;
+            this->_matrix[2][1] = a21;
+            this->_matrix[2][2] = a22;
+            this->_matrix[2][3] = a23;
+            this->_matrix[3][0] = a30;
+            this->_matrix[3][1] = a31;
+            this->_matrix[3][2] = a32;
+            this->_matrix[3][3] = a33;
+        }
+
+        // // = operator
+        // [[nodiscard]] constexpr Matrix4 &operator=(const Matrix4 &rhs) noexcept
+        // {
+        //     for (char i = 0; i < 4; i++)
+        //         for (char j = 0; j < 4; j++)
+        //             this->_matrix[i][j] = rhs._matrix[i][j];
+        //     return *this;
+        // }
 
         // == operator
         [[nodiscard]] constexpr bool operator==(const Matrix4 &other) const noexcept
@@ -69,6 +105,17 @@ namespace COAL
             return result;
         }
 
+        // * by std::vector<std::vector<double>>
+        [[nodiscard]] constexpr Matrix4 operator*(const std::vector<std::vector<double>> &other) const noexcept
+        {
+            Matrix4 result;
+
+            for (char i = 0; i < 4; i++)
+                for (char j = 0; j < 4; j++)
+                    result._matrix[i][j] = this->_matrix[i][0] * other[0][j] + this->_matrix[i][1] * other[1][j] + this->_matrix[i][2] * other[2][j] + this->_matrix[i][3] * other[3][j];
+
+            return result;
+        }
         // * operator
         [[nodiscard]] constexpr Matrix4 operator*(const Matrix4 &other) const noexcept
         {
@@ -100,6 +147,20 @@ namespace COAL
         [[nodiscard]] constexpr COAL::Vector operator*(const COAL::Vector &other) const noexcept
         {
             COAL::Vector result;
+
+            result.x = this->_matrix[0][0] * other.x + this->_matrix[0][1] * other.y +
+                       this->_matrix[0][2] * other.z + this->_matrix[0][3];
+            result.y = this->_matrix[1][0] * other.x + this->_matrix[1][1] * other.y +
+                       this->_matrix[1][2] * other.z + this->_matrix[1][3];
+            result.z = this->_matrix[2][0] * other.x + this->_matrix[2][1] * other.y +
+                       this->_matrix[2][2] * other.z + this->_matrix[2][3];
+
+            return result;
+        }
+
+        [[nodiscard]] constexpr COAL::Point operator*(const COAL::Point &other) const noexcept
+        {
+            COAL::Point result;
 
             result.x = this->_matrix[0][0] * other.x + this->_matrix[0][1] * other.y +
                        this->_matrix[0][2] * other.z + this->_matrix[0][3];
@@ -168,7 +229,7 @@ namespace COAL
         }
 
         // determinant
-        [[nodiscard]] constexpr double determinant() const noexcept
+        [[nodiscard]] constexpr double determinant4() const noexcept
         {
             return this->_matrix[0][0] * this->_matrix[1][1] * this->_matrix[2][2] * this->_matrix[3][3] +
                    this->_matrix[0][0] * this->_matrix[1][2] * this->_matrix[2][3] * this->_matrix[3][1] +
@@ -196,42 +257,62 @@ namespace COAL
                    this->_matrix[0][3] * this->_matrix[1][2] * this->_matrix[2][0] * this->_matrix[3][1];
         }
 
-        // matrix sub-determinant
-        [[nodiscard]] constexpr double sub_determinant(int i, int j) const noexcept
+        [[nodiscard]] double constexpr determinant(double *matrix, int size) const
         {
             double det = 0;
 
-            double temp[3][3] = {};
+            if (size == 1)
+                return matrix[0];
 
-            for (char k = 0; k < 3; k++)
+            if (size == 2)
+                return matrix[0] * matrix[3] - matrix[1] * matrix[2];
+
+            for (int i = 0; i < size; i++)
             {
-                for (char l = 0; l < 3; l++)
-                {
-                    temp[k][l] = _matrix[(k + 1) % 3][(l + 1) % 3];
-                }
-            }
+                double *subMatrix = new double[size * size];
+                int subMatrixSize = size - 1;
 
-            det += _matrix[i][j] * temp[0][0] * sub_determinant(0, 0);
-            det -= _matrix[i][j] * temp[0][1] * sub_determinant(0, 1);
-            det += _matrix[i][j] * temp[0][2] * sub_determinant(0, 2);
+                for (int j = 1; j < size; j++)
+                {
+                    for (int k = 0; k < size; k++)
+                    {
+                        if (k < i)
+                            subMatrix[(j - 1) * subMatrixSize + k] = matrix[j * size + k];
+                        else if (k > i)
+                            subMatrix[(j - 1) * subMatrixSize + k - 1] = matrix[j * size + k];
+                    }
+                }
+
+                det += pow(-1, i) * matrix[0] * determinant(subMatrix, subMatrixSize);
+
+                delete[] subMatrix;
+            }
 
             return det;
         }
 
-        // matrix cofactor
+        // // cofactor
+        // [[nodiscard]] constexpr Matrix4 cofactor() const noexcept
+        // {
+        //     Matrix4 result;
+
+        //     for (char i = 0; i < 4; i++)
+        //         for (char j = 0; j < 4; j++)
+        //             result._matrix[i][j] = pow(-1, i + j) * determinant(subMatrix(i, j));
+
+        //     return result;
+        // }
+
+        // cofactor
         [[nodiscard]] constexpr Matrix4 cofactor() const noexcept
         {
-            Matrix4 temp = Matrix4();
+            Matrix4 result;
 
             for (char i = 0; i < 4; i++)
-            {
                 for (char j = 0; j < 4; j++)
-                {
-                    temp._matrix[i][j] = sub_determinant(i, j);
-                }
-            }
+                    result._matrix[i][j] = this->_matrix[i][j] * ((i + j) % 2 == 0 ? 1 : -1);
 
-            return temp;
+            return result;
         }
 
         // matrix adjugate
@@ -254,6 +335,102 @@ namespace COAL
         [[nodiscard]] constexpr Matrix4 inverse() const noexcept
         {
             return adjugate().transpose();
+        }
+
+        _nodiscard Matrix4 translate(std::vector<double> const &values) const
+        {
+            std::vector<std::vector<double>> translation_values = {
+                {1, 0, 0, values[0]},
+                {0, 1, 0, values[1]},
+                {0, 0, 1, values[2]},
+                {0, 0, 0, 1},
+            };
+
+            return *this * translation_values;
+        }
+
+        _nodiscard Matrix4 translate(const double x, const double y, const double z) const
+        {
+            std::vector<std::vector<double>> translation_values = {
+                {1, 0, 0, x},
+                {0, 1, 0, y},
+                {0, 0, 1, z},
+                {0, 0, 0, 1},
+            };
+
+            return *this * translation_values;
+        }
+
+        _nodiscard Matrix4 scale(std::vector<double> const &values) const
+        {
+            std::vector<std::vector<double>> translation_values = {
+                {values[0], 0, 0, 0},
+                {0, values[1], 0, 0},
+                {0, 0, values[2], 0},
+                {0, 0, 0, 1},
+            };
+
+            return *this * translation_values;
+        }
+
+        _nodiscard Matrix4 scale(const double x, const double y, const double z) const
+        {
+            std::vector<std::vector<double>> translation_values = {
+                {x, 0, 0, 0},
+                {0, y, 0, 0},
+                {0, 0, z, 0},
+                {0, 0, 0, 1},
+            };
+
+            return *this * translation_values;
+        }
+
+        _nodiscard Matrix4 rotate_x(const double radians) const
+        {
+            std::vector<std::vector<double>> rotate_x_values = {
+                {1, 0, 0, 0},
+                {0, std::cos(radians), -std::sin(std::cos(radians)), 0},
+                {0, std::sin(std::cos(radians)), std::cos(radians), 0},
+                {0, 0, 0, 1},
+            };
+
+            return *this * rotate_x_values;
+        }
+
+        _nodiscard Matrix4 rotate_y(const double radians) const
+        {
+            std::vector<std::vector<double>> rotate_y_values = {
+                {std::cos(radians), 0, std::sin(radians), 0},
+                {0, 1, 0, 0},
+                {-std::sin(radians), 0, std::cos(radians), 0},
+                {0, 0, 0, 1},
+            };
+
+            return *this * rotate_y_values;
+        }
+
+        _nodiscard Matrix4 rotate_z(const double radians) const
+        {
+            std::vector<std::vector<double>> rotate_z_values = {
+                {std::cos(radians), -std::sin(radians), 0, 0},
+                {std::sin(radians), std::cos(radians), 0, 0},
+                {0, 0, 1, 0},
+                {0, 0, 0, 1},
+            };
+
+            return *this * rotate_z_values;
+        }
+
+        _nodiscard Matrix4 shear(double Xy, double Xz, double Yx, double Yz, double Zx, double Zy) const
+        {
+            std::vector<std::vector<double>> shear_values = {
+                {1, Xy, Xz, 0},
+                {Yx, 1, Yz, 0},
+                {Zx, Zy, 1, 0},
+                {0, 0, 0, 1},
+            };
+
+            return *this * shear_values;
         }
 
         // << operator
@@ -286,5 +463,5 @@ namespace COAL
         static constexpr double _identity_array[4][4] = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
     };
 
-    static constexpr const Matrix4 IDENTITY = Matrix4();
+    constexpr const Matrix4 IDENTITY = Matrix4();
 }; // namespace CLOAL

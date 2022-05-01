@@ -6,16 +6,17 @@
 
 namespace COAL
 {
-    class PointLight : public Light
+    struct PointLight : public Light
     {
-    public:
         [[nodiscard]] constexpr PointLight() : Light() {}
 
-        [[nodiscard]] constexpr PointLight(COAL::Color &intensity, COAL::Point &position) : Light(intensity, position) {}
+        [[nodiscard]] constexpr PointLight(COAL::Point &position, COAL::Color &intensity) : Light(position,intensity ) {}
 
-        [[nodiscard]] int equals(PointLight &p) const
+        // implement abstract equality
+        [[nodiscard]] bool operator==(const Light &rhs) const noexcept override
         {
-            return intensity == p.intensity && position == p.position;
-        }
+            const auto other_point_light = dynamic_cast<const PointLight *>(&rhs);
+            return other_point_light != nullptr && other_point_light->get_position() == get_position() && other_point_light->get_intensity() == get_intensity();
+        };
     };
 } // namespace COAL
