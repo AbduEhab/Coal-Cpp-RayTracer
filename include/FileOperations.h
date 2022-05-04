@@ -5,9 +5,9 @@
 namespace COAL
 {
 
-    std::string read_file(const std::string &filepath)
+    _nodiscard std::string read_file(const std::string &filepath)
     {
-        DebugPrint(std::string("Reading file: ") + filepath);
+        debug_print(std::string("Reading file: ") + filepath);
 
         std::string result;
         std::ifstream in(filepath, std::ios::in | std::ios::binary);
@@ -15,7 +15,7 @@ namespace COAL
         if (in)
         {
             in.seekg(0, std::ios::end);
-            size_t size = in.tellg();
+            size_t size = (size_t)in.tellg();
             if (size != -1)
             {
                 result.resize(size);
@@ -25,19 +25,19 @@ namespace COAL
             else
             {
                 // ToDO: handle failure to read from file
-                std::cout << "-1" << std::endl;
+                debug_print(-1);
             }
         }
         else
         {
             // ToDO: handle failure to open file
-            std::cout << "-2" << std::endl;
+            debug_print(-2);
         }
 
         return result;
     }
 
-    int read_file(const std::string &filepath, const std::string &message)
+    _nodiscard int write_file(const std::string &filepath, const std::string &message)
     {
         std::ofstream out(filepath, std::ios::out | std::ios::binary);
 
@@ -52,15 +52,15 @@ namespace COAL
             else
             { // handle empty string case
 
+                debug_print("failed to Write to file (cannot write empty string)");
                 return -1;
-                DebugPrint("failed to Write to file (cannot write empty string)");
             }
         }
         else
         { // handle failure to open file
 
+            debug_print("failed to Write to file (cannot open file)");
             return -2;
-            DebugPrint("failed to Write to file (cannot open file)");
         }
 
         return 1;
