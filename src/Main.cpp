@@ -50,7 +50,7 @@ int main()
     world.add_shapes({floor, middle_sphere, right_sphere, left_sphere});
     world.add_lights({light});
 
-    auto camera = COAL::Camera(200, 200, std::numbers::pi / 3);
+    auto camera = COAL::Camera(1000, 1000, std::numbers::pi / 3);
 
     camera.transform(COAL::Point(0, 1.5, -5), COAL::Point(0, 1, 0), COAL::Vector(0, 1, 0));
 

@@ -82,17 +82,9 @@ namespace COAL
                 std::cout << y << std::endl;
                 for (int x = 0; x < m_hsize; x++)
                 {
-                    if (x == 151 && y == 103)
-                        debug_print("ch");
-
                     Ray r = ray_for_pixel(x, y);
 
                     Color c = w.color_at(r);
-
-                    if (c.r == 255 && x > 100)
-                    {
-                        debug_print("!");
-                    }
 
                     image[y][x] = c;
                 }
