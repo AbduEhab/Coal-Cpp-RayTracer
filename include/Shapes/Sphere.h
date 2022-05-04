@@ -18,7 +18,7 @@ namespace COAL
 
         _nodiscard Sphere() = default;
 
-        [[nodiscard]] std::vector<Intersection> intersects(const Ray &ray) const
+        _nodiscard std::vector<Intersection> intersects(const Ray &ray) const
         {
 
             Ray transformed_ray = ray.transform(get_inverse_transform());
@@ -57,22 +57,22 @@ namespace COAL
             return std::vector<Intersection>{Intersection(t1, *this), Intersection(t2, *this)};
         }
 
-        [[nodiscard]] Vector normal_at(Point p) const override
+        _nodiscard Vector normal_at(const Point &p) const override
         {
             Point object_point = get_inverse_transform() * p;
             Vector object_normal = (object_point - Point()).normalize();
-            return get_transform().inverse().transpose() * object_normal;
+            return (get_normal_transform() * object_normal).normalize();
         }
 
         // implement abstract equality
-        [[nodiscard]] bool operator==(const Shape &other) const override
+        _nodiscard bool operator==(const Shape &other) const override
         {
             const auto other_sphere = dynamic_cast<const Sphere *>(&other);
             return other_sphere != nullptr && other_sphere->get_transform() == get_transform();
         };
     };
 
-    [[nodiscard]] static Sphere glass_sphere()
+    _nodiscard _maybe_unused static Sphere glass_sphere()
     {
         return static_cast<Sphere &>(Sphere().set_material(Material().set_transparency(1.0).set_refractive_index(1.5)));
     }

@@ -19,10 +19,10 @@ namespace COAL
 
         _nodiscard World() = default;
 
-        _nodiscard World(int type)
+        _nodiscard World(_maybe_unused const int type)
         {
             std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(Sphere());
-            sphere->set_material(Material(Color(0.8, 1, 0.6), -1, 0.7, 0.2, -1, nullptr, 0, -1, -1));
+            sphere->set_material(Material(Color(0.8, 1, 0.6), -1.0, 0.7, 0.2, -1.0, nullptr, 0.0, -1.0, -1.0));
             m_shapes.emplace_back(sphere);
 
             std::shared_ptr<Sphere> sphere2 = std::make_shared<Sphere>(Sphere());
@@ -53,7 +53,7 @@ namespace COAL
 
         _nodiscard bool is_shadowed(const Point &point, const Light &light) const
         {
-            Vector v = light.position - point;
+            Vector v = light.m_position - point;
             double distance = v.magnitude();
             Vector direction = v.normalize();
 
@@ -74,7 +74,7 @@ namespace COAL
             Intersection hit = Intersection::hit(xs);
 
             if (hit.m_t < 0)
-                return Color(0, 0, 0);
+                return COAL::BLACK;
 
             Computation comps = hit.prepare_computation(ray, xs);
 
@@ -121,7 +121,7 @@ namespace COAL
 
                 double cos_t = sqrt(1.0 - sin2_t);
 
-                Vector direction = comp.m_normal_vector * (n_ratio * cos_i - cos_i) - comp.m_eye_vector * n_ratio;
+                Vector direction = comp.m_normal_vector * (n_ratio * cos_i - cos_t) - comp.m_eye_vector * n_ratio;
 
                 Ray refracted_ray = Ray(comp.m_under_point, direction);
 

@@ -8,7 +8,7 @@ namespace COAL
     {
         [[nodiscard]] constexpr Point() : x(0), y(0), z(0), w(1){};
 
-        [[nodiscard]] constexpr Point(double x, double y, double z) : x(x), y(y), z(z), w(0){};
+        [[nodiscard]] constexpr Point(double x, double y, double z) : x(x), y(y), z(z), w(1){};
 
         [[nodiscard]] bool operator==(const Point &rhs) const noexcept
         {

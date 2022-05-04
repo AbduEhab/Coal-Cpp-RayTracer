@@ -14,7 +14,7 @@ namespace COAL
 
         [[nodiscard]] constexpr Material() : m_pattern(nullptr){};
 
-        [[nodiscard]] constexpr Material(COAL::Color &color, double ambient, double diffuse, double specular, double shininess, COAL::Pattern *pattern, double reflectiveness, double transparency, double refractiveIndex) : m_pattern(pattern)
+        [[nodiscard]] constexpr Material(const COAL::Color &color, const double ambient, const double diffuse, const double specular, const double shininess, const COAL::Pattern *pattern, const double reflectiveness, const double transparency, const double refractiveIndex) : m_pattern(pattern)
         {
             if (color.r < 0 || color.r > 255 || color.g < 0 || color.g > 255 || color.b < 0 || color.b > 255)
             {
@@ -76,14 +76,14 @@ namespace COAL
 
             if (m_pattern)
             {
-                effColor = m_pattern->colot_at(shape, point) * light.intensity;
+                effColor = m_pattern->colot_at(shape, point) * light.m_intensity;
             }
             else
             {
-                effColor = m_color * light.intensity;
+                effColor = m_color * light.m_intensity;
             }
 
-            Vector lightv = (light.position - point).normalize();
+            Vector lightv = (light.m_position - point).normalize();
 
             Color ambient = effColor * m_ambient;
 
@@ -106,7 +106,7 @@ namespace COAL
                 else
                 {
                     double factor = std::pow(reflectDotEye, m_shininess);
-                    specular = light.intensity * m_specular * factor;
+                    specular = light.m_intensity * m_specular * factor;
                 }
             }
 

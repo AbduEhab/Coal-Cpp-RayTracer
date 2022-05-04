@@ -11,7 +11,7 @@ namespace COAL
 
         [[nodiscard]] constexpr Matrix4(){};
 
-        [[nodiscard]] constexpr Matrix4(const double *array, int array_size)
+        [[nodiscard]] constexpr Matrix4(const double *array, _maybe_unused int array_size)
         {
             assert(16 == array_size);
 
@@ -55,14 +55,27 @@ namespace COAL
             this->_matrix[3][3] = a33;
         }
 
-        // // = operator
-        // [[nodiscard]] constexpr Matrix4 &operator=(const Matrix4 &rhs) noexcept
+        // // [][] operator
+        // [[nodiscard]] constexpr double &operator[](const int index) noexcept
         // {
-        //     for (char i = 0; i < 4; i++)
-        //         for (char j = 0; j < 4; j++)
-        //             this->_matrix[i][j] = rhs._matrix[i][j];
-        //     return *this;
+        //     return this->_matrix[index / 4][index % 4];
         // }
+
+        // [] operator
+        [[nodiscard]] constexpr double *operator[](const int index) noexcept
+        {
+            return this->_matrix[index];
+        }
+
+        // / operator
+        [[nodiscard]] constexpr Matrix4 operator/(const double rhs) const noexcept
+        {
+            return Matrix4(
+                this->_matrix[0][0] / rhs, this->_matrix[0][1] / rhs, this->_matrix[0][2] / rhs, this->_matrix[0][3] / rhs,
+                this->_matrix[1][0] / rhs, this->_matrix[1][1] / rhs, this->_matrix[1][2] / rhs, this->_matrix[1][3] / rhs,
+                this->_matrix[2][0] / rhs, this->_matrix[2][1] / rhs, this->_matrix[2][2] / rhs, this->_matrix[2][3] / rhs,
+                this->_matrix[3][0] / rhs, this->_matrix[3][1] / rhs, this->_matrix[3][2] / rhs, this->_matrix[3][3] / rhs);
+        }
 
         // == operator
         [[nodiscard]] constexpr bool operator==(const Matrix4 &other) const noexcept
@@ -149,11 +162,11 @@ namespace COAL
             COAL::Vector result;
 
             result.x = this->_matrix[0][0] * other.x + this->_matrix[0][1] * other.y +
-                       this->_matrix[0][2] * other.z + this->_matrix[0][3];
+                       this->_matrix[0][2] * other.z;
             result.y = this->_matrix[1][0] * other.x + this->_matrix[1][1] * other.y +
-                       this->_matrix[1][2] * other.z + this->_matrix[1][3];
+                       this->_matrix[1][2] * other.z;
             result.z = this->_matrix[2][0] * other.x + this->_matrix[2][1] * other.y +
-                       this->_matrix[2][2] * other.z + this->_matrix[2][3];
+                       this->_matrix[2][2] * other.z;
 
             return result;
         }
@@ -257,84 +270,85 @@ namespace COAL
                    this->_matrix[0][3] * this->_matrix[1][2] * this->_matrix[2][0] * this->_matrix[3][1];
         }
 
-        [[nodiscard]] double constexpr determinant(double *matrix, int size) const
+        template <size_t size>
+        _nodiscard constexpr void sub_matrix(const double (&matrix)[size + 1][size + 1], const int row, const int column, double (&sub_matrix)[size][size]) const
+        {
+            bool a_replaced = false;
+            bool b_replaced = false;
+
+            for (char i = 0; i < size + 1; i++)
+            {
+                b_replaced = false;
+                if (i != row)
+                    for (char j = 0; j < size + 1; j++)
+                    {
+                        if (j != column)
+                            sub_matrix[a_replaced ? i - 1 : i][b_replaced ? j - 1 : j] = matrix[i][j];
+                        else
+                            b_replaced = true;
+                    }
+                else
+                    a_replaced = true;
+            }
+        }
+
+        [[nodiscard]] double constexpr determinant(const double (&matrix)[2][2]) const
+        {
+            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+        }
+
+        [[nodiscard]] double constexpr determinant(const double (&matrix)[3][3]) const
         {
             double det = 0;
 
-            if (size == 1)
-                return matrix[0];
-
-            if (size == 2)
-                return matrix[0] * matrix[3] - matrix[1] * matrix[2];
-
-            for (int i = 0; i < size; i++)
+            for (char i = 0; i < 3; i++)
             {
-                double *subMatrix = new double[size * size];
-                int subMatrixSize = size - 1;
-
-                for (int j = 1; j < size; j++)
+                if (i % 2 == 0)
                 {
-                    for (int k = 0; k < size; k++)
-                    {
-                        if (k < i)
-                            subMatrix[(j - 1) * subMatrixSize + k] = matrix[j * size + k];
-                        else if (k > i)
-                            subMatrix[(j - 1) * subMatrixSize + k - 1] = matrix[j * size + k];
-                    }
+                    double temp_matrix[2][2];
+                    sub_matrix<2>(matrix, i, 0, temp_matrix);
+                    det += matrix[i][0] * determinant(temp_matrix);
                 }
-
-                det += pow(-1, i) * matrix[0] * determinant(subMatrix, subMatrixSize);
-
-                delete[] subMatrix;
+                else
+                {
+                    double temp_matrix[2][2];
+                    sub_matrix<2>(matrix, i, 0, temp_matrix);
+                    det -= matrix[i][0] * determinant(temp_matrix);
+                }
             }
 
             return det;
         }
 
-        // // cofactor
-        // [[nodiscard]] constexpr Matrix4 cofactor() const noexcept
-        // {
-        //     Matrix4 result;
-
-        //     for (char i = 0; i < 4; i++)
-        //         for (char j = 0; j < 4; j++)
-        //             result._matrix[i][j] = pow(-1, i + j) * determinant(subMatrix(i, j));
-
-        //     return result;
-        // }
-
         // cofactor
         [[nodiscard]] constexpr Matrix4 cofactor() const noexcept
         {
-            Matrix4 result;
+            Matrix4 cofactor;
 
-            for (char i = 0; i < 4; i++)
-                for (char j = 0; j < 4; j++)
-                    result._matrix[i][j] = this->_matrix[i][j] * ((i + j) % 2 == 0 ? 1 : -1);
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    double temp_matrix[3][3];
+                    sub_matrix<3>(_matrix, i, j, temp_matrix);
 
-            return result;
+                    cofactor[i][j] = pow(-1, i + j) * determinant(temp_matrix);
+                }
+            }
+
+            return cofactor;
         }
 
         // matrix adjugate
         [[nodiscard]] constexpr Matrix4 adjugate() const noexcept
         {
-            Matrix4 temp = cofactor();
-
-            for (char i = 0; i < 4; i++)
-            {
-                for (char j = 0; j < 4; j++)
-                {
-                    temp._matrix[i][j] = temp._matrix[i][j] * ((i + j) % 2 == 0 ? 1 : -1);
-                }
-            }
-
-            return temp;
+            return this->cofactor().transpose();
         }
 
         // matrix inverse
         [[nodiscard]] constexpr Matrix4 inverse() const noexcept
         {
-            return adjugate().transpose();
+            return this->adjugate() / this->determinant4();
         }
 
         _nodiscard Matrix4 translate(std::vector<double> const &values) const

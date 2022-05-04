@@ -36,7 +36,7 @@ namespace COAL
             m_pixel_size = (m_half_width * 2) / m_hsize;
         }
 
-        _nodiscard Matrix4 transform(Point &from, Point &to, Vector &up)
+        _nodiscard void transform(const Point &from, const Point &to, const Vector &up)
         {
             Vector forword = (to - from).normalize();
 
@@ -46,20 +46,18 @@ namespace COAL
 
             Matrix4 orientation(left.x, left.y, left.z, 0,
                                 new_up.x, new_up.y, new_up.z, 0,
-                                forword.x, forword.y, forword.z, 0,
+                                -forword.x, -forword.y, -forword.z, 0,
                                 0, 0, 0, 1);
 
             m_transform = orientation.translate(-from.x, -from.y, -from.z);
 
             m_inverse_transform = m_transform.inverse();
-
-            return m_transform;
         }
 
         _nodiscard Ray ray_for_pixel(int x, int y) const
         {
-            double xOffset = (x - (m_hsize / 2.0)) * m_pixel_size;
-            double yOffset = (y - (m_vsize / 2.0)) * m_pixel_size;
+            double xOffset = (x + 0.5) * m_pixel_size;
+            double yOffset = (y + 0.5) * m_pixel_size;
 
             double world_x = m_half_width - xOffset;
             double world_y = m_half_height - yOffset;
@@ -74,9 +72,9 @@ namespace COAL
         _nodiscard Color **classic_render(World &w) const
         {
             Color **image;
-            image = new Color *[500];
-            for (int i = 0; i < 500; i++)
-                image[i] = new Color[500];
+            image = new Color *[m_hsize];
+            for (int i = 0; i < m_hsize; i++)
+                image[i] = new Color[m_vsize];
 
             for (int y = 0; y < m_vsize; y++)
             {
@@ -84,9 +82,17 @@ namespace COAL
                 std::cout << y << std::endl;
                 for (int x = 0; x < m_hsize; x++)
                 {
+                    if (x == 151 && y == 103)
+                        debug_print("ch");
+
                     Ray r = ray_for_pixel(x, y);
 
                     Color c = w.color_at(r);
+
+                    if (c.r == 255 && x > 100)
+                    {
+                        debug_print("!");
+                    }
 
                     image[y][x] = c;
                 }

@@ -40,7 +40,7 @@ namespace COAL
             double r0 = ((m_n1 - m_n2) / (m_n1 + m_n2));
             r0 = r0 * r0;
 
-            return r0 + (1 - r0) * pow((1 - cosine), 5);
+            return r0 + (1 - r0) * std::pow((1 - cosine), 5);
         }
 
         double m_t;

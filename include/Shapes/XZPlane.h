@@ -34,7 +34,7 @@ namespace COAL
             return std::vector<Intersection>{Intersection(t, *this)};
         }
 
-        [[nodiscard]] Vector normal_at(Point p) const override
+        [[nodiscard]] Vector normal_at( [[maybe_unused]] const Point &p) const override
         {
             return Vector(0, 1, 0);
         }

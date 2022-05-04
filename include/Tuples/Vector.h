@@ -127,15 +127,14 @@ namespace COAL
 
         [[nodiscard]] double magnitude() const noexcept
         {
-            return std::sqrt(x * x + y * y + z * z +
-                             w * w);
+            return std::sqrt(x * x + y * y + z * z);
         }
 
         [[nodiscard]] Vector normalize() const noexcept
         {
             double mag = magnitude();
 
-            return *this / (float)mag;
+            return *this / mag;
         }
 
         [[nodiscard]] constexpr double dot(const Vector &b) const noexcept
@@ -143,21 +142,21 @@ namespace COAL
             return x * b.x + y * b.y + z * b.z + w * b.w;
         }
 
-        [[nodiscard]] Vector cross(const Vector &b) const noexcept
+        [[nodiscard]] constexpr Vector cross(const Vector &b) const noexcept
         {
             return Vector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x);
         }
 
         // reflection
-        [[nodiscard]] Vector reflect(const Vector &b) const noexcept
-        {
-            return Vector(x - 2 * b.x, y - 2 * b.y, z - 2 * b.z);
-        }
-
-        // [[nodiscard]] constexpr Vector reflect(const Vector &b) noexcept
-        // { // return subtract(b.multiply(2 * dot(b)))
-        //     return *this - (b * (2 * this->dot(b)));
+        // [[nodiscard]] Vector reflect(const Vector &b) const noexcept
+        // {
+        //     return Vector(x - 2 * b.x, y - 2 * b.y, z - 2 * b.z);
         // }
+
+        [[nodiscard]] Vector reflect(const Vector &b) const noexcept
+        { // return subtract(b.multiply(2 * dot(b)))
+            return *this - (b * (2 * this->dot(b)));
+        }
 
         double x;
         double y;

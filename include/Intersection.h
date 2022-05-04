@@ -36,8 +36,8 @@ namespace COAL
                 inside = true;
             }
 
-            Point under_point = p - normalv * 1e-4;
             Point over_point = p + normalv * 1e-4;
+            Point under_point = p - normalv * 1e-4;
 
             double n1 = 0;
             double n2 = 0;
@@ -77,7 +77,7 @@ namespace COAL
         {
             for (const Intersection &intersection : intersections)
             {
-                if (intersection.m_t >= 0)
+                if (intersection.m_t > 0)
                     return intersection;
             }
 
