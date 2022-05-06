@@ -169,6 +169,8 @@ namespace COAL
 
                     res = res + reflection_map * (1 - reflectiveness) + refraction_map * (1 - reflectiveness);
                 }
+                else
+                 res = res + reflection_map + refraction_map;
             }
             return res;
         }

@@ -26,7 +26,7 @@ namespace COAL
                 return std::vector<Intersection>{};
             }
 
-            double t = -transformed_ray.m_origin.y / transformed_ray.m_direction.y;
+            double t = -(transformed_ray.m_origin.y) / (transformed_ray.m_direction.y);
 
             if (t < 0)
             {

@@ -57,7 +57,7 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     option(GIT_SUBMODULE "Check submodules during build" ON)
     if(GIT_SUBMODULE)
         message(STATUS "Submodule update")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive --remote --merge
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                         RESULT_VARIABLE GIT_SUBMOD_RESULT)
 
@@ -72,10 +72,6 @@ endif()
 # Add locations of other CMakelists.txt (one per call)
 add_subdirectory(
     src
-)
-
-add_subdirectory(
-    external/Walnut-CMake
 )
 
 # Extra C++ specific option I need
@@ -110,6 +106,5 @@ target_link_directories(${PROJECT_NAME}
 # <-- Link needed Libs: -->
 target_link_libraries(${PROJECT_NAME} 
     PRIVATE project_options project_warnings
-    PUBLIC glfw 
 )
 # <----------------------->

@@ -110,6 +110,10 @@ namespace COAL
 
                 for (int x = 0; x < m_hsize; x++)
                 {
+
+                    if (y == 70 && x == 40)
+                        std::cout << "y: " << y << " x: " << x << std::endl;
+                        
                     Ray r = ray_for_pixel(x, y);
 
                     Color c = w.color_at(r);
