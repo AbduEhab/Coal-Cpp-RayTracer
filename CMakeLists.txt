@@ -9,7 +9,7 @@ project(Cpp_RayTracer VERSION 0.2.0)
 
 # set a default CXX standard used by the external tools like clang-tidy, cppcheck, etc.
 # You can later set fine-grained standards for each target using `target_compile_features`
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 ### Add project_options
 # include(FetchContent)
@@ -48,7 +48,7 @@ project_options(
 #----------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------
-# Part till line 67 is taken from @codetechandtutorials
+# Part till line 72 is similar to that of @codetechandtutorials
 
 #           DOWNLOAD ALL THE SUBMODULES
 find_package(Git QUIET)
@@ -57,9 +57,10 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     option(GIT_SUBMODULE "Check submodules during build" ON)
     if(GIT_SUBMODULE)
         message(STATUS "Submodule update")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive --remote --merge
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                         RESULT_VARIABLE GIT_SUBMOD_RESULT)
+
         if(NOT GIT_SUBMOD_RESULT EQUAL "0")
             message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
         endif()
@@ -74,17 +75,8 @@ add_subdirectory(
 )
 
 add_subdirectory(
-    external/Walnut/vendor/glm
+    external/Walnut-CMake
 )
-
-add_subdirectory(
-    external/Walnut/vendor/GLFW
-)
-
-
-# Comment these 2 out if you don't intend on using CTests
-include(CTest)
-enable_testing()
 
 # Extra C++ specific option I need
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -92,12 +84,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # <-- Set standard here -->
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 # <----------------------->
-
-# <-- Comment out if you don't need CPack -->
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
-# <----------------------------------------->
 
 # <-- Define Compile Time Definitions here: -->
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -112,22 +98,12 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 target_include_directories(${PROJECT_NAME}
     PUBLIC src
     PUBLIC include
-    PUBLIC external/glfw/include
-    PUBLIC external/Walnut/vendor/glm
-    PUBLIC external/Walnut/vendor/GLFW/include
-    PUBLIC external/Walnut/vendor/imgui
-    PUBLIC external/Walnut/vendor/stb_image
-    PUBLIC external/Walnut/Walnut/src
-    PUBLIC $ENV{VULKAN_SDK}/include
 )
 # <------------------------------------------------>
 
 # <-- Add directory of external libs to link here: -->
 target_link_directories(${PROJECT_NAME}
     PRIVATE src # this line is just to prevent errors
-    PRIVATE external/Walnut/vendor/glfw/src
-    #  PUBLIC $ENV{VULKAN_SDK}/lib
-    #  PUBLIC $ENV{VULKAN_SDK}/etc/explicit_layer.d
 )
 # <-------------------------------------------------->
 

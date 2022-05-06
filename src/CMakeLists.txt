@@ -4,10 +4,6 @@ cmake_minimum_required (VERSION 3.0.0)
 add_executable(${PROJECT_NAME}
     Main.cpp
 
-    ../external/Walnut/src/Walnut/Application.cpp
-    ../external/Walnut/src/Walnut/Image.cpp
-    ../external/Walnut/src/Walnut/Random.cpp
-    ../external/Walnut/src/Walnut/ImGui/ImGuiBuild.cpp
 )
 
 if(NOT MSVC)
