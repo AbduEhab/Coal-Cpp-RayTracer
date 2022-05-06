@@ -7,7 +7,9 @@ namespace COAL
 
     _nodiscard std::string read_file(const std::string &filepath)
     {
-        debug_print(std::string("Reading file: ") + filepath);
+        PROFILE_FUNCTION();
+
+            debug_print(std::string("Reading file: ") + filepath);
 
         std::string result;
         std::ifstream in(filepath, std::ios::in | std::ios::binary);
@@ -39,7 +41,9 @@ namespace COAL
 
     _nodiscard int write_file(const std::string &filepath, const std::string &message)
     {
-        std::ofstream out(filepath, std::ios::out | std::ios::binary);
+        PROFILE_FUNCTION();
+
+            std::ofstream out(filepath, std::ios::out | std::ios::binary);
 
         if (out)
         {

@@ -73,6 +73,15 @@ add_subdirectory(
     src
 )
 
+add_subdirectory(
+    external/Walnut/vendor/glm
+)
+
+add_subdirectory(
+    external/Walnut/vendor/GLFW
+)
+
+
 # Comment these 2 out if you don't intend on using CTests
 include(CTest)
 enable_testing()
@@ -82,10 +91,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # <-- Set standard here -->
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
-# <----------------------->
-
-# <-- Define warnings to show -->
-target_link_libraries(${PROJECT_NAME} PRIVATE project_options project_warnings)
 # <----------------------->
 
 # <-- Comment out if you don't need CPack -->
@@ -107,15 +112,28 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 target_include_directories(${PROJECT_NAME}
     PUBLIC src
     PUBLIC include
+    PUBLIC external/glfw/include
+    PUBLIC external/Walnut/vendor/glm
+    PUBLIC external/Walnut/vendor/GLFW/include
+    PUBLIC external/Walnut/vendor/imgui
+    PUBLIC external/Walnut/vendor/stb_image
+    PUBLIC external/Walnut/Walnut/src
+    PUBLIC $ENV{VULKAN_SDK}/include
 )
 # <------------------------------------------------>
 
 # <-- Add directory of external libs to link here: -->
 target_link_directories(${PROJECT_NAME}
-     PRIVATE src # this line is just to prevent errors
+    PRIVATE src # this line is just to prevent errors
+    PRIVATE external/Walnut/vendor/glfw/src
+    #  PUBLIC $ENV{VULKAN_SDK}/lib
+    #  PUBLIC $ENV{VULKAN_SDK}/etc/explicit_layer.d
 )
 # <-------------------------------------------------->
 
 # <-- Link needed Libs: -->
-# target_link_libraries(${PROJECT_NAME} "LIB NAME")
+target_link_libraries(${PROJECT_NAME} 
+    PRIVATE project_options project_warnings
+    PUBLIC glfw 
+)
 # <----------------------->

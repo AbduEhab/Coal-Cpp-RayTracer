@@ -21,6 +21,8 @@ namespace COAL
 
         _nodiscard World(_maybe_unused const int type)
         {
+            PROFILE_FUNCTION();
+
             std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(Sphere());
             sphere->set_material(Material(Color(0.8, 1, 0.6), -1.0, 0.7, 0.2, -1.0, nullptr, 0.0, -1.0, -1.0));
             m_shapes.emplace_back(sphere);
@@ -36,6 +38,8 @@ namespace COAL
 
         _nodiscard std::vector<Intersection> intersects(const Ray &ray) const
         {
+            PROFILE_FUNCTION();
+
             std::vector<Intersection> res;
 
             for (const auto &shape : m_shapes)
@@ -53,6 +57,8 @@ namespace COAL
 
         _nodiscard bool is_shadowed(const Point &point, const Light &light) const
         {
+            PROFILE_FUNCTION();
+
             Vector v = light.m_position - point;
             double distance = v.magnitude();
             Vector direction = v.normalize();
@@ -70,6 +76,8 @@ namespace COAL
 
         _nodiscard Color color_at(const Ray &ray) const
         {
+            PROFILE_FUNCTION();
+
             auto xs = intersects(ray);
             Intersection hit = Intersection::hit(xs);
 
@@ -78,11 +86,13 @@ namespace COAL
 
             Computation comps = hit.prepare_computation(ray, xs);
 
-            return shade_hit_helper(comps, 0);
+            return shade_hit(comps);
         }
 
         _nodiscard Color color_at(const Ray &ray, const int recursion_level) const
         {
+            PROFILE_FUNCTION();
+
             auto xs = intersects(ray);
             Intersection hit = Intersection::hit(xs);
 
@@ -91,11 +101,13 @@ namespace COAL
 
             Computation comps = hit.prepare_computation(ray, xs);
 
-            return shade_hit_helper(comps, recursion_level);
+            return shade_hit(comps, recursion_level);
         }
 
-        _nodiscard Color reflected_color_helper(const Computation &comp, const int recursion_level) const
+        _nodiscard Color reflected_color(const Computation &comp, const int recursion_level = 0) const
         {
+            PROFILE_FUNCTION();
+
             if (comp.m_s->m_material.get_reflectiveness() > 0 && recursion_level < MAX_DEPTH)
             {
                 Ray reflected_ray = Ray(comp.m_over_point, comp.m_reflection_vector);
@@ -106,8 +118,10 @@ namespace COAL
             return Color();
         }
 
-        _nodiscard Color refraction_color_helper(const Computation &comp, const int recursion_level) const
+        _nodiscard Color refraction_color(const Computation &comp, const int recursion_level = 0) const
         {
+            PROFILE_FUNCTION();
+
             if (comp.m_s->m_material.get_refractive_index() > 0 && recursion_level < MAX_DEPTH)
             {
                 double n_ratio = comp.m_inside ? comp.m_n1 / comp.m_n2 : comp.m_n2 / comp.m_n1;
@@ -131,13 +145,9 @@ namespace COAL
             return Color();
         }
 
-        _nodiscard Color shade_hit(const Computation &comp) const
+        _nodiscard Color shade_hit(const Computation &comp, const int depth = 0) const
         {
-            return shade_hit_helper(comp, 0);
-        }
 
-        _nodiscard Color shade_hit_helper(const Computation &comp, const int depth) const
-        {
             Color res;
 
             for (const auto &light : m_lights)
@@ -147,9 +157,9 @@ namespace COAL
                 res = res + comp.m_s->m_material.lighting(
                                 *light, *comp.m_s, comp.m_over_point, comp.m_eye_vector, comp.m_normal_vector, in_shadow);
 
-                Color reflection_map = reflected_color_helper(comp, depth + 1);
+                Color reflection_map = reflected_color(comp, depth + 1);
 
-                Color refraction_map = refraction_color_helper(comp, depth + 1);
+                Color refraction_map = refraction_color(comp, depth + 1);
 
                 Material mat = comp.m_s->m_material;
 
@@ -166,24 +176,32 @@ namespace COAL
         // add shapes
         void add_shape(const std::shared_ptr<Shape> &shape)
         {
+            PROFILE_FUNCTION();
+
             m_shapes.emplace_back(shape);
         }
 
         // add shapes
         void add_shapes(const std::vector<std::shared_ptr<Shape>> &shapes)
         {
+            PROFILE_FUNCTION();
+
             m_shapes.insert(m_shapes.end(), shapes.begin(), shapes.end());
         }
 
         // add light
         void add_light(const std::shared_ptr<Light> &light)
         {
+            PROFILE_FUNCTION();
+
             m_lights.emplace_back(light);
         }
 
         // add lights
         void add_lights(const std::vector<std::shared_ptr<Light>> &lights)
         {
+            PROFILE_FUNCTION();
+
             m_lights.insert(m_lights.end(), lights.begin(), lights.end());
         }
 

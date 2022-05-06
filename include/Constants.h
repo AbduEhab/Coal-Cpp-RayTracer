@@ -21,6 +21,17 @@
 #include <utility>
 #include <vector>
 
+#define PROFILING 0
+
+#include "Profiling/Instrumentor.h"
+#include "Profiling/Timer.h"
+
+// DEBUG MACROS
+#ifdef DEBUG
+
+#endif
+
+
 #ifdef _WIN32
 
 #include <direct.h>

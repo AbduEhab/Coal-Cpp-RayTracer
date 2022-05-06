@@ -20,6 +20,7 @@ namespace COAL
 
         _nodiscard std::vector<Intersection> intersects(const Ray &ray) const
         {
+            PROFILE_FUNCTION();
 
             Ray transformed_ray = ray.transform(get_inverse_transform());
 
@@ -59,7 +60,9 @@ namespace COAL
 
         _nodiscard Vector normal_at(const Point &p) const override
         {
-            Point object_point = get_inverse_transform() * p;
+           PROFILE_FUNCTION();
+
+             Point object_point = get_inverse_transform() * p;
             Vector object_normal = (object_point - Point()).normalize();
             return (get_normal_transform() * object_normal).normalize();
         }

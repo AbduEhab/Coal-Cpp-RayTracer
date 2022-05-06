@@ -107,11 +107,11 @@ namespace COAL
     };
 
     static constexpr const Color BLACK = Color(0, 0, 0);
-    static constexpr const Color DARK_GREY = Color(0.2, 0.2, 0.2);
-    static constexpr const Color WHITE = Color(1, 1, 1);
-    static constexpr const Color RED = Color(1, 0, 0);
-    static constexpr const Color GREEN = Color(0, 1, 0);
-    static constexpr const Color BLUE = Color(0, 0, 1);
-    static constexpr const Color PURPLE = Color(1, 0, 1);
-    static constexpr const Color YELLOW = Color(1, 1, 0);
+    static constexpr const Color GREY = Color(0.2 * 255, 0.2 * 255, 0.2 * 255);
+    static constexpr const Color WHITE = Color(255, 255, 255);
+    static constexpr const Color RED = Color(255, 0, 0);
+    static constexpr const Color GREEN = Color(0, 255, 0);
+    static constexpr const Color BLUE = Color(0, 0, 255);
+    static constexpr const Color PURPLE = Color(255, 0, 255);
+    static constexpr const Color YELLOW = Color(255, 255, 0);
 }

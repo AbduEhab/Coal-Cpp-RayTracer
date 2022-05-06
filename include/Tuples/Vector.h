@@ -89,32 +89,32 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] Vector operator+(const Vector &rhs) const noexcept
+        [[nodiscard]] constexpr Vector operator+(const Vector &rhs) const noexcept
         {
             return Vector(x + rhs.x, y + rhs.y, z + rhs.z);
         }
 
-        [[nodiscard]] Vector operator+(const double rhs) const noexcept
+        [[nodiscard]] constexpr Vector operator+(const double rhs) const noexcept
         {
             return Vector(x + rhs, y + rhs, z + rhs);
         }
 
-        [[nodiscard]] Vector operator-(const double rhs) const noexcept
+        [[nodiscard]] constexpr Vector operator-(const double rhs) const noexcept
         {
             return Vector(x - rhs, y - rhs, z - rhs);
         }
 
-        [[nodiscard]] Vector operator-(const Vector &rhs) const noexcept
+        [[nodiscard]] constexpr Vector operator-(const Vector &rhs) const noexcept
         {
             return Vector(x - rhs.x, y - rhs.y, z - rhs.z);
         }
 
-        [[nodiscard]] Vector operator*(const double factor) const noexcept
+        [[nodiscard]] constexpr Vector operator*(const double factor) const noexcept
         {
             return Vector(x * factor, y * factor, z * factor);
         }
 
-        [[nodiscard]] Vector operator/(const double factor) const noexcept
+        [[nodiscard]] constexpr Vector operator/(const double factor) const noexcept
         {
             return Vector(x / factor, y / factor, z / factor);
         }

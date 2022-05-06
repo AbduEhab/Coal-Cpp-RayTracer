@@ -95,6 +95,8 @@ namespace COAL
 
     [[nodiscard]] COAL::Color Pattern::colot_at(const Shape &s, const COAL::Point &p) const
     {
+        PROFILE_FUNCTION();
+
         Point object_point = s.get_transform().inverse() * p;
         Point pattern_point = m_transform.inverse() * object_point;
 

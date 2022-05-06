@@ -72,6 +72,8 @@ namespace COAL
         // lighting
         [[nodiscard]] Color lighting(const Light &light, const Shape &shape, const Point &point, const Vector &eyev, const Vector &normalv, const bool inShadow) const
         {
+            PROFILE_FUNCTION();
+
             Color effColor;
 
             if (m_pattern)

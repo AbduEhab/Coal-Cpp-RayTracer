@@ -21,6 +21,8 @@ namespace COAL
 
         [[nodiscard]] Computation prepare_computation(const Ray &ray, const std::vector<Intersection> &xs) const
         {
+            PROFILE_FUNCTION();
+
             double t2 = m_t;
             const Shape *object = m_object;
             Point p = ray.position(m_t);
@@ -75,6 +77,8 @@ namespace COAL
 
         _nodiscard static Intersection hit(std::vector<Intersection> intersections)
         {
+            PROFILE_FUNCTION();
+
             for (const Intersection &intersection : intersections)
             {
                 if (intersection.m_t > 0)
