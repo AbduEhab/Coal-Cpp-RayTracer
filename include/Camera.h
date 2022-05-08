@@ -98,6 +98,10 @@ namespace COAL
         {
             PROFILE_FUNCTION();
 
+            debug_print("Started Single-Threaded Rendering");
+
+            Timer timer;
+
             Color **image;
             image = new Color *[m_hsize];
             for (int i = 0; i < m_hsize; i++)
@@ -110,10 +114,6 @@ namespace COAL
 
                 for (int x = 0; x < m_hsize; x++)
                 {
-
-                    if (y == 70 && x == 40)
-                        std::cout << "y: " << y << " x: " << x << std::endl;
-                        
                     Ray r = ray_for_pixel(x, y);
 
                     Color c = w.color_at(r);
@@ -122,33 +122,35 @@ namespace COAL
                 }
             }
 
+            debug_print("Single-Threaded Rendering done in: " + std::to_string(timer.elapsed_millis()) + " ms");
+
             return image;
         }
 
-        _nodiscard Color **classic_render_multi_threaded(World &w, const int thread_count) const
+        _nodiscard Color *classic_render_multi_threaded(World &w, const int thread_count = kCORE_COUNT)
         {
             PROFILE_FUNCTION();
+
+            m_is_finished = false;
 
             debug_print("Started Multi-Threaded Rendering");
 
             Timer timer;
 
-            Color **image;
-            image = new Color *[m_hsize];
-            for (int i = 0; i < m_hsize; i++)
-                image[i] = new Color[m_vsize];
+            Color *image;
+            image = new Color[m_hsize * m_vsize];
 
-            std::vector<std::thread> threads;
+            std::vector<std::shared_ptr<std::thread>> threads;
+
             for (int i = 0; i < thread_count; i++)
             {
-
                 const int index = i;
-                threads.push_back(std::thread([&, index]()
-                                              {
+
+                threads.push_back(std::make_unique<std::thread>(std::thread([&, index]()
+                                                                            {
                     for (int y = index; y < m_vsize; y += thread_count)
                     {
-                        std::cout << ">> Thread {" + std::to_string(index + 1) + "}: Calculating Row: [" + std::to_string(y + 1) + '/'\
-                        + std::to_string(m_hsize) + ']' << std::endl;
+                        debug_print(">> Thread {" + std::to_string(index + 1) + "}: Calculating Row: [" + std::to_string(y + 1) + '/' + std::to_string(m_hsize) + "]");
 
                         for (int x = 0; x < m_hsize; x++)
                         {
@@ -156,13 +158,15 @@ namespace COAL
 
                             Color c = w.color_at(r);
 
-                            image[y][x] = c;
+                            image[y *m_hsize + x] = c;
                         }
-                    } }));
+                    } })));
             }
 
             for (auto &t : threads)
-                t.join();
+                t->join();
+
+            m_is_finished = true;
 
             debug_print("Multi-Threaded Rendering done in: " + std::to_string(timer.elapsed_millis()) + " ms");
 
@@ -170,8 +174,12 @@ namespace COAL
         }
 
         // generate getters
-        _nodiscard constexpr int
-        get_hsize() const
+        _nodiscard constexpr int is_finished() const
+        {
+            return m_is_finished;
+        }
+
+        _nodiscard constexpr int get_hsize() const
         {
             return m_hsize;
         }
@@ -256,6 +264,7 @@ namespace COAL
         }
 
     private:
+        bool m_is_finished = false;
         int m_hsize;
         int m_vsize;
         double m_field_of_view;

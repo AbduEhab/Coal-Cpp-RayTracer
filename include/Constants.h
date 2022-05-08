@@ -6,6 +6,7 @@
 #include <chrono>
 #include <deque>
 #include <fstream>
+#include <future>
 #include <iostream>
 #include <map>
 #include <math.h>
@@ -31,6 +32,7 @@
 
 #endif
 
+const int kCORE_COUNT = std::thread::hardware_concurrency();
 
 #ifdef _WIN32
 

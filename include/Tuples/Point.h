@@ -10,6 +10,8 @@ namespace COAL
 
         [[nodiscard]] constexpr Point(double x, double y, double z) : x(x), y(y), z(z), w(1){};
 
+        [[nodiscard]] constexpr Point(const float (&vector_array)[3]) : x(vector_array[0]), y(vector_array[1]), z(vector_array[2]), w(1){};
+
         [[nodiscard]] bool operator==(const Point &rhs) const noexcept
         {
             return (std::abs(x - rhs.x) <= kEpsilon) && (std::abs(y - rhs.y) <= kEpsilon) && (std::abs(z - rhs.z) <= kEpsilon) && (rhs.w == 1);

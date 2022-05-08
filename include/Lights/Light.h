@@ -31,6 +31,22 @@ namespace COAL
             return *this;
         }
 
+        // set m_intensity with a float[3]
+        constexpr Light &set_intensity(const float (&intensity)[3]) noexcept
+        {
+            this->m_intensity = COAL::Color(intensity);
+            return *this;
+        }
+
+        // set m_position with a float[3]
+        constexpr Light &set_position(const float (&position)[3]) noexcept
+        {
+            this->m_position = COAL::Point(position);
+            return *this;
+        }
+
+        _nodiscard virtual const char *get_name() const = 0;
+
         COAL::Color m_intensity;
         COAL::Point m_position;
     };

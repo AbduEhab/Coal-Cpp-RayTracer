@@ -8,7 +8,8 @@ namespace COAL
 
         [[nodiscard]] constexpr Vector() : x(0), y(0), z(0), w(0){};
 
-        [[nodiscard]] constexpr Vector(double x, double y, double z) : x(x), y(y), z(z), w(0){};
+        [[nodiscard]] constexpr Vector(const double x, const double y, const double z) : x(x), y(y), z(z), w(0){};
+        [[nodiscard]] constexpr Vector(const float (&vector_array)[3]) : x(vector_array[0]), y(vector_array[1]), z(vector_array[2]), w(0){};
 
         [[nodiscard]] int operator==(const Vector &rhs) const noexcept
         {

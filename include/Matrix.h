@@ -353,8 +353,6 @@ namespace COAL
 
         _nodiscard Matrix4 translate(std::vector<double> const &values) const
         {
-            PROFILE_FUNCTION();
-
             std::vector<std::vector<double>> translation_values = {
                 {1, 0, 0, values[0]},
                 {0, 1, 0, values[1]},
@@ -367,8 +365,6 @@ namespace COAL
 
         _nodiscard Matrix4 translate(const double x, const double y, const double z) const
         {
-            PROFILE_FUNCTION();
-
             std::vector<std::vector<double>> translation_values = {
                 {1, 0, 0, x},
                 {0, 1, 0, y},
@@ -381,8 +377,6 @@ namespace COAL
 
         _nodiscard Matrix4 scale(std::vector<double> const &values) const
         {
-            PROFILE_FUNCTION();
-
             std::vector<std::vector<double>> translation_values = {
                 {values[0], 0, 0, 0},
                 {0, values[1], 0, 0},
@@ -395,8 +389,6 @@ namespace COAL
 
         _nodiscard Matrix4 scale(const double x, const double y, const double z) const
         {
-            PROFILE_FUNCTION();
-
             std::vector<std::vector<double>> translation_values = {
                 {x, 0, 0, 0},
                 {0, y, 0, 0},
@@ -409,8 +401,6 @@ namespace COAL
 
         _nodiscard Matrix4 rotate_x(const double radians) const
         {
-            PROFILE_FUNCTION();
-
             std::vector<std::vector<double>> rotate_x_values = {
                 {1, 0, 0, 0},
                 {0, std::cos(radians), -std::sin(std::cos(radians)), 0},
@@ -423,8 +413,6 @@ namespace COAL
 
         _nodiscard Matrix4 rotate_y(const double radians) const
         {
-            PROFILE_FUNCTION();
-
             std::vector<std::vector<double>> rotate_y_values = {
                 {std::cos(radians), 0, std::sin(radians), 0},
                 {0, 1, 0, 0},
@@ -437,8 +425,6 @@ namespace COAL
 
         _nodiscard Matrix4 rotate_z(const double radians) const
         {
-            PROFILE_FUNCTION();
-
             std::vector<std::vector<double>> rotate_z_values = {
                 {std::cos(radians), -std::sin(radians), 0, 0},
                 {std::sin(radians), std::cos(radians), 0, 0},
@@ -449,10 +435,13 @@ namespace COAL
             return *this * rotate_z_values;
         }
 
+        _nodiscard Matrix4 rotate(const double radians_x, const double radians_y, const double radians_z) const
+        {
+            return this->rotate_x(radians_x).rotate_y(radians_y).rotate_z(radians_z);
+        }
+
         _nodiscard Matrix4 shear(double Xy, double Xz, double Yx, double Yz, double Zx, double Zy) const
         {
-            PROFILE_FUNCTION();
-
             std::vector<std::vector<double>> shear_values = {
                 {1, Xy, Xz, 0},
                 {Yx, 1, Yz, 0},

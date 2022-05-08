@@ -1,11 +1,9 @@
-# Set CMake version number
 cmake_minimum_required(VERSION 3.13)
 
-# Change "Temp-Projekt" to your project name
 project(Cpp_RayTracer VERSION 0.2.0)
 
 #----------------------------------------------------------------------------------------------
-# Part till line 46 is taken from @lefticus
+# Part till line 44 is taken from @lefticus
 
 # set a default CXX standard used by the external tools like clang-tidy, cppcheck, etc.
 # You can later set fine-grained standards for each target using `target_compile_features`
@@ -25,7 +23,7 @@ include(CMakeSetupFiles/Index.cmake)
 project_options(
 #   ENABLE_CACHE
 #   ENABLE_CONAN
-  WARNINGS_AS_ERRORS
+#   WARNINGS_AS_ERRORS
 #   ENABLE_CPPCHECK
 #   ENABLE_CLANG_TIDY
 #   ENABLE_INCLUDE_WHAT_YOU_USE
@@ -48,63 +46,101 @@ project_options(
 #----------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------
-# Part till line 72 is similar to that of @codetechandtutorials
+# Part till line 72 is very very similar to that of @codetechandtutorials
 
 #           DOWNLOAD ALL THE SUBMODULES
+
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 # Update submodules as needed
     option(GIT_SUBMODULE "Check submodules during build" ON)
     if(GIT_SUBMODULE)
         message(STATUS "Submodule update")
+        if (1)
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                         RESULT_VARIABLE GIT_SUBMOD_RESULT)
-
+        else()
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive --remote --merge
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
+        endif()
         if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+            message(FATAL_ERROR "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
         endif()
     endif()
 endif()
 
 #----------------------------------------------------------------------------------------------
 
-# Add locations of other CMakelists.txt (one per call)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+      "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
+
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "No build type selected, default to Debug")
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type (default Debug)")
+endif()
+
 add_subdirectory(
     src
+)
+
+add_subdirectory(
+    external/Walnut/vendor/glm
+)
+
+# The glfw submodule that is included in the Walnut project is not compatible with CMake for some reason
+add_subdirectory(
+    external/glfw
 )
 
 # Extra C++ specific option I need
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# <-- Set standard here -->
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
-# <----------------------->
 
-# <-- Define Compile Time Definitions here: -->
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-     $<$<CONFIG:Debug>:DEBUG=1>
-     $<$<CONFIG:RelWithDebInfo>:DEBUG=1>
-     $<$<CONFIG:Release>:NDEBUG=1>
-     $<$<CONFIG:MinSizeRel>:NDEBUG=1>
-)
-# <------------------------------------------->
+# Defining WL_PLATFORM_WINDOWS WL_DEBUG where applicable
+if(MSVC)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:DEBUG; WL_PLATFORM_WINDOWS; WL_DEBUG>
+        $<$<CONFIG:RelWithDebInfo>:DEBUG; WL_PLATFORM_WINDOWS; WL_DEBUG>
+        $<$<CONFIG:Release>:NDEBUG; WL_PLATFORM_WINDOWS; WL_DIST>
+        $<$<CONFIG:MinSizeRel>:NDEBUG; WL_PLATFORM_WINDOWS; WL_DIST>
+    )
+else()
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:DEBUG; WL_DEBUG>
+        $<$<CONFIG:RelWithDebInfo>:DEBUG; WL_DEBUG>
+        $<$<CONFIG:Release>:NDEBUG; WL_DIST>
+        $<$<CONFIG:MinSizeRel>:NDEBUG; WL_DIST>
+    )
+endif()
 
 # <-- Add directories to include directory here: -->
 target_include_directories(${PROJECT_NAME}
-    PUBLIC src
     PUBLIC include
+    PUBLIC external/glfw/include
+    PUBLIC external/Walnut/vendor/glm
+    PUBLIC external/Walnut/vendor/imgui
+    PUBLIC external/Walnut/vendor/stb_image
+    PUBLIC external/Walnut/Walnut/src
+    PUBLIC $ENV{VULKAN_SDK}/include
+    PUBLIC ${Vulkan_INCLUDE_DIRS}
 )
 # <------------------------------------------------>
 
-# <-- Add directory of external libs to link here: -->
+# <-- Added directory of external libs to link here: -->
 target_link_directories(${PROJECT_NAME}
-    PRIVATE src # this line is just to prevent errors
+    PRIVATE external/glfw/src
 )
-# <-------------------------------------------------->
+
+find_package(Vulkan REQUIRED)
 
 # <-- Link needed Libs: -->
-target_link_libraries(${PROJECT_NAME} 
+target_link_libraries(${PROJECT_NAME}
     PRIVATE project_options project_warnings
+    PUBLIC glfw Vulkan::Vulkan ${VULKAN_LIB_LIST} ${Vulkan_LIBRARY}
 )
 # <----------------------->

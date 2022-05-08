@@ -49,5 +49,11 @@ namespace COAL
             const auto other_xz_plane = dynamic_cast<const XZPlane *>(&other);
             return other_xz_plane != nullptr && other_xz_plane->get_transform() == get_transform();
         };
+
+        // get name
+        [[nodiscard]] const char *get_name() const override
+        {
+            return "XZPlane ";
+        }
     };
 }; // namespace COAL

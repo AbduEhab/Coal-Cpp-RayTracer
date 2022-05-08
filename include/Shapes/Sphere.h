@@ -60,9 +60,9 @@ namespace COAL
 
         _nodiscard Vector normal_at(const Point &p) const override
         {
-           PROFILE_FUNCTION();
+            PROFILE_FUNCTION();
 
-             Point object_point = get_inverse_transform() * p;
+            Point object_point = get_inverse_transform() * p;
             Vector object_normal = (object_point - Point()).normalize();
             return (get_normal_transform() * object_normal).normalize();
         }
@@ -72,7 +72,13 @@ namespace COAL
         {
             const auto other_sphere = dynamic_cast<const Sphere *>(&other);
             return other_sphere != nullptr && other_sphere->get_transform() == get_transform();
-        };
+        }
+
+        // get name
+        _nodiscard const char *get_name() const override
+        {
+            return "Sphere ";
+        }
     };
 
     _nodiscard _maybe_unused static Sphere glass_sphere()

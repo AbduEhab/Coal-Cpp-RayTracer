@@ -28,7 +28,7 @@ namespace COAL
             m_shapes.emplace_back(sphere);
 
             std::shared_ptr<Sphere> sphere2 = std::make_shared<Sphere>(Sphere());
-            sphere2->set_transform(COAL::IDENTITY.scale(0.5, 0.5, 0.5));
+            sphere2->scale(0.5, 0.5, 0.5);
             m_shapes.emplace_back(sphere2);
 
             auto light = std::make_shared<PointLight>(PointLight());
@@ -170,7 +170,7 @@ namespace COAL
                     res = res + reflection_map * (1 - reflectiveness) + refraction_map * (1 - reflectiveness);
                 }
                 else
-                 res = res + reflection_map + refraction_map;
+                    res = res + reflection_map + refraction_map;
             }
             return res;
         }
@@ -205,6 +205,18 @@ namespace COAL
             PROFILE_FUNCTION();
 
             m_lights.insert(m_lights.end(), lights.begin(), lights.end());
+        }
+
+        // get shapes
+        const std::vector<std::shared_ptr<Shape>> &get_shapes() const
+        {
+            return m_shapes;
+        }
+
+        // get lights
+        const std::vector<std::shared_ptr<Light>> &get_lights() const
+        {
+            return m_lights;
         }
 
     private:
