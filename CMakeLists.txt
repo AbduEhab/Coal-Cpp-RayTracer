@@ -74,14 +74,10 @@ endif()
 #----------------------------------------------------------------------------------------------
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release" CACHE STRING
-      "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
+      "Build not specified, defaulted to Debug" FORCE)
+    message(STATUS "Build type not specified, defaulted to Debug")
 endif(NOT CMAKE_BUILD_TYPE)
-
-if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(STATUS "No build type selected, default to Debug")
-  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type (default Debug)")
-endif()
 
 add_subdirectory(
     src

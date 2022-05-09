@@ -14,7 +14,7 @@ namespace COAL
 
         [[nodiscard]] constexpr Material() : m_pattern(nullptr){};
 
-        [[nodiscard]] constexpr Material(const COAL::Color &color, const double ambient, const double diffuse, const double specular, const double shininess, const COAL::Pattern *pattern, const double reflectiveness, const double transparency, const double refractiveIndex) : m_pattern(pattern)
+        [[nodiscard]] Material(const Color &color, const double ambient, const double diffuse, const double specular, const double shininess, const std::shared_ptr<Pattern> pattern, const double reflectiveness, const double transparency, const double refractiveIndex) : m_pattern(pattern)
         {
             if (color.r < 0 || color.r > 255 || color.g < 0 || color.g > 255 || color.b < 0 || color.b > 255)
             {
@@ -145,10 +145,10 @@ namespace COAL
         [[nodiscard]] constexpr double get_transparency() const noexcept { return m_transparency; }
         [[nodiscard]] constexpr double get_refractive_index() const noexcept { return m_refractive_index; }
         [[nodiscard]] constexpr Color get_color() const noexcept { return m_color; }
-        [[nodiscard]] constexpr const Pattern *get_pattern() const noexcept { return m_pattern; }
+        [[nodiscard]] const std::shared_ptr<Pattern> get_pattern() const noexcept { return m_pattern; }
 
         // setters
-        constexpr Material &set_ambient(double ambient) noexcept
+        constexpr Material &set_ambient(const double ambient) noexcept
         {
             if (ambient >= 0 && ambient <= 1)
             {
@@ -162,7 +162,7 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_diffuse(double diffuse) noexcept
+        constexpr Material &set_diffuse(const double diffuse) noexcept
         {
             if (diffuse >= 0 && diffuse <= 1)
             {
@@ -175,7 +175,7 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_specular(double specular) noexcept
+        constexpr Material &set_specular(const double specular) noexcept
         {
             if (specular >= 0 && specular <= 1)
             {
@@ -189,7 +189,7 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_shininess(double shininess) noexcept
+        constexpr Material &set_shininess(const double shininess) noexcept
         {
             if (shininess >= 0)
             {
@@ -203,7 +203,7 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_reflectiveness(double reflectiveness) noexcept
+        constexpr Material &set_reflectiveness(const double reflectiveness) noexcept
         {
             m_reflectiveness = reflectiveness > 1 ? 1 : reflectiveness < 0 ? 0
                                                                            : reflectiveness;
@@ -211,28 +211,42 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_transparency(double transparency) noexcept
+        constexpr Material &set_transparency(const double transparency) noexcept
         {
             m_transparency = transparency >= 0 ? transparency : 0;
 
             return *this;
         }
 
-        constexpr Material &set_refractive_index(double refractiveIndex) noexcept
+        constexpr Material &set_refractive_index(const double refractiveIndex) noexcept
         {
             m_refractive_index = refractiveIndex >= 0 ? refractiveIndex : 0;
 
             return *this;
         }
 
-        constexpr Material &set_color(Color color) noexcept
+        constexpr Material &set_color(const Color color) noexcept
         {
             m_color = color;
 
             return *this;
         }
 
-        constexpr Material &set_pattern(Pattern *pattern) noexcept
+        constexpr Material &set_color(const float (&color_array)[3]) noexcept
+        {
+            m_color = Color(color_array[0], color_array[1], color_array[2]);
+
+            return *this;
+        }
+
+        constexpr Material &set_color(const float r, const float g, const float b) noexcept
+        {
+            m_color = Color(r, g, b);
+
+            return *this;
+        }
+
+        Material &set_pattern(std::shared_ptr<Pattern> pattern) noexcept
         {
             m_pattern = pattern;
 
@@ -241,7 +255,7 @@ namespace COAL
 
     private:
         Color m_color = COAL::WHITE;
-        const Pattern *m_pattern;
+        std::shared_ptr<Pattern> m_pattern;
         double m_ambient = 0.1;
         double m_diffuse = 0.9;
         double m_specular = 0.9;

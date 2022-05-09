@@ -11,31 +11,47 @@ namespace COAL
         [[nodiscard]] constexpr Color(double red, double green, double blue)
             : r(red > 255 ? 255 : red), g(green > 255 ? 255 : green), b(blue > 255 ? 255 : blue), a(0xff){};
 
-        [[nodiscard]] constexpr Color(const float (&vector_array)[3]) : r(vector_array[0] > 255 ? 255 : vector_array[0]), g(vector_array[1] > 255 ? 255 : vector_array[1]), b(vector_array[2] > 255 ? 255 : vector_array[2]), a(0xff){};
+        [[nodiscard]] constexpr Color(const float (&color_array)[3]) : r(color_array[0] > 255 ? 255 : color_array[0]), g(color_array[1] > 255 ? 255 : color_array[1]), b(color_array[2] > 255 ? 255 : color_array[2]), a(0xff){};
+
+        static constexpr Color create_SDR(double r, double g, double b) noexcept
+        {
+            return Color(r * 255, g * 255, b * 255);
+        }
+
+        static constexpr Color create_SDR(const float (&color_array)[3]) noexcept
+        {
+            return Color(color_array[0] * 255, color_array[1] * 255, color_array[2] * 255);
+        }
 
         [[nodiscard]] int operator==(const Color &rhs) const noexcept
         {
             return (std::abs(r - rhs.r) <= kEpsilon) && (std::abs(g - rhs.g) <= kEpsilon) && (std::abs(b - rhs.b) <= kEpsilon) && (rhs.a == 0);
         }
 
-        static constexpr uint32_t createRGBA(uint32_t r, uint32_t g, uint32_t b, uint32_t a) noexcept
+        static constexpr uint32_t create_RGBA(uint32_t r, uint32_t g, uint32_t b, uint32_t a) noexcept
         {
             return ((r & 0xff) << 24) + ((g & 0xff) << 16) + ((b & 0xff) << 8) + (a & 0xff);
         }
 
-        constexpr uint32_t createRGBA() const noexcept
+        constexpr uint32_t create_RGBA() const noexcept
         {
             return (((int)r & 0xff) << 24) + (((int)g & 0xff) << 16) + (((int)b & 0xff) << 8) + ((int)a & 0xff);
         }
 
-        static constexpr uint32_t createABGR(uint32_t r, uint32_t g, uint32_t b, uint32_t a) noexcept
+        static constexpr uint32_t create_ABGR(uint32_t r, uint32_t g, uint32_t b, uint32_t a) noexcept
         {
             return (((uint32_t)a & 0xff) << 24) + (((uint32_t)b & 0xff) << 16) + (((uint32_t)g & 0xff) << 8) + ((uint32_t)r & 0xff);
         }
 
-        constexpr uint32_t createABGR() const noexcept
+        constexpr uint32_t create_ABGR() const noexcept
         {
             return (((uint32_t)a & 0xff) << 24) + (((uint32_t)b & 0xff) << 16) + (((uint32_t)g & 0xff) << 8) + ((uint32_t)r & 0xff);
+        }
+
+        // / operator
+        constexpr Color operator/(const double &rhs) const noexcept
+        {
+            return Color(r / rhs, g / rhs, b / rhs);
         }
 
         [[nodiscard]] constexpr Color &operator+=(const double rhs) noexcept
@@ -129,11 +145,11 @@ namespace COAL
     };
 
     static constexpr const Color BLACK = Color(0, 0, 0);
-    static constexpr const Color GREY = Color(0.2 * 255, 0.2 * 255, 0.2 * 255);
-    static constexpr const Color WHITE = Color(255, 255, 255);
-    static constexpr const Color RED = Color(255, 0, 0);
-    static constexpr const Color GREEN = Color(0, 255, 0);
-    static constexpr const Color BLUE = Color(0, 0, 255);
-    static constexpr const Color PURPLE = Color(255, 0, 255);
-    static constexpr const Color YELLOW = Color(255, 255, 0);
+    static constexpr const Color GREY = Color(0.2, 0.2, 0.2);
+    static constexpr const Color WHITE = Color(1, 1, 1);
+    static constexpr const Color RED = Color(1, 0, 0);
+    static constexpr const Color GREEN = Color(0, 1, 0);
+    static constexpr const Color BLUE = Color(0, 0, 1);
+    static constexpr const Color PURPLE = Color(1, 0, 1);
+    static constexpr const Color YELLOW = Color(1, 1, 0);
 }

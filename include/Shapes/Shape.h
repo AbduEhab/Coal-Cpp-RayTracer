@@ -25,6 +25,11 @@ namespace COAL
             return m_material;
         }
 
+        _nodiscard Material &get_material()
+        {
+            return m_material;
+        }
+
         [[nodiscard]] constexpr const Matrix4 &get_transform() const
         {
             return m_transform;
@@ -186,22 +191,22 @@ namespace COAL
         }
 
         // get rotations
-        _nodiscard constexpr const Vector get_rotations() const
+        _nodiscard constexpr Vector get_rotations() const
         {
             return {m_rotation_x, m_rotation_y, m_rotation_z};
         }
 
-        _nodiscard constexpr const double get_rotation_x() const
+        _nodiscard constexpr double get_rotation_x() const
         {
             return m_rotation_x;
         }
 
-        _nodiscard constexpr const double get_rotation_y() const
+        _nodiscard constexpr double get_rotation_y() const
         {
             return m_rotation_y;
         }
 
-        _nodiscard constexpr const double get_rotation_z() const
+        _nodiscard constexpr double get_rotation_z() const
         {
             return m_rotation_z;
         }

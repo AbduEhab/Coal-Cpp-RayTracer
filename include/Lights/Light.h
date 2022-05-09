@@ -38,6 +38,13 @@ namespace COAL
             return *this;
         }
 
+        // set m_intensity with a float[3]
+        constexpr Light &set_SDR_intensity(const float (&intensity)[3]) noexcept
+        {
+            this->m_intensity = COAL::Color::create_SDR(intensity);
+            return *this;
+        }
+
         // set m_position with a float[3]
         constexpr Light &set_position(const float (&position)[3]) noexcept
         {

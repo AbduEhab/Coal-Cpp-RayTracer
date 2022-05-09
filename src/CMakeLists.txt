@@ -3,9 +3,10 @@ cmake_minimum_required (VERSION 3.0.0)
 # Add source files to be compiled here
 if(MSVC)
 
-     if (CMAKE_BUILD_TYPE STREQUAL "Release")
+     if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 
-     add_executable(${PROJECT_NAME} WIN32 
+
+     add_executable(${PROJECT_NAME} 
           Main.cpp
 
           ../external/Walnut/Walnut/src/Walnut/Application.cpp
@@ -23,7 +24,7 @@ if(MSVC)
 
      else()
 
-     add_executable(${PROJECT_NAME} 
+     add_executable(${PROJECT_NAME} WIN32
           Main.cpp
 
           ../external/Walnut/Walnut/src/Walnut/Application.cpp
@@ -61,14 +62,6 @@ if(NOT MSVC)
                ${CMAKE_SOURCE_DIR}/bin/
      )
 
-     # # copy engine related files to binary location
-     # add_custom_command(
-     #      TARGET ${PROJECT_NAME} POST_BUILD
-     #      COMMAND ${CMAKE_COMMAND} -E copy
-     #           ${CMAKE_SOURCE_DIR}/bin/assets
-     #           ${CMAKE_CURRENT_BINARY_DIR}/assets
-     # )
-
      # # Set a symbolic link so the binary can find a required relative folder
      # set(link_src "${CMAKE_SOURCE_DIR}/assets")
      # if(UNIX AND NOT APPLE) 
@@ -84,26 +77,14 @@ if(NOT MSVC)
      #     COMMENT "symbolic link ${link_src} => ${link_dst}" 
      # )
 
-     # else()
+     else()
 
-     # add_custom_command(
-     #      TARGET ${PROJECT_NAME} POST_BUILD
-     #      COMMAND ${CMAKE_COMMAND} -E copy
-     #      ${CMAKE_CURRENT_BINARY_DIR}/Debug/${PROJECT_NAME}.exe
-     #      ${CMAKE_SOURCE_DIR}/bin/
-     # )
-
-     # elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-     #      add_custom_command(
-     #           TARGET ${PROJECT_NAME} POST_BUILD
-     #           COMMAND ${CMAKE_COMMAND} -E copy
-     #                ${CMAKE_CURRENT_BINARY_DIR}/Release/${PROJECT_NAME}.exe
-     #                ${CMAKE_SOURCE_DIR}/bin/
-     #      )
-
-     # elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-     # message("debug mode")
-
+     add_custom_command(
+          TARGET ${PROJECT_NAME} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy
+          ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PROJECT_NAME}.exe
+          ${CMAKE_SOURCE_DIR}/bin/
+     )
 
 endif()
 

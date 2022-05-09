@@ -20,7 +20,7 @@
     auto light = std::make_shared<COAL::PointLight>(COAL::PointLight());                                                                                       \
     light->set_intensity(COAL::Color(255, 255, 255)).set_position(COAL::Point(-10, 10, -10));
 
-auto camera = COAL::Camera(1000, 1000, std::numbers::pi / 3);
+auto camera = COAL::Camera(800, 600, std::numbers::pi / 3);
 auto world = COAL::World();
 COAL::Color *canvas;
 std::thread render_thread;
@@ -74,85 +74,132 @@ public:
 
         ImGui::Separator();
 
+        if (ImGui::TreeNode("Details"))
         {
-            ImGui::BeginGroup();
-            ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-            ImGui::Text("Selected object: %s %d", selected < shapes.size() ? shapes[selected]->get_name() : lights[selected % lights.size()]->get_name(), selected);
-            ImGui::Separator();
-            if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+
             {
-                if (ImGui::BeginTabItem("Transform"))
+                ImGui::BeginGroup();
+                ImGui::Text("Selected object: %s %d", selected < shapes.size() ? shapes[selected]->get_name() : lights[selected % lights.size()]->get_name(), selected);
+                ImGui::Separator();
+                if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
                 {
-                    if (selected < shapes.size())
+                    if (ImGui::BeginTabItem("Transform"))
                     {
-                        auto shape = shapes[selected];
+                        if (selected < shapes.size())
+                        {
+                            auto shape = shapes[selected];
 
-                        auto translations = shape->get_translation();
-                        auto rotations = shape->get_rotations();
-                        auto scales = shape->get_scale();
+                            auto translations = shape->get_translation();
+                            auto rotations = shape->get_rotations();
+                            auto scales = shape->get_scale();
 
-                        float transformation[3] = {translations.x, translations.y, translations.z};
-                        float rotation[3] = {rotations.x, rotations.y, rotations.z};
-                        float scale[3] = {scales.x, scales.y, scales.z};
+                            float transformation[3] = {translations.x, translations.y, translations.z};
+                            float rotation[3] = {rotations.x, rotations.y, rotations.z};
+                            float scale[3] = {scales.x, scales.y, scales.z};
 
-                        ImGui::InputFloat3("Position", (float *)&transformation);
-                        ImGui::InputFloat3("Rotation", (float *)&rotation);
-                        ImGui::InputFloat3("Scale", (float *)&scale);
+                            ImGui::InputFloat3("Position", (float *)&transformation);
+                            ImGui::InputFloat3("Rotation", (float *)&rotation);
+                            ImGui::InputFloat3("Scale", (float *)&scale);
 
-                        shape->transform(transformation, rotation, scale);
+                            shape->transform(transformation, rotation, scale);
+                        }
+                        else
+                        {
+                            auto light = lights[selected % lights.size()];
+
+                            auto position_vec = light->get_position();
+
+                            float position[3] = {position_vec.x, position_vec.y, position_vec.z};
+
+                            ImGui::InputFloat3("Position", (float *)&position);
+
+                            light->set_position(position);
+                        }
+
+                        ImGui::EndTabItem();
                     }
-                    else
+
+                    if (ImGui::BeginTabItem("Material"))
                     {
-                        auto light = lights[selected % lights.size()];
+                        if (selected < shapes.size())
+                        {
+                            auto shape = shapes[selected];
 
-                        auto intensity_vec = light->get_intensity();
-                        auto position_vec = light->get_position();
+                            auto color = shape->get_material().get_color();
+                            auto specular = shape->get_material().get_specular();
+                            auto diffuse = shape->get_material().get_diffuse();
+                            auto reflectiveness = shape->get_material().get_reflectiveness();
+                            auto shininess = shape->get_material().get_shininess();
 
-                        float position[3] = {position_vec.x, position_vec.y, position_vec.z};
-                        float intensity[3] = {intensity_vec.r, intensity_vec.g, intensity_vec.b};
+                            float color_vec[3] = {color.r, color.g, color.b};
 
-                        ImGui::InputFloat3("Position", (float *)&position);
-                        ImGui::InputFloat3("Intensity", (float *)&intensity);
+                            ImGui::ColorEdit3("Material Color", (float *)&color_vec);
 
-                        light->set_position(position);
-                        light->set_intensity(intensity);
-                    }
+                            shape->get_material().set_color(color_vec);
+                        }
+                        else
+                        {
+                            auto light = lights[selected % lights.size()];
 
-                    ImGui::EndTabItem();
+                            auto color = light->get_intensity() / 255;
 
-                    if (ImGui::BeginTabItem("Details"))
-                    {
-                        ImGui::Text("ID: 0123456789");
+                            float color_vec[3] = {color.r, color.g, color.b};
+
+                            ImGui::ColorEdit3("Light Color", (float *)&color_vec);
+
+                            light->set_SDR_intensity(color_vec);
+                        }
+
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
-                }
 
-                ImGui::Separator();
-                if (ImGui::Button("Render"))
+                } // End of Detail view
+            }
+
+            ImGui::EndGroup();
+
+            ImGui::TreePop(); // Details
+        }
+
+        ImGui::Separator();
+
+        {
+            if (ImGui::TreeNode("Render Settings"))
+            {
                 {
-                    Render();
+                    auto v_size = camera.get_vsize();
+                    auto h_size = camera.get_hsize();
+
+                    float size[2] = {h_size, v_size};
+
+                    ImGui::InputFloat2("Render Resolution", (float *)&size);
+
+                    camera.set_hsize(size[0]);
+                    camera.set_vsize(size[1]);
                 }
 
-                ImGui::SameLine();
+                auto render_depth = world.get_max_depth();
 
-                auto v_size = camera.get_vsize();
-                auto h_size = camera.get_hsize();
+                ImGui::SliderInt("Render Depth (Don't go nuts...)", &render_depth, 0, 10);
 
-                float size[2] = {h_size, v_size};
+                world.set_max_depth(render_depth);
 
-                ImGui::InputFloat2("Render Resolution", (float *)&size);
+                ImGui::TreePop(); // Render Settings
+            }
+        }
 
-                camera.set_hsize(size[0]);
-                camera.set_vsize(size[1]);
+        ImGui::Separator();
 
-                ImGui::EndGroup();
-
-                ImGui::EndChild();
+        {
+            if (ImGui::Button("Render"))
+            {
+                Render();
             }
 
             ImGui::Text("Last render: %.3fms", m_LastRenderTime);
         }
+
         ImGui::End(); // World Outline
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -163,10 +210,6 @@ public:
 
         if (m_Image)
             ImGui::Image(m_Image->GetDescriptorSet(), {(float)m_Image->GetWidth(), (float)m_Image->GetHeight()});
-
-        // ImVec4 color;
-
-        // ImGui::ColorEdit4("MyColor##3", (float *)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
 
         ImGui::End();
         ImGui::PopStyleVar();
@@ -194,7 +237,7 @@ public:
         {
             for (uint32_t i = 0; i < m_ViewportWidth * m_ViewportHeight; i++)
             {
-                m_ImageData[i] = canvas[i].createABGR();
+                m_ImageData[i] = canvas[i].create_ABGR();
             }
 
             delete[] canvas;

@@ -208,15 +208,27 @@ namespace COAL
         }
 
         // get shapes
-        const std::vector<std::shared_ptr<Shape>> &get_shapes() const
+        std::vector<std::shared_ptr<Shape>> &get_shapes()
         {
             return m_shapes;
         }
 
         // get lights
-        const std::vector<std::shared_ptr<Light>> &get_lights() const
+        std::vector<std::shared_ptr<Light>> &get_lights()
         {
             return m_lights;
+        }
+
+        // get Max Depth
+        int get_max_depth() const
+        {
+            return MAX_DEPTH;
+        }
+
+        // set Max Depth
+        void set_max_depth(const int max_depth)
+        {
+            MAX_DEPTH = max_depth;
         }
 
     private:
