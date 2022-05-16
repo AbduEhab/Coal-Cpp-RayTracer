@@ -13,7 +13,7 @@ namespace COAL
         {
         }
 
-        [[nodiscard]] Point position(const double t) const
+        [[nodiscard]] Point position(const float t) const
         {
             PROFILE_FUNCTION();
 

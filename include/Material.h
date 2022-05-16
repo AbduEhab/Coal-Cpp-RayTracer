@@ -14,7 +14,7 @@ namespace COAL
 
         [[nodiscard]] constexpr Material() : m_pattern(nullptr){};
 
-        [[nodiscard]] Material(const Color &color, const double ambient, const double diffuse, const double specular, const double shininess, const std::shared_ptr<Pattern> pattern, const double reflectiveness, const double transparency, const double refractiveIndex) : m_pattern(pattern)
+        [[nodiscard]] Material(const Color &color, const float ambient, const float diffuse, const float specular, const float shininess, const std::shared_ptr<Pattern> pattern, const float reflectiveness, const float transparency, const float refractiveIndex) : m_pattern(pattern)
         {
             if (color.r < 0 || color.r > 255 || color.g < 0 || color.g > 255 || color.b < 0 || color.b > 255)
             {
@@ -89,7 +89,7 @@ namespace COAL
 
             Color ambient = effColor * m_ambient;
 
-            double lightDotNormal = lightv.dot(normalv);
+            float lightDotNormal = lightv.dot(normalv);
 
             Color diffuse;
             Color specular;
@@ -99,7 +99,7 @@ namespace COAL
                 diffuse = effColor * m_diffuse * lightDotNormal;
 
                 Vector reflectv = -lightv.reflect(normalv);
-                double reflectDotEye = reflectv.dot(eyev);
+                float reflectDotEye = reflectv.dot(eyev);
 
                 if (reflectDotEye <= 0)
                 {
@@ -107,7 +107,7 @@ namespace COAL
                 }
                 else
                 {
-                    double factor = std::pow(reflectDotEye, m_shininess);
+                    float factor = std::pow(reflectDotEye, m_shininess);
                     specular = light.m_intensity * m_specular * factor;
                 }
             }
@@ -137,18 +137,18 @@ namespace COAL
         }
 
         // getters
-        [[nodiscard]] constexpr double get_ambient() const noexcept { return m_ambient; }
-        [[nodiscard]] constexpr double get_diffuse() const noexcept { return m_diffuse; }
-        [[nodiscard]] constexpr double get_specular() const noexcept { return m_specular; }
-        [[nodiscard]] constexpr double get_shininess() const noexcept { return m_shininess; }
-        [[nodiscard]] constexpr double get_reflectiveness() const noexcept { return m_reflectiveness; }
-        [[nodiscard]] constexpr double get_transparency() const noexcept { return m_transparency; }
-        [[nodiscard]] constexpr double get_refractive_index() const noexcept { return m_refractive_index; }
+        [[nodiscard]] constexpr float get_ambient() const noexcept { return m_ambient; }
+        [[nodiscard]] constexpr float get_diffuse() const noexcept { return m_diffuse; }
+        [[nodiscard]] constexpr float get_specular() const noexcept { return m_specular; }
+        [[nodiscard]] constexpr float get_shininess() const noexcept { return m_shininess; }
+        [[nodiscard]] constexpr float get_reflectiveness() const noexcept { return m_reflectiveness; }
+        [[nodiscard]] constexpr float get_transparency() const noexcept { return m_transparency; }
+        [[nodiscard]] constexpr float get_refractive_index() const noexcept { return m_refractive_index; }
         [[nodiscard]] constexpr Color get_color() const noexcept { return m_color; }
         [[nodiscard]] const std::shared_ptr<Pattern> get_pattern() const noexcept { return m_pattern; }
 
         // setters
-        constexpr Material &set_ambient(const double ambient) noexcept
+        constexpr Material &set_ambient(const float ambient) noexcept
         {
             if (ambient >= 0 && ambient <= 1)
             {
@@ -162,7 +162,7 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_diffuse(const double diffuse) noexcept
+        constexpr Material &set_diffuse(const float diffuse) noexcept
         {
             if (diffuse >= 0 && diffuse <= 1)
             {
@@ -175,7 +175,7 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_specular(const double specular) noexcept
+        constexpr Material &set_specular(const float specular) noexcept
         {
             if (specular >= 0 && specular <= 1)
             {
@@ -189,7 +189,7 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_shininess(const double shininess) noexcept
+        constexpr Material &set_shininess(const float shininess) noexcept
         {
             if (shininess >= 0)
             {
@@ -203,7 +203,7 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_reflectiveness(const double reflectiveness) noexcept
+        constexpr Material &set_reflectiveness(const float reflectiveness) noexcept
         {
             m_reflectiveness = reflectiveness > 1 ? 1 : reflectiveness < 0 ? 0
                                                                            : reflectiveness;
@@ -211,14 +211,14 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_transparency(const double transparency) noexcept
+        constexpr Material &set_transparency(const float transparency) noexcept
         {
             m_transparency = transparency >= 0 ? transparency : 0;
 
             return *this;
         }
 
-        constexpr Material &set_refractive_index(const double refractiveIndex) noexcept
+        constexpr Material &set_refractive_index(const float refractiveIndex) noexcept
         {
             m_refractive_index = refractiveIndex >= 0 ? refractiveIndex : 0;
 
@@ -256,12 +256,12 @@ namespace COAL
     private:
         Color m_color = COAL::WHITE;
         std::shared_ptr<Pattern> m_pattern;
-        double m_ambient = 0.1;
-        double m_diffuse = 0.9;
-        double m_specular = 0.9;
-        double m_shininess = 200.0;
-        double m_reflectiveness = 0.0;
-        double m_transparency = 0.0;
-        double m_refractive_index = 1.0;
+        float m_ambient = 0.1f;
+        float m_diffuse = 0.9f;
+        float m_specular = 0.9f;
+        float m_shininess = 200.0;
+        float m_reflectiveness = 0.0;
+        float m_transparency = 0.0;
+        float m_refractive_index = 1.0;
     };
 }; // namespace COAL

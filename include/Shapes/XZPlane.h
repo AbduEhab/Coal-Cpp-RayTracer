@@ -13,6 +13,15 @@ namespace COAL
 {
     struct XZPlane : public Shape
     {
+        _nodiscard XZPlane() = default;
+
+        ~XZPlane()  = default;
+
+        // // generate default copy constructor nad move constructor
+        // XZPlane(const XZPlane &) = default;
+        // XZPlane(XZPlane &&) = default;
+
+
 
         [[nodiscard]] std::vector<Intersection> intersects(const Ray &ray) const
         {
@@ -26,7 +35,7 @@ namespace COAL
                 return std::vector<Intersection>{};
             }
 
-            double t = -(transformed_ray.m_origin.y) / (transformed_ray.m_direction.y);
+            float t = -(transformed_ray.m_origin.y) / (transformed_ray.m_direction.y);
 
             if (t < 0)
             {

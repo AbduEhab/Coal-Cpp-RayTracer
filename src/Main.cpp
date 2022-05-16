@@ -3,31 +3,30 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-#define setup_world()                                                                                                                                              \
-                                                                                                                                                                   \
-    auto floor = std::make_shared<COAL::XZPlane>(COAL::XZPlane());                                                                                                 \
-    floor->get_material().set_color(COAL::Color(1, 0.9, 0.9)).set_specular(0).set_reflectiveness(0.3);                                                             \
-                                                                                                                                                                   \
-    auto middle_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());                                                                                           \
-    middle_sphere->get_material().set_color(COAL::Color(0, 0, 0)).set_specular(1).set_diffuse(0.1).set_reflectiveness(0.3).set_shininess(300).set_transparency(1); \
-    middle_sphere->translate(-0.5, 1, 0.5);                                                                                                                        \
-                                                                                                                                                                   \
-    auto right_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());                                                                                            \
-    right_sphere->get_material().set_color(COAL::Color(0.5, 1, 0.1)).set_specular(0.3).set_diffuse(0.7).set_reflectiveness(0.3);                                   \
-    right_sphere->translate(1.5, 0.5, -0.5).scale(0.5, 0.5, 0.5);                                                                                                  \
-                                                                                                                                                                   \
-    auto left_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());                                                                                             \
-    left_sphere->get_material().set_color(COAL::Color(1, 0.8, 0.1)).set_specular(0.3).set_diffuse(0.7).set_reflectiveness(0.3);                                    \
-    left_sphere->translate(-1.5, 0.33, -0.75).scale(0.33, 0.33, 0.33);                                                                                             \
-                                                                                                                                                                   \
-    auto light = std::make_shared<COAL::PointLight>(COAL::PointLight());                                                                                           \
-    light->set_intensity(COAL::Color(255, 255, 255)).set_position(COAL::Point(-10, 10, -10));
+#define setup_world()                                                                                                                                                         \
+                                                                                                                                                                              \
+    auto floor = std::make_shared<COAL::XZPlane>(COAL::XZPlane());                                                                                                            \
+    floor->get_material().set_color(COAL::Color(1.0f, 0.9f, 0.9f)).set_specular(0).set_reflectiveness(0.3f);                                                                  \
+                                                                                                                                                                              \
+    auto middle_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());                                                                                                      \
+    middle_sphere->get_material().set_color(COAL::Color(0.0f, 0.0f, 0.0f)).set_specular(1).set_diffuse(0.1f).set_reflectiveness(0.3f).set_shininess(300).set_transparency(1); \
+    middle_sphere->translate(-0.5f, 1.0f, 0.5f);                                                                                                                              \
+                                                                                                                                                                              \
+    auto right_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());                                                                                                       \
+    right_sphere->get_material().set_color(COAL::Color(0.5f, 1.0f, 0.1f)).set_specular(0.3f).set_diffuse(0.7f).set_reflectiveness(0.3f);                                      \
+    right_sphere->translate(1.5f, 0.5f, -0.5f).scale(0.5f, 0.5f, 0.5f);                                                                                                       \
+                                                                                                                                                                              \
+    auto left_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());                                                                                                        \
+    left_sphere->get_material().set_color(COAL::Color(1, 0.8f, 0.1f)).set_specular(0.3f).set_diffuse(0.7f).set_reflectiveness(0.3f);                                          \
+    left_sphere->translate(-1.5f, 0.33f, -0.75f).scale(0.33f, 0.33f, 0.33f);                                                                                                  \
+                                                                                                                                                                              \
+    auto light = std::make_shared<COAL::PointLight>(COAL::PointLight());                                                                                                      \
+    light->set_intensity(COAL::Color((float)255, (float)255, (float)255)).set_position(COAL::Point((float)-10, (float)10, (float)-10));
 
-auto camera = COAL::Camera(800, 600, std::numbers::pi / 3);
+auto camera = COAL::Camera(800, 600, (float)std::numbers::pi / 3);
 auto world = COAL::World();
 std::shared_ptr<COAL::Color[]> canvas;
 std::thread render_thread;
-bool first_render = true;
 
 #ifdef _WIN32
 #include "Walnut/Application.h"
@@ -42,7 +41,7 @@ public:
     virtual void OnUIRender() override
     {
 
-        // ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
         ImGui::Begin("World Outline");
 
         static size_t selected = 0;
@@ -101,11 +100,28 @@ public:
                             float rotation[3] = {rotations.x, rotations.y, rotations.z};
                             float scale[3] = {scales.x, scales.y, scales.z};
 
-                            ImGui::InputFloat3("Position", (float *)&transformation);
-                            ImGui::InputFloat3("Rotation", (float *)&rotation);
-                            ImGui::InputFloat3("Scale", (float *)&scale);
+                            // imgui text output
+                            ImGui::Text("Translation");
 
-                            shape->transform(transformation, rotation, scale);
+                            ImGui::SliderFloat("X", &transformation[0], -5, 5);
+                            ImGui::SliderFloat("Y", &transformation[1], -5, 5);
+                            ImGui::SliderFloat("Z", &transformation[2], -5, 500);
+
+                            ImGui::Separator();
+                            ImGui::Text("Rotation");
+
+                            ImGui::SliderFloat("RX", &rotation[0], -180, 180);
+                            ImGui::SliderFloat("RY", &rotation[1], -180, 180);
+                            ImGui::SliderFloat("RZ", &rotation[2], -180, 180);
+
+                            ImGui::Separator();
+                            ImGui::Text("Scale");
+
+                            ImGui::SliderFloat("SX", &scale[0], 0.1f, 5);
+                            ImGui::SliderFloat("SY", &scale[1], 0.1f, 5);
+                            ImGui::SliderFloat("SZ", &scale[2], 0.1f, 5);
+
+                            shape->transform_deg(transformation, rotation, scale);
                         }
                         else
                         {
@@ -134,12 +150,24 @@ public:
                             auto diffuse = shape->get_material().get_diffuse();
                             auto reflectiveness = shape->get_material().get_reflectiveness();
                             auto shininess = shape->get_material().get_shininess();
+                            auto ambient = shape->get_material().get_ambient();
+                            auto transparency = shape->get_material().get_transparency();
+                            auto refractive_index = shape->get_material().get_refractive_index();
+                            auto pattern = shape->get_material().get_pattern();
 
                             float color_vec[3] = {color.r, color.g, color.b};
 
                             ImGui::ColorEdit3("Material Color", (float *)&color_vec);
 
-                            shape->get_material().set_color(color_vec);
+                            ImGui::SliderFloat("Specular", &specular, 0.0f, 1.0f);
+                            ImGui::SliderFloat("Diffuse", &diffuse, 0.0f, 1.0f);
+                            ImGui::SliderFloat("Reflectiveness", &reflectiveness, 0.0f, 1.0f);
+                            ImGui::SliderFloat("Shininess", &shininess, 0.0f, 100.0f);
+                            ImGui::SliderFloat("Ambient", &ambient, 0.0f, 1.0f);
+                            ImGui::SliderFloat("Transparency", &transparency, 0.0f, 1.0f);
+                            ImGui::SliderFloat("Refractive Index", &refractive_index, 1.0f, 10.0f);
+
+                            shape->get_material().set_color(color_vec).set_specular(specular).set_diffuse(diffuse).set_reflectiveness(reflectiveness).set_shininess(shininess).set_ambient(ambient).set_transparency(transparency).set_refractive_index(refractive_index);
                         }
                         else
                         {
@@ -175,12 +203,12 @@ public:
                     auto v_size = camera.get_height();
                     auto h_size = camera.get_width();
 
-                    float size[2] = {h_size, v_size};
+                    float size[2] = {(float)h_size, (float)v_size};
 
                     ImGui::InputFloat2("Render Resolution", (float *)&size);
 
-                    camera.set_width(size[0]);
-                    camera.set_height(size[1]);
+                    camera.set_width((int)size[0]);
+                    camera.set_height((int)size[1]);
                 }
 
                 auto render_depth = world.get_max_depth();
@@ -204,30 +232,23 @@ public:
             ImGui::Text("Last render: %.3fms", m_LastRenderTime);
         }
 
-        if (!first_render)
+        if (!is_first_render)
         {
             if (ImGui::Button("Save Render"))
             {
+                COAL::Timer timer;
 
-                uint8_t *pixels = new uint8_t[camera.get_width() * camera.get_height() * 3];
+                COAL::save_image(canvas, camera.get_width(), camera.get_height(), "render.png");
 
-                int index = 0;
+                is_file_saved = true;
 
-                for (uint32_t i = 0; i < m_ViewportWidth * m_ViewportHeight; i++)
-                {
-                    COAL::Color curr = canvas.get()[i];
-
-                    pixels[index++] = (uint8_t)curr.r;
-                    pixels[index++] = (uint8_t)curr.g;
-                    pixels[index++] = (uint8_t)curr.b;
-                }
-
-                // You have to use 3 comp for complete jpg file. If not, the image will be grayscale or nothing.
-                stbi_write_jpg("ExampleRender.jpg", camera.get_width(), camera.get_height(), 3, pixels, 100);
-                delete[] pixels;
+                m_file_save_time = timer.elapsed_millis();
             }
 
-            ImGui::Text("Last render: %.3fms", m_LastRenderTime);
+            if (is_file_saved)
+            {
+                ImGui::Text("File saved in %.3fms", m_file_save_time);
+            }
         }
 
         ImGui::End(); // World Outline
@@ -249,7 +270,7 @@ public:
     {
         COAL::Timer timer;
 
-        first_render = false;
+        is_first_render = false;
 
         // auto a2 = std::async([&]()
         //                      { return camera.classic_render_multi_threaded(world); });
@@ -278,6 +299,8 @@ public:
 
         m_Image->SetData(m_ImageData);
 
+        is_file_saved = false;
+
         m_LastRenderTime = timer.elapsed_millis();
     }
 
@@ -287,6 +310,10 @@ private:
     uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
     float m_LastRenderTime = 0.0f;
+
+    bool is_first_render = true;
+    float m_file_save_time = 0.0f;
+    bool is_file_saved = false;
 };
 
 Walnut::Application *Walnut::CreateApplication(_maybe_unused int argc, _maybe_unused char **argv)

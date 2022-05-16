@@ -12,7 +12,7 @@ namespace COAL
     struct Camera
     {
 
-        _nodiscard Camera(int width, int height, double fov) : m_width(width), m_height(height), m_field_of_view(fov), m_half_height(0), m_half_width(0), m_pixel_size(0)
+        _nodiscard Camera(int width, int height, float fov) : m_width(width), m_height(height), m_field_of_view(fov), m_half_height(0), m_half_width(0), m_pixel_size(0)
         {
             set_pixel_size();
         }
@@ -21,8 +21,8 @@ namespace COAL
         {
             PROFILE_FUNCTION();
 
-            double half_view = std::tan(m_field_of_view / 2.0);
-            double aspect = m_width / (m_height + 0.0);
+            float half_view = std::tan(m_field_of_view / 2.0f);
+            float aspect = m_width / (m_height + 0.0f);
 
             if (aspect >= 1.0)
             {
@@ -62,11 +62,11 @@ namespace COAL
         {
             PROFILE_FUNCTION();
 
-            double xOffset = (x + 0.5) * m_pixel_size;
-            double yOffset = (y + 0.5) * m_pixel_size;
+            float xOffset = (x + 0.5f) * m_pixel_size;
+            float yOffset = (y + 0.5f) * m_pixel_size;
 
-            double world_x = m_half_width - xOffset;
-            double world_y = m_half_height - yOffset;
+            float world_x = m_half_width - xOffset;
+            float world_y = m_half_height - yOffset;
 
             Point pixel = m_inverse_transform * Point(world_x, world_y, -1);
             Point origin = m_inverse_transform * Point(0, 0, 0);
@@ -188,22 +188,22 @@ namespace COAL
             return m_height;
         }
 
-        _nodiscard constexpr double get_field_of_view() const
+        _nodiscard constexpr float get_field_of_view() const
         {
             return m_field_of_view;
         }
 
-        _nodiscard constexpr double get_half_height() const
+        _nodiscard constexpr float get_half_height() const
         {
             return m_half_height;
         }
 
-        _nodiscard constexpr double get_half_width() const
+        _nodiscard constexpr float get_half_width() const
         {
             return m_half_width;
         }
 
-        _nodiscard constexpr double get_pixel_size() const
+        _nodiscard constexpr float get_pixel_size() const
         {
             return m_pixel_size;
         }
@@ -231,23 +231,23 @@ namespace COAL
             set_pixel_size();
         }
 
-        void set_field_of_view(double field_of_view)
+        void set_field_of_view(float field_of_view)
         {
             m_field_of_view = field_of_view;
             set_pixel_size();
         }
 
-        void constexpr set_half_height(double half_height)
+        void constexpr set_half_height(float half_height)
         {
             m_half_height = half_height;
         }
 
-        void constexpr set_half_width(double half_width)
+        void constexpr set_half_width(float half_width)
         {
             m_half_width = half_width;
         }
 
-        void constexpr set_pixel_size(double pixel_size)
+        void constexpr set_pixel_size(float pixel_size)
         {
             m_pixel_size = pixel_size;
         }
@@ -266,12 +266,12 @@ namespace COAL
         bool m_is_finished = false;
         int m_width;
         int m_height;
-        double m_field_of_view;
-        double m_pixel_size;
+        float m_field_of_view;
+        float m_pixel_size;
         Matrix4 m_transform = COAL::IDENTITY;
         Matrix4 m_inverse_transform = COAL::IDENTITY;
 
-        double m_half_width;
-        double m_half_height;
+        float m_half_width;
+        float m_half_height;
     };
 } // namespace COAL

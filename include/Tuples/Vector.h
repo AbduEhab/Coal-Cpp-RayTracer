@@ -8,7 +8,7 @@ namespace COAL
 
         [[nodiscard]] constexpr Vector() : x(0), y(0), z(0), w(0){};
 
-        [[nodiscard]] constexpr Vector(const double x, const double y, const double z) : x(x), y(y), z(z), w(0){};
+        [[nodiscard]] constexpr Vector(const float x, const float y, const float z) : x(x), y(y), z(z), w(0){};
         [[nodiscard]] constexpr Vector(const float (&vector_array)[3]) : x(vector_array[0]), y(vector_array[1]), z(vector_array[2]), w(0){};
 
         [[nodiscard]] int operator==(const Vector &rhs) const noexcept
@@ -22,7 +22,7 @@ namespace COAL
         }
 
         // [] operator
-        [[nodiscard]] constexpr double operator[](const char i) const noexcept
+        [[nodiscard]] constexpr float operator[](const char i) const noexcept
         {
             assert(i >= 0 && i < 3);
 
@@ -42,7 +42,7 @@ namespace COAL
             return -1;
         }
 
-        [[nodiscard]] constexpr Vector &operator+=(const double rhs) noexcept
+        [[nodiscard]] constexpr Vector &operator+=(const float rhs) noexcept
         {
             x = x + rhs;
             y = y + rhs;
@@ -58,7 +58,7 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] constexpr Vector &operator-=(const double rhs) noexcept
+        [[nodiscard]] constexpr Vector &operator-=(const float rhs) noexcept
         {
             x = x - rhs;
             y = y - rhs;
@@ -74,7 +74,7 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] constexpr Vector &operator*=(double factor) noexcept
+        [[nodiscard]] constexpr Vector &operator*=(float factor) noexcept
         {
             x *= factor;
             y *= factor;
@@ -82,7 +82,7 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] constexpr Vector &operator/=(double factor) noexcept
+        [[nodiscard]] constexpr Vector &operator/=(float factor) noexcept
         {
             x /= factor;
             y /= factor;
@@ -95,12 +95,12 @@ namespace COAL
             return Vector(x + rhs.x, y + rhs.y, z + rhs.z);
         }
 
-        [[nodiscard]] constexpr Vector operator+(const double rhs) const noexcept
+        [[nodiscard]] constexpr Vector operator+(const float rhs) const noexcept
         {
             return Vector(x + rhs, y + rhs, z + rhs);
         }
 
-        [[nodiscard]] constexpr Vector operator-(const double rhs) const noexcept
+        [[nodiscard]] constexpr Vector operator-(const float rhs) const noexcept
         {
             return Vector(x - rhs, y - rhs, z - rhs);
         }
@@ -110,12 +110,12 @@ namespace COAL
             return Vector(x - rhs.x, y - rhs.y, z - rhs.z);
         }
 
-        [[nodiscard]] constexpr Vector operator*(const double factor) const noexcept
+        [[nodiscard]] constexpr Vector operator*(const float factor) const noexcept
         {
             return Vector(x * factor, y * factor, z * factor);
         }
 
-        [[nodiscard]] constexpr Vector operator/(const double factor) const noexcept
+        [[nodiscard]] constexpr Vector operator/(const float factor) const noexcept
         {
             return Vector(x / factor, y / factor, z / factor);
         }
@@ -126,19 +126,19 @@ namespace COAL
             return os;
         }
 
-        [[nodiscard]] double magnitude() const noexcept
+        [[nodiscard]] float magnitude() const noexcept
         {
             return std::sqrt(x * x + y * y + z * z);
         }
 
         [[nodiscard]] Vector normalize() const noexcept
         {
-            double mag = magnitude();
+            float mag = magnitude();
 
             return *this / mag;
         }
 
-        [[nodiscard]] constexpr double dot(const Vector &b) const noexcept
+        [[nodiscard]] constexpr float dot(const Vector &b) const noexcept
         {
             return x * b.x + y * b.y + z * b.z + w * b.w;
         }
@@ -159,9 +159,9 @@ namespace COAL
             return *this - (b * (2 * this->dot(b)));
         }
 
-        double x;
-        double y;
-        double z;
-        double w;
+        float x;
+        float y;
+        float z;
+        float w;
     };
 }

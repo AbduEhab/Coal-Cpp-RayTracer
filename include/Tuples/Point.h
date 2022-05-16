@@ -8,7 +8,7 @@ namespace COAL
     {
         [[nodiscard]] constexpr Point() : x(0), y(0), z(0), w(1){};
 
-        [[nodiscard]] constexpr Point(double x, double y, double z) : x(x), y(y), z(z), w(1){};
+        [[nodiscard]] constexpr Point(float x, float y, float z) : x(x), y(y), z(z), w(1){};
 
         [[nodiscard]] constexpr Point(const float (&vector_array)[3]) : x(vector_array[0]), y(vector_array[1]), z(vector_array[2]), w(1){};
 
@@ -17,7 +17,7 @@ namespace COAL
             return (std::abs(x - rhs.x) <= kEpsilon) && (std::abs(y - rhs.y) <= kEpsilon) && (std::abs(z - rhs.z) <= kEpsilon) && (rhs.w == 1);
         }
 
-        [[nodiscard]] constexpr Point &operator+=(const double rhs) noexcept
+        [[nodiscard]] constexpr Point &operator+=(const float rhs) noexcept
         {
             x = x + rhs;
             y = x + rhs;
@@ -34,7 +34,7 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] constexpr Point &operator-=(const double rhs) noexcept
+        [[nodiscard]] constexpr Point &operator-=(const float rhs) noexcept
         {
             x = x - rhs;
             y = y - rhs;
@@ -67,7 +67,7 @@ namespace COAL
         }
 
         // [] operator
-        [[nodiscard]] constexpr double operator[](const char i) const noexcept
+        [[nodiscard]] constexpr float operator[](const char i) const noexcept
         {
             assert(i >= 0 && i < 3);
 
@@ -87,7 +87,7 @@ namespace COAL
             return -1;
         }
 
-        [[nodiscard]] constexpr Point &operator*=(const double rhs) noexcept
+        [[nodiscard]] constexpr Point &operator*=(const float rhs) noexcept
         {
             x = x * rhs;
             y = y * rhs;
@@ -95,7 +95,7 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] constexpr Point &operator/=(const double rhs) noexcept
+        [[nodiscard]] constexpr Point &operator/=(const float rhs) noexcept
         {
             x = x / rhs;
             y = y / rhs;
@@ -141,10 +141,10 @@ namespace COAL
             return os;
         };
 
-        double x;
-        double y;
-        double z;
-        double w;
+        float x;
+        float y;
+        float z;
+        float w;
     };
 
 }

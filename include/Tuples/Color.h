@@ -8,12 +8,14 @@ namespace COAL
     {
         [[nodiscard]] constexpr Color() : r(0), g(0), b(0), a(0xff){};
 
-        [[nodiscard]] constexpr Color(double red, double green, double blue)
+        [[nodiscard]] constexpr Color(float red, float green, float blue)
             : r(red > 255 ? 255 : red), g(green > 255 ? 255 : green), b(blue > 255 ? 255 : blue), a(0xff){};
 
         [[nodiscard]] constexpr Color(const float (&color_array)[3]) : r(color_array[0] > 255 ? 255 : color_array[0]), g(color_array[1] > 255 ? 255 : color_array[1]), b(color_array[2] > 255 ? 255 : color_array[2]), a(0xff){};
 
-        static constexpr Color create_SDR(double r, double g, double b) noexcept
+        
+
+        static constexpr Color create_SDR(float r, float g, float b) noexcept
         {
             return Color(r * 255, g * 255, b * 255);
         }
@@ -49,12 +51,12 @@ namespace COAL
         }
 
         // / operator
-        constexpr Color operator/(const double &rhs) const noexcept
+        constexpr Color operator/(const float &rhs) const noexcept
         {
             return Color(r / rhs, g / rhs, b / rhs);
         }
 
-        [[nodiscard]] constexpr Color &operator+=(const double rhs) noexcept
+        [[nodiscard]] constexpr Color &operator+=(const float rhs) noexcept
         {
             r = r + rhs;
             g = g + rhs;
@@ -70,7 +72,7 @@ namespace COAL
             return *this;
         }
 
-        [[nodiscard]] constexpr Color &operator-=(const double rhs) noexcept
+        [[nodiscard]] constexpr Color &operator-=(const float rhs) noexcept
         {
             r = r - rhs;
             g = g - rhs;
@@ -107,12 +109,12 @@ namespace COAL
             return Color(r + rhs.r, g + rhs.g, b + rhs.b);
         }
 
-        [[nodiscard]] constexpr Color operator+(const double rhs) const noexcept
+        [[nodiscard]] constexpr Color operator+(const float rhs) const noexcept
         {
             return Color(r + rhs, g + rhs, b + rhs);
         }
 
-        [[nodiscard]] constexpr Color operator-(const double rhs) const noexcept
+        [[nodiscard]] constexpr Color operator-(const float rhs) const noexcept
         {
             return Color(r - rhs, g - rhs, b - rhs);
         }
@@ -122,7 +124,7 @@ namespace COAL
             return Color(r - rhs.r, g - rhs.g, b - rhs.b);
         }
 
-        [[nodiscard]] constexpr Color operator*(const double factor) const noexcept
+        [[nodiscard]] constexpr Color operator*(const float factor) const noexcept
         {
             return Color(r * factor, g * factor, b * factor);
         }
@@ -138,14 +140,14 @@ namespace COAL
             return os;
         };
 
-        double r;
-        double g;
-        double b;
-        double a;
+        float r;
+        float g;
+        float b;
+        float a;
     };
 
     static constexpr const Color BLACK = Color(0, 0, 0);
-    static constexpr const Color GREY = Color(0.2, 0.2, 0.2);
+    static constexpr const Color GREY = Color(0.2f, 0.2f, 0.2f);
     static constexpr const Color WHITE = Color(1, 1, 1);
     static constexpr const Color RED = Color(1, 0, 0);
     static constexpr const Color GREEN = Color(0, 1, 0);

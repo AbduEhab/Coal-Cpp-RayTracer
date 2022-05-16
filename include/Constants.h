@@ -21,6 +21,7 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+#include "stb_image_write.h"
 
 #define PROFILING 0
 

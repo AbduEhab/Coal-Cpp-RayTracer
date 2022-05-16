@@ -18,6 +18,12 @@ namespace COAL
 
         _nodiscard Sphere() = default;
 
+        ~Sphere() = default;
+
+        // generate default copy and move constructors
+        Sphere(const Sphere &) = default;
+        Sphere(Sphere &&) = default;
+
         _nodiscard std::vector<Intersection> intersects(const Ray &ray) const
         {
             PROFILE_FUNCTION();
@@ -26,19 +32,19 @@ namespace COAL
 
             Vector sphere_to_ray = transformed_ray.m_origin - Point();
 
-            double a = transformed_ray.m_direction.dot(transformed_ray.m_direction);
-            double b = 2 * sphere_to_ray.dot(transformed_ray.m_direction);
-            double c = sphere_to_ray.dot(sphere_to_ray) - 1;
+            float a = transformed_ray.m_direction.dot(transformed_ray.m_direction);
+            float b = 2 * sphere_to_ray.dot(transformed_ray.m_direction);
+            float c = sphere_to_ray.dot(sphere_to_ray) - 1;
 
-            double discriminant = b * b - 4 * a * c;
+            float discriminant = b * b - 4 * a * c;
 
             if (discriminant < 0)
             {
                 return {};
             }
 
-            double t1 = (-b - std::sqrt(discriminant)) / (2 * a);
-            double t2 = (-b + std::sqrt(discriminant)) / (2 * a);
+            float t1 = (-b - std::sqrt(discriminant)) / (2 * a);
+            float t2 = (-b + std::sqrt(discriminant)) / (2 * a);
 
             if (t1 > t2)
             {

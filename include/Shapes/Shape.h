@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Constants.h"
 #include "Intersection.h"
 #include "Material.h"
 #include "Matrix.h"
@@ -16,6 +17,8 @@ namespace COAL
     {
 
         [[nodiscard]] virtual std::vector<Intersection> intersects(const Ray &ray) const = 0;
+
+        ~Shape() = default;
 
         [[nodiscard]] virtual Vector normal_at(const Point &p) const = 0;
 
@@ -62,10 +65,26 @@ namespace COAL
 
         Shape &transform(const float (&translation)[3], const float (&rotation)[3], const float (&scale)[3])
         {
-            m_translation = Vector((double)translation[0], (double)translation[1], (double)translation[2]);
+            m_translation = Vector((float)translation[0], (float)translation[1], (float)translation[2]);
             m_rotation_x = rotation[0];
             m_rotation_y = rotation[1];
             m_rotation_z = rotation[2];
+            m_scale = Vector(scale[0], scale[1], scale[2]);
+
+            m_transform = COAL::IDENTITY.translate(translation[0], translation[1], translation[2]).scale(scale[0], scale[1], scale[2]);
+            m_inverse_transform = m_transform.inverse();
+            m_normal_transform = m_inverse_transform.transpose();
+            m_inverse_normal_transform = m_normal_transform.inverse();
+
+            return *this;
+        }
+
+        Shape &transform_deg(const float (&translation)[3], const float (&rotation)[3], const float (&scale)[3])
+        {
+            m_translation = Vector((float)translation[0], (float)translation[1], (float)translation[2]);
+            m_rotation_x = rotation[0] * (float)std::numbers::pi / 180.0f;
+            m_rotation_y = rotation[1] * (float)std::numbers::pi / 180.0f;
+            m_rotation_z = rotation[2] * (float)std::numbers::pi / 180.0f;
             m_scale = Vector(scale[0], scale[1], scale[2]);
 
             m_transform = COAL::IDENTITY.translate(translation[0], translation[1], translation[2]).scale(scale[0], scale[1], scale[2]);
@@ -89,7 +108,7 @@ namespace COAL
         }
 
         // translate the shape
-        Shape &translate(const double x, const double y, const double z)
+        Shape &translate(const float x, const float y, const float z)
         {
             m_translation = Vector(x, y, z);
             m_transform = COAL::IDENTITY.translate(x, y, z);
@@ -113,7 +132,7 @@ namespace COAL
         }
 
         // scale the shape
-        Shape &scale(const double x, const double y, const double z)
+        Shape &scale(const float x, const float y, const float z)
         {
             m_scale = Vector(x, y, z);
             m_transform = m_transform.scale(x, y, z);
@@ -125,7 +144,7 @@ namespace COAL
         }
 
         // rotate the shape
-        Shape &rotate_x(const double radians)
+        Shape &rotate_x(const float radians)
         {
             m_rotation_x = radians;
             m_transform = m_transform.rotate_x(radians);
@@ -136,7 +155,7 @@ namespace COAL
             return *this;
         }
 
-        Shape &rotate_y(const double radians)
+        Shape &rotate_y(const float radians)
         {
             m_rotation_y = radians;
             m_transform = m_transform.rotate_y(radians);
@@ -147,7 +166,7 @@ namespace COAL
             return *this;
         }
 
-        Shape &rotate_z(const double radians)
+        Shape &rotate_z(const float radians)
         {
             m_rotation_z = radians;
             m_transform = m_transform.rotate_z(radians);
@@ -178,17 +197,17 @@ namespace COAL
             return {m_rotation_x, m_rotation_y, m_rotation_z};
         }
 
-        _nodiscard constexpr double get_rotation_x() const
+        _nodiscard constexpr float get_rotation_x() const
         {
             return m_rotation_x;
         }
 
-        _nodiscard constexpr double get_rotation_y() const
+        _nodiscard constexpr float get_rotation_y() const
         {
             return m_rotation_y;
         }
 
-        _nodiscard constexpr double get_rotation_z() const
+        _nodiscard constexpr float get_rotation_z() const
         {
             return m_rotation_z;
         }
@@ -202,9 +221,9 @@ namespace COAL
         COAL::Matrix4 m_inverse_normal_transform = COAL::IDENTITY;
         Vector m_translation = Vector(0, 0, 0);
         Vector m_scale = Vector(1, 1, 1);
-        double m_rotation_x = 0;
-        double m_rotation_y = 0;
-        double m_rotation_z = 0;
+        float m_rotation_x = 0;
+        float m_rotation_y = 0;
+        float m_rotation_z = 0;
     };
 
     [[nodiscard]] COAL::Color Pattern::colot_at(const Shape &s, const COAL::Point &p) const

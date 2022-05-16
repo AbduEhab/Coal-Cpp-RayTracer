@@ -14,7 +14,7 @@ namespace COAL
 
         [[nodiscard]] constexpr Intersection() : m_t(-1), m_object(nullptr) {}
 
-        [[nodiscard]] constexpr Intersection(const double t, const Shape &object)
+        [[nodiscard]] constexpr Intersection(const float t, const Shape &object)
             : m_t(t), m_object(&object)
         {
         }
@@ -23,7 +23,7 @@ namespace COAL
         {
             PROFILE_FUNCTION();
 
-            double t2 = m_t;
+            float t2 = m_t;
             const Shape *object = m_object;
             Point p = ray.position(m_t);
             Vector eyev = -ray.m_direction;
@@ -38,11 +38,11 @@ namespace COAL
                 inside = true;
             }
 
-            Point over_point = p + normalv * 1e-4;
-            Point under_point = p - normalv * 1e-4;
+            Point over_point = p + normalv * 1e-4f;
+            Point under_point = p - normalv * 1e-4f;
 
-            double n1 = 0;
-            double n2 = 0;
+            float n1 = 0;
+            float n2 = 0;
 
             if (!xs.empty())
             {
@@ -127,7 +127,7 @@ namespace COAL
         }
 
     public:
-        double m_t;
+        float m_t;
         const Shape *m_object;
     };
 

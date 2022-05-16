@@ -24,7 +24,7 @@ namespace COAL
             PROFILE_FUNCTION();
 
             std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(Sphere());
-            sphere->set_material(Material(Color(0.8, 1, 0.6), -1.0, 0.7, 0.2, -1.0, nullptr, 0.0, -1.0, -1.0));
+            sphere->set_material(Material(Color(0.8f, 1, 0.6f), -1.0f, 0.7f, 0.2f, -1.0f, nullptr, 0.0f, -1.0f, -1.0f));
             m_shapes.emplace_back(sphere);
 
             std::shared_ptr<Sphere> sphere2 = std::make_shared<Sphere>(Sphere());
@@ -60,7 +60,7 @@ namespace COAL
             PROFILE_FUNCTION();
 
             Vector v = light.m_position - point;
-            double distance = v.magnitude();
+            float distance = v.magnitude();
             Vector direction = v.normalize();
 
             Ray ray(point, direction);
@@ -124,16 +124,16 @@ namespace COAL
 
             if (comp.m_s->get_material().get_refractive_index() > 0 && recursion_level < MAX_DEPTH)
             {
-                double n_ratio = comp.m_inside ? comp.m_n1 / comp.m_n2 : comp.m_n2 / comp.m_n1;
+                float n_ratio = comp.m_inside ? comp.m_n1 / comp.m_n2 : comp.m_n2 / comp.m_n1;
 
-                double cos_i = comp.m_eye_vector.dot(comp.m_normal_vector);
+                float cos_i = comp.m_eye_vector.dot(comp.m_normal_vector);
 
-                double sin2_t = n_ratio * n_ratio * (1.0 - cos_i * cos_i);
+                float sin2_t = (n_ratio * n_ratio * (1.0f - cos_i * cos_i));
 
                 if (sin2_t > 1.0)
                     return Color();
 
-                double cos_t = sqrt(1.0 - sin2_t);
+                float cos_t = (float) sqrt(1.0 - sin2_t);
 
                 Vector direction = comp.m_normal_vector * (n_ratio * cos_i - cos_t) - comp.m_eye_vector * n_ratio;
 
@@ -165,7 +165,7 @@ namespace COAL
 
                 if (mat.get_reflectiveness() > 0 && mat.get_transparency() > 0)
                 {
-                    double reflectiveness = comp.schilck();
+                    float reflectiveness = comp.schilck();
 
                     res = res + reflection_map * (1 - reflectiveness) + refraction_map * (1 - reflectiveness);
                 }
