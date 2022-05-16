@@ -117,6 +117,7 @@ endif()
 # <-- Add directories to include directory here: -->
 target_include_directories(${PROJECT_NAME}
     PUBLIC include
+    PUBLIC external
     PUBLIC external/glfw/include
     PUBLIC external/Walnut/vendor/glm
     PUBLIC external/Walnut/vendor/imgui

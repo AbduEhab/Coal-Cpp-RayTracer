@@ -60,17 +60,6 @@ namespace COAL
             return *this;
         }
 
-        // Shape &set_transform(const Matrix4 &transform)
-        // {
-
-        //     m_transform = transform;
-        //     m_inverse_transform = m_transform.inverse();
-        //     m_normal_transform = m_inverse_transform.transpose();
-        //     m_inverse_normal_transform = m_normal_transform.inverse();
-
-        //     return *this;
-        // }
-
         Shape &transform(const float (&translation)[3], const float (&rotation)[3], const float (&scale)[3])
         {
             m_translation = Vector((double)translation[0], (double)translation[1], (double)translation[2]);
@@ -172,13 +161,6 @@ namespace COAL
         // get name
         _nodiscard virtual const char *get_name() const = 0;
 
-        // private:
-        COAL::Material m_material = COAL::Material();
-        COAL::Matrix4 m_transform = COAL::IDENTITY;
-        COAL::Matrix4 m_inverse_transform = COAL::IDENTITY;
-        COAL::Matrix4 m_normal_transform = COAL::IDENTITY;
-        COAL::Matrix4 m_inverse_normal_transform = COAL::IDENTITY;
-
         // getters
         _nodiscard constexpr const Vector &get_translation() const
         {
@@ -211,6 +193,13 @@ namespace COAL
             return m_rotation_z;
         }
 
+    private:
+        // private:
+        COAL::Material m_material = COAL::Material();
+        COAL::Matrix4 m_transform = COAL::IDENTITY;
+        COAL::Matrix4 m_inverse_transform = COAL::IDENTITY;
+        COAL::Matrix4 m_normal_transform = COAL::IDENTITY;
+        COAL::Matrix4 m_inverse_normal_transform = COAL::IDENTITY;
         Vector m_translation = Vector(0, 0, 0);
         Vector m_scale = Vector(1, 1, 1);
         double m_rotation_x = 0;

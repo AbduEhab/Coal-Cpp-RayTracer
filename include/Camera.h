@@ -12,7 +12,7 @@ namespace COAL
     struct Camera
     {
 
-        _nodiscard Camera(int hSize, int vSize, double fov) : m_hsize(hSize), m_vsize(vSize), m_field_of_view(fov), m_half_height(0), m_half_width(0), m_pixel_size(0)
+        _nodiscard Camera(int width, int height, double fov) : m_width(width), m_height(height), m_field_of_view(fov), m_half_height(0), m_half_width(0), m_pixel_size(0)
         {
             set_pixel_size();
         }
@@ -22,7 +22,7 @@ namespace COAL
             PROFILE_FUNCTION();
 
             double half_view = std::tan(m_field_of_view / 2.0);
-            double aspect = m_hsize / (m_vsize + 0.0);
+            double aspect = m_width / (m_height + 0.0);
 
             if (aspect >= 1.0)
             {
@@ -35,7 +35,7 @@ namespace COAL
                 m_half_height = half_view;
             }
 
-            m_pixel_size = (m_half_width * 2) / m_hsize;
+            m_pixel_size = (m_half_width * 2) / m_width;
         }
 
         _nodiscard void transform(const Point &from, const Point &to, const Vector &up)
@@ -80,10 +80,10 @@ namespace COAL
         {
             PROFILE_FUNCTION();
 
-            for (int y = 0; y < m_vsize; y++)
+            for (int y = 0; y < m_height; y++)
             {
                 std::cout << y << std::endl;
-                for (int x = 0; x < m_hsize; x++)
+                for (int x = 0; x < m_width; x++)
                 {
                     Ray r = ray_for_pixel(x, y);
 
@@ -103,16 +103,16 @@ namespace COAL
             Timer timer;
 
             Color **image;
-            image = new Color *[m_hsize];
-            for (int i = 0; i < m_hsize; i++)
-                image[i] = new Color[m_vsize];
+            image = new Color *[m_width];
+            for (int i = 0; i < m_width; i++)
+                image[i] = new Color[m_height];
 
-            for (int y = 0; y < m_vsize; y++)
+            for (int y = 0; y < m_height; y++)
             {
 
-                std::cout << ">> Thread {" + std::to_string(y + 1) + "}: Calculating Row: [" + std::to_string(y + 1) + '/' + std::to_string(m_hsize) + ']' << std::endl;
+                std::cout << ">> Thread {" + std::to_string(y + 1) + "}: Calculating Row: [" + std::to_string(y + 1) + '/' + std::to_string(m_height) + ']' << std::endl;
 
-                for (int x = 0; x < m_hsize; x++)
+                for (int x = 0; x < m_width; x++)
                 {
                     Ray r = ray_for_pixel(x, y);
 
@@ -127,7 +127,7 @@ namespace COAL
             return image;
         }
 
-        _nodiscard Color *classic_render_multi_threaded(World &w, const int thread_count = kCORE_COUNT)
+        _nodiscard std::shared_ptr<Color[]> classic_render_multi_threaded(World &w, const int thread_count = kCORE_COUNT)
         {
             PROFILE_FUNCTION();
 
@@ -137,34 +137,33 @@ namespace COAL
 
             Timer timer;
 
-            Color *image;
-            image = new Color[m_hsize * m_vsize];
+            std::shared_ptr<Color[]> image(new Color[m_width * m_height]);
 
-            std::vector<std::shared_ptr<std::thread>> threads;
+            std::vector<std::thread> threads;
 
             for (int i = 0; i < thread_count; i++)
             {
                 const int index = i;
 
-                threads.push_back(std::make_unique<std::thread>(std::thread([&, index]()
+                threads.push_back(std::thread([&, index]()
                                                                             {
-                    for (int y = index; y < m_vsize; y += thread_count)
+                    for (int y = index; y < m_height; y += thread_count)
                     {
-                        debug_print(">> Thread {" + std::to_string(index + 1) + "}: Calculating Row: [" + std::to_string(y + 1) + '/' + std::to_string(m_hsize) + "]");
+                        debug_print(">> Thread {" + std::to_string(index + 1) + "}: Calculating Row: [" + std::to_string(y + 1) + '/' + std::to_string(m_height) + "]");
 
-                        for (int x = 0; x < m_hsize; x++)
+                        for (int x = 0; x < m_width; x++)
                         {
                             Ray r = ray_for_pixel(x, y);
 
                             Color c = w.color_at(r);
 
-                            image[y *m_hsize + x] = c;
+                            image.get() [y *m_width + x] = c;
                         }
-                    } })));
+                    } }));
             }
 
             for (auto &t : threads)
-                t->join();
+                t.join();
 
             m_is_finished = true;
 
@@ -179,14 +178,14 @@ namespace COAL
             return m_is_finished;
         }
 
-        _nodiscard constexpr int get_hsize() const
+        _nodiscard constexpr int get_width() const
         {
-            return m_hsize;
+            return m_width;
         }
 
-        _nodiscard constexpr int get_vsize() const
+        _nodiscard constexpr int get_height() const
         {
-            return m_vsize;
+            return m_height;
         }
 
         _nodiscard constexpr double get_field_of_view() const
@@ -220,15 +219,15 @@ namespace COAL
         }
 
         // generate setters
-        void set_hsize(int hsize)
+        void set_width(int width)
         {
-            m_hsize = hsize;
+            m_width = width;
             set_pixel_size();
         }
 
-        void set_vsize(int vsize)
+        void set_height(int height)
         {
-            m_vsize = vsize;
+            m_height = height;
             set_pixel_size();
         }
 
@@ -265,8 +264,8 @@ namespace COAL
 
     private:
         bool m_is_finished = false;
-        int m_hsize;
-        int m_vsize;
+        int m_width;
+        int m_height;
         double m_field_of_view;
         double m_pixel_size;
         Matrix4 m_transform = COAL::IDENTITY;

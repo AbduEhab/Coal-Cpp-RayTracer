@@ -108,11 +108,11 @@ namespace COAL
         {
             PROFILE_FUNCTION();
 
-            if (comp.m_s->m_material.get_reflectiveness() > 0 && recursion_level < MAX_DEPTH)
+            if (comp.m_s->get_material().get_reflectiveness() > 0 && recursion_level < MAX_DEPTH)
             {
                 Ray reflected_ray = Ray(comp.m_over_point, comp.m_reflection_vector);
                 Color reflected_color = color_at(reflected_ray, recursion_level + 1);
-                return reflected_color * comp.m_s->m_material.get_reflectiveness();
+                return reflected_color * comp.m_s->get_material().get_reflectiveness();
             }
 
             return Color();
@@ -122,7 +122,7 @@ namespace COAL
         {
             PROFILE_FUNCTION();
 
-            if (comp.m_s->m_material.get_refractive_index() > 0 && recursion_level < MAX_DEPTH)
+            if (comp.m_s->get_material().get_refractive_index() > 0 && recursion_level < MAX_DEPTH)
             {
                 double n_ratio = comp.m_inside ? comp.m_n1 / comp.m_n2 : comp.m_n2 / comp.m_n1;
 
@@ -139,7 +139,7 @@ namespace COAL
 
                 Ray refracted_ray = Ray(comp.m_under_point, direction);
 
-                return color_at(refracted_ray, recursion_level + 1) * comp.m_s->m_material.get_transparency();
+                return color_at(refracted_ray, recursion_level + 1) * comp.m_s->get_material().get_transparency();
             }
 
             return Color();
@@ -154,14 +154,14 @@ namespace COAL
             {
                 bool in_shadow = is_shadowed(comp.m_over_point, *light);
 
-                res = res + comp.m_s->m_material.lighting(
+                res = res + comp.m_s->get_material().lighting(
                                 *light, *comp.m_s, comp.m_over_point, comp.m_eye_vector, comp.m_normal_vector, in_shadow);
 
                 Color reflection_map = reflected_color(comp, depth + 1);
 
                 Color refraction_map = refraction_color(comp, depth + 1);
 
-                Material mat = comp.m_s->m_material;
+                Material mat = comp.m_s->get_material();
 
                 if (mat.get_reflectiveness() > 0 && mat.get_transparency() > 0)
                 {
