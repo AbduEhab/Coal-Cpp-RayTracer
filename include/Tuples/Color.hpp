@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Constants.h"
+#include "Constants.hpp"
 
 namespace COAL
 {
@@ -8,12 +8,12 @@ namespace COAL
     {
         [[nodiscard]] constexpr Color() : r(0), g(0), b(0), a(0xff){};
 
-        [[nodiscard]] constexpr Color(float red, float green, float blue)
-            : r(red > 255 ? 255 : red), g(green > 255 ? 255 : green), b(blue > 255 ? 255 : blue), a(0xff){};
+        [[nodiscard]] constexpr Color(float red, float green, float blue, int alpha = 0xff)
+            : r(red > 255 ? 255 : red), g(green > 255 ? 255 : green), b(blue > 255 ? 255 : blue), a(alpha > 255 ? 255 : alpha){};
 
         [[nodiscard]] constexpr Color(const float (&color_array)[3]) : r(color_array[0] > 255 ? 255 : color_array[0]), g(color_array[1] > 255 ? 255 : color_array[1]), b(color_array[2] > 255 ? 255 : color_array[2]), a(0xff){};
 
-        
+        [[nodiscard]] constexpr Color(const float (&color_array)[4]) : r(color_array[0] > 255 ? 255 : color_array[0]), g(color_array[1] > 255 ? 255 : color_array[1]), b(color_array[2] > 255 ? 255 : color_array[3]), a(color_array[3] > 255 ? 255 : (int)color_array[3]){};
 
         static constexpr Color create_SDR(float r, float g, float b) noexcept
         {
@@ -140,10 +140,28 @@ namespace COAL
             return os;
         };
 
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] std::string to_json() const noexcept
+        {
+            nlohmann::json j;
+            j["r"] = r;
+            j["g"] = g;
+            j["b"] = b;
+            j["a"] = a;
+            return j.dump();
+        }
+
+        // static deserialize all data from a nlohmann json string object
+        static Color from_json(const std::string &json_string)
+        {
+            nlohmann::json j = nlohmann::json::parse(json_string);
+            return Color(j["r"], j["g"], j["b"], j["a"]);
+        }
+
         float r;
         float g;
         float b;
-        float a;
+        int a;
     };
 
     static constexpr const Color BLACK = Color(0, 0, 0);

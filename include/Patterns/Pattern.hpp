@@ -1,13 +1,18 @@
 #pragma once
 
-#include "Matrix.h"
-#include "Shapes/Shape.h"
-#include "Tuples/Color.h"
-#include "Tuples/Point.h"
+#include "Matrix.hpp"
+#include "Shapes/Shape.hpp"
+#include "Tuples/Color.hpp"
+#include "Tuples/Point.hpp"
 
 namespace COAL
 {
     struct Shape;
+
+    struct Checker;
+    struct Gradient;
+    struct Ring;
+    struct Stripe;
 
     struct Pattern
     {
@@ -45,6 +50,9 @@ namespace COAL
             os << "Pattern(" << pattern.m_first_color << ", " << pattern.m_second_color << ")";
             return os;
         }
+
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] virtual std::string to_json() const noexcept = 0;
 
         COAL::Matrix4 m_transform = COAL::IDENTITY;
         COAL::Color m_first_color = COAL::WHITE;

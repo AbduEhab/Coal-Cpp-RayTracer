@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Patterns/Pattern.h"
-#include "Shapes/Shape.h"
-#include "Tuples/Color.h"
+#include "Patterns/Pattern.hpp"
+#include "Shapes/Shape.hpp"
+#include "Tuples/Color.hpp"
 
 namespace COAL
 {
@@ -225,7 +225,7 @@ namespace COAL
             return *this;
         }
 
-        constexpr Material &set_color(const Color color) noexcept
+        constexpr Material &set_color(const Color &color) noexcept
         {
             m_color = color;
 
@@ -251,6 +251,52 @@ namespace COAL
             m_pattern = pattern;
 
             return *this;
+        }
+
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] std::string to_json() const noexcept
+        {
+            nlohmann::json json_obj;
+            json_obj["color"] = nlohmann::json::parse(m_color.to_json());
+            json_obj["ambient"] = m_ambient;
+            json_obj["diffuse"] = m_diffuse;
+            json_obj["specular"] = m_specular;
+            json_obj["shininess"] = m_shininess;
+            json_obj["reflectiveness"] = m_reflectiveness;
+            json_obj["transparency"] = m_transparency;
+            json_obj["refractive index"] = m_refractive_index;
+
+            if (m_pattern)
+            {
+                json_obj["pattern"] = nlohmann::json::parse(m_pattern->to_json());
+            }
+            else
+            {
+                json_obj["pattern"] = nullptr;
+            }
+            return json_obj.dump();
+        }
+
+        // static deserialize all data from a nlohmann json string object
+        static Material from_json(const std::string &json_str)
+        {
+            nlohmann::json json_obj = nlohmann::json::parse(json_str);
+            Color color = Color::from_json(json_obj["color"].dump());
+            float ambient = json_obj["ambient"];
+            float diffuse = json_obj["diffuse"];
+            float specular = json_obj["specular"];
+            float shininess = json_obj["shininess"];
+            float reflectiveness = json_obj["reflectiveness"];
+            float transparency = json_obj["transparency"];
+            float refractive_index = json_obj["refractive index"];
+            std::shared_ptr<Pattern> pattern;
+            if (json_obj["pattern"] != nullptr)
+            {
+                // pattern = Pattern::from_json(json_obj["pattern"].dump());
+                pattern = nullptr;
+            }
+            return Material(color, ambient, diffuse, specular, shininess, pattern, reflectiveness, transparency,
+                            refractive_index);
         }
 
     private:

@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Computation.h"
-#include "Constants.h"
-#include "Intersection.h"
-#include "Lights/Light.h"
-#include "Lights/PointLight.h"
-#include "Matrix.h"
-#include "Shapes/Shape.h"
-#include "Shapes/Sphere.h"
-#include "Tuples/Color.h"
-#include "Tuples/Point.h"
-#include "Tuples/Vector.h"
+#include "Computation.hpp"
+#include "Constants.hpp"
+#include "Intersection.hpp"
+#include "Lights/Light.hpp"
+#include "Lights/PointLight.hpp"
+#include "Matrix.hpp"
+#include "Shapes/Shape.hpp"
+#include "Shapes/Sphere.hpp"
+#include "Tuples/Color.hpp"
+#include "Tuples/Point.hpp"
+#include "Tuples/Vector.hpp"
 
 namespace COAL
 {
@@ -133,7 +133,7 @@ namespace COAL
                 if (sin2_t > 1.0)
                     return Color();
 
-                float cos_t = (float) sqrt(1.0 - sin2_t);
+                float cos_t = (float)sqrt(1.0 - sin2_t);
 
                 Vector direction = comp.m_normal_vector * (n_ratio * cos_i - cos_t) - comp.m_eye_vector * n_ratio;
 
@@ -178,43 +178,47 @@ namespace COAL
         // add shapes
         void add_shape(const std::shared_ptr<Shape> &shape)
         {
-            PROFILE_FUNCTION();
-
             m_shapes.emplace_back(shape);
         }
 
         // add shapes
         void add_shapes(const std::vector<std::shared_ptr<Shape>> &shapes)
         {
-            PROFILE_FUNCTION();
-
             m_shapes.insert(m_shapes.end(), shapes.begin(), shapes.end());
         }
 
         // add light
         void add_light(const std::shared_ptr<Light> &light)
         {
-            PROFILE_FUNCTION();
-
             m_lights.emplace_back(light);
         }
 
         // add lights
         void add_lights(const std::vector<std::shared_ptr<Light>> &lights)
         {
-            PROFILE_FUNCTION();
-
             m_lights.insert(m_lights.end(), lights.begin(), lights.end());
         }
 
         // get shapes
-        std::vector<std::shared_ptr<Shape>> &get_shapes()
+        _nodiscard std::vector<std::shared_ptr<Shape>> &get_shapes()
         {
             return m_shapes;
         }
 
         // get lights
-        std::vector<std::shared_ptr<Light>> &get_lights()
+        _nodiscard std::vector<std::shared_ptr<Light>> &get_lights()
+        {
+            return m_lights;
+        }
+
+        // get shapes
+        _nodiscard const std::vector<std::shared_ptr<Shape>> &get_shapes() const
+        {
+            return m_shapes;
+        }
+
+        // get lights
+        _nodiscard const std::vector<std::shared_ptr<Light>> &get_lights() const
         {
             return m_lights;
         }
@@ -229,6 +233,55 @@ namespace COAL
         void set_max_depth(const int max_depth)
         {
             MAX_DEPTH = max_depth;
+        }
+
+        // save scene from file as json
+        void load_scene(const std::string &file_name) const
+        {
+        }
+
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] std::string to_json() const noexcept
+        {
+            nlohmann::json json;
+
+            json["max_depth"] = MAX_DEPTH;
+
+            nlohmann::json lights_json;
+            for (const auto &light : m_lights)
+                lights_json.emplace_back(nlohmann::json::parse(light->to_json()));
+            json["lights"] = lights_json;
+
+            nlohmann::json shapes_json;
+            for (const auto &shape : m_shapes)
+                shapes_json.emplace_back(nlohmann::json::parse(shape->to_json()));
+            json["shapes"] = shapes_json;
+
+            return json.dump();
+        }
+
+        // deserialize all data from a json string object
+        void from_json(const std::string &json_string)
+        {
+            // nlohmann::json json = nlohmann::json::parse(json_string);
+
+            // MAX_DEPTH = json["max_depth"];
+
+            // for (const auto &light_json : json["lights"])
+            // {
+            //     if (light_json["type"] == "PointLight")
+            //     {
+            //         m_lights.emplace_back(std::make_shared<PointLight>(light_json));
+            //     }
+            // }
+
+            // for (const auto &shape_json : json["shapes"])
+            // {
+            //     if (shape_json["type"] == "Sphere")
+            //         m_shapes.emplace_back(std::make_shared<Sphere>(shape_json));
+            //     else if (shape_json["type"] == "XZPlane")
+            //         m_shapes.emplace_back(std::make_shared<XZPlane>(shape_json));
+            // }
         }
 
     private:

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Computation.h"
-#include "Constants.h"
-#include "Ray.h"
-#include "Shapes/Shape.h"
-#include "Tuples/Point.h"
-#include "Tuples/Vector.h"
+#include "Computation.hpp"
+#include "Constants.hpp"
+#include "Ray.hpp"
+#include "Shapes/Shape.hpp"
+#include "Tuples/Point.hpp"
+#include "Tuples/Vector.hpp"
 
 namespace COAL
 {

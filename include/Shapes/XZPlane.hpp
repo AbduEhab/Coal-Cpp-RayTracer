@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Constants.h>
-#include <Intersection.h>
-#include <Material.h>
-#include <Ray.h>
-#include <Tuples/Point.h>
-#include <Tuples/Vector.h>
+#include <Constants.hpp>
+#include <Intersection.hpp>
+#include <Material.hpp>
+#include <Ray.hpp>
+#include <Tuples/Point.hpp>
+#include <Tuples/Vector.hpp>
 
 struct Intersection;
 
@@ -15,13 +15,7 @@ namespace COAL
     {
         _nodiscard XZPlane() = default;
 
-        ~XZPlane()  = default;
-
-        // // generate default copy constructor nad move constructor
-        // XZPlane(const XZPlane &) = default;
-        // XZPlane(XZPlane &&) = default;
-
-
+        ~XZPlane() = default;
 
         [[nodiscard]] std::vector<Intersection> intersects(const Ray &ray) const
         {
@@ -63,6 +57,20 @@ namespace COAL
         [[nodiscard]] const char *get_name() const override
         {
             return "XZPlane ";
+        }
+
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] std::string to_json() const noexcept
+        {
+            nlohmann::json j;
+
+            j["type"] = "XZPlane";
+            j["translation"] = nlohmann::json::parse(get_translation().to_json());
+            j["scale"] = nlohmann::json::parse(get_scale().to_json());
+            j["rotation"] = nlohmann::json::parse(get_rotations().to_json());
+            j["material"] = nlohmann::json::parse(get_material().to_json());
+
+            return j.dump(4);
         }
     };
 }; // namespace COAL

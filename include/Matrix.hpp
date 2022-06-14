@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Constants.h"
-#include "Tuples/Point.h"
-#include "Tuples/Vector.h"
+#include "Constants.hpp"
+#include "Tuples/Point.hpp"
+#include "Tuples/Vector.hpp"
 
 namespace COAL
 {
@@ -54,12 +54,6 @@ namespace COAL
             this->_matrix[3][2] = a32;
             this->_matrix[3][3] = a33;
         }
-
-        // // [][] operator
-        // [[nodiscard]] constexpr float &operator[](const int index) noexcept
-        // {
-        //     return this->_matrix[index / 4][index % 4];
-        // }
 
         // [] operator
         [[nodiscard]] constexpr float *operator[](const int index) noexcept
@@ -403,8 +397,8 @@ namespace COAL
         {
             std::vector<std::vector<float>> rotate_x_values = {
                 {1, 0, 0, 0},
-                {0, std::cos(radians), -std::sin(std::cos(radians)), 0},
-                {0, std::sin(std::cos(radians)), std::cos(radians), 0},
+                {0, std::cos(radians), -std::sin(radians), 0},
+                {0, std::sin(radians), std::cos(radians), 0},
                 {0, 0, 0, 1},
             };
 
@@ -475,6 +469,40 @@ namespace COAL
             }
 
             return is;
+        }
+
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] std::string to_json() const noexcept
+        {
+            nlohmann::json json_matrix;
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    json_matrix[i][j] = _matrix[i][j];
+                }
+            }
+
+            return json_matrix.dump();
+        }
+
+        // static deserialize all data from a nlohmann json string object
+        static Matrix4 from_json(const std::string &json_string)
+        {
+            nlohmann::json json_matrix = nlohmann::json::parse(json_string);
+
+            Matrix4 matrix;
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    matrix._matrix[i][j] = json_matrix[i][j];
+                }
+            }
+
+            return matrix;
         }
 
     private:

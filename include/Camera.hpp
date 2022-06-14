@@ -1,20 +1,21 @@
 #pragma once
 
-#include "Constants.h"
-#include "Matrix.h"
-#include "Tuples/Color.h"
-#include "Tuples/Point.h"
-#include "Tuples/Vector.h"
-#include "World.h"
+#include "Constants.hpp"
+#include "Matrix.hpp"
+#include "Tuples/Color.hpp"
+#include "Tuples/Point.hpp"
+#include "Tuples/Vector.hpp"
+#include "World.hpp"
 
 namespace COAL
 {
     struct Camera
     {
 
-        _nodiscard Camera(int width, int height, float fov) : m_width(width), m_height(height), m_field_of_view(fov), m_half_height(0), m_half_width(0), m_pixel_size(0)
+        _nodiscard Camera(int width, int height, float fov, Matrix4 transform = COAL::IDENTITY) : m_width(width), m_height(height), m_field_of_view(fov), m_transform(transform)
         {
             set_pixel_size();
+            m_transform = m_transform.inverse();
         }
 
         _nodiscard void set_pixel_size()
@@ -40,8 +41,6 @@ namespace COAL
 
         _nodiscard void transform(const Point &from, const Point &to, const Vector &up)
         {
-            PROFILE_FUNCTION();
-
             Vector forword = (to - from).normalize();
 
             Vector left = forword.cross(up).normalize();
@@ -146,7 +145,7 @@ namespace COAL
                 const int index = i;
 
                 threads.push_back(std::thread([&, index]()
-                                                                            {
+                                              {
                     for (int y = index; y < m_height; y += thread_count)
                     {
                         debug_print(">> Thread {" + std::to_string(index + 1) + "}: Calculating Row: [" + std::to_string(y + 1) + '/' + std::to_string(m_height) + "]");
@@ -260,6 +259,34 @@ namespace COAL
         void constexpr set_inverse_transform(const Matrix4 &inverse_transform)
         {
             m_inverse_transform = inverse_transform;
+        }
+
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] std::string to_json() const noexcept
+        {
+            nlohmann::json j;
+
+            j["width"] = m_width;
+            j["height"] = m_height;
+            j["field_of_view"] = m_field_of_view;
+            j["transform"] = nlohmann::json::parse(m_transform.to_json());
+            j["inverse_transform"] = nlohmann::json::parse(m_inverse_transform.to_json());
+
+            return j.dump();
+        }
+
+        // deserialize all data from a json string object
+        void from_json(const std::string &json)
+        {
+            nlohmann::json j = nlohmann::json::parse(json);
+
+            m_width = j["width"];
+            m_height = j["height"];
+            m_field_of_view = j["field_of_view"];
+            m_transform = Matrix4::from_json(j["transform"].dump());
+            m_inverse_transform = Matrix4::from_json(j["inverse_transform"].dump());
+
+            set_pixel_size();
         }
 
     private:

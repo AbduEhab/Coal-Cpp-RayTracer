@@ -1,20 +1,20 @@
 #pragma once
 
-#include "Vector.h"
+#include "Vector.hpp"
 
 namespace COAL
 {
     struct Point
     {
-        [[nodiscard]] constexpr Point() : x(0), y(0), z(0), w(1){};
+        [[nodiscard]] constexpr Point() : x(0), y(0), z(0){};
 
-        [[nodiscard]] constexpr Point(float x, float y, float z) : x(x), y(y), z(z), w(1){};
+        [[nodiscard]] constexpr Point(float x, float y, float z) : x(x), y(y), z(z){};
 
-        [[nodiscard]] constexpr Point(const float (&vector_array)[3]) : x(vector_array[0]), y(vector_array[1]), z(vector_array[2]), w(1){};
+        [[nodiscard]] constexpr Point(const float (&vector_array)[3]) : x(vector_array[0]), y(vector_array[1]), z(vector_array[2]){};
 
         [[nodiscard]] bool operator==(const Point &rhs) const noexcept
         {
-            return (std::abs(x - rhs.x) <= kEpsilon) && (std::abs(y - rhs.y) <= kEpsilon) && (std::abs(z - rhs.z) <= kEpsilon) && (rhs.w == 1);
+            return (std::abs(x - rhs.x) <= kEpsilon) && (std::abs(y - rhs.y) <= kEpsilon) && (std::abs(z - rhs.z) <= kEpsilon);
         }
 
         [[nodiscard]] constexpr Point &operator+=(const float rhs) noexcept
@@ -22,7 +22,6 @@ namespace COAL
             x = x + rhs;
             y = x + rhs;
             z = x + rhs;
-            w = w + rhs;
             return *this;
         }
 
@@ -141,10 +140,27 @@ namespace COAL
             return os;
         };
 
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] std::string to_json() const noexcept
+        {
+            nlohmann::json j;
+            j["x"] = x;
+            j["y"] = y;
+            j["z"] = z;
+            return j.dump();
+        }
+
+        // static deserialize all data from a nlohmann json string object
+        static Point from_json(const std::string &json_string)
+        {
+            nlohmann::json j = nlohmann::json::parse(json_string);
+            return Point(j["x"], j["y"], j["z"]);
+        }
+        
+
         float x;
         float y;
         float z;
-        float w;
     };
 
 }

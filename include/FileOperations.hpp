@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Constants.h"
-#include "Tuples/Color.h"
+#include "Constants.hpp"
+#include "Tuples/Color.hpp"
 
 namespace COAL
 {

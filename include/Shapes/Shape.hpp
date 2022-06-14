@@ -1,24 +1,24 @@
 #pragma once
 
-#include "Constants.h"
-#include "Intersection.h"
-#include "Material.h"
-#include "Matrix.h"
-#include "Ray.h"
-#include "Tuples/Point.h"
-#include "Tuples/Vector.h"
+#include "Constants.hpp"
+#include "Intersection.hpp"
+#include "Material.hpp"
+#include "Matrix.hpp"
+#include "Ray.hpp"
+#include "Tuples/Point.hpp"
+#include "Tuples/Vector.hpp"
 
 namespace COAL
 {
 
     struct Intersection;
 
+    struct Checker;
+
     struct Shape
     {
 
         [[nodiscard]] virtual std::vector<Intersection> intersects(const Ray &ray) const = 0;
-
-        ~Shape() = default;
 
         [[nodiscard]] virtual Vector normal_at(const Point &p) const = 0;
 
@@ -63,7 +63,7 @@ namespace COAL
             return *this;
         }
 
-        Shape &transform(const float (&translation)[3], const float (&rotation)[3], const float (&scale)[3])
+        Shape &transform_no_rotation(const float (&translation)[3], const float (&rotation)[3], const float (&scale)[3])
         {
             m_translation = Vector((float)translation[0], (float)translation[1], (float)translation[2]);
             m_rotation_x = rotation[0];
@@ -79,6 +79,22 @@ namespace COAL
             return *this;
         }
 
+        Shape &transform(const float (&translation)[3], const float (&rotation)[3], const float (&scale)[3])
+        {
+            m_translation = Vector((float)translation[0], (float)translation[1], (float)translation[2]);
+            m_rotation_x = rotation[0];
+            m_rotation_y = rotation[1];
+            m_rotation_z = rotation[2];
+            m_scale = Vector(scale[0], scale[1], scale[2]);
+
+            m_transform = COAL::IDENTITY.translate(translation[0], translation[1], translation[2]).scale(scale[0], scale[1], scale[2]).rotate(m_rotation_x, m_rotation_y, m_rotation_z);
+            m_inverse_transform = m_transform.inverse();
+            m_normal_transform = m_inverse_transform.transpose();
+            m_inverse_normal_transform = m_normal_transform.inverse();
+
+            return *this;
+        }
+
         Shape &transform_deg(const float (&translation)[3], const float (&rotation)[3], const float (&scale)[3])
         {
             m_translation = Vector((float)translation[0], (float)translation[1], (float)translation[2]);
@@ -87,7 +103,7 @@ namespace COAL
             m_rotation_z = rotation[2] * (float)std::numbers::pi / 180.0f;
             m_scale = Vector(scale[0], scale[1], scale[2]);
 
-            m_transform = COAL::IDENTITY.translate(translation[0], translation[1], translation[2]).scale(scale[0], scale[1], scale[2]);
+            m_transform = COAL::IDENTITY.translate(translation[0], translation[1], translation[2]).scale(scale[0], scale[1], scale[2]).rotate(m_rotation_x, m_rotation_y, m_rotation_z);
             m_inverse_transform = m_transform.inverse();
             m_normal_transform = m_inverse_transform.transpose();
             m_inverse_normal_transform = m_normal_transform.inverse();
@@ -212,6 +228,9 @@ namespace COAL
             return m_rotation_z;
         }
 
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] virtual std::string to_json() const noexcept = 0;
+
     private:
         // private:
         COAL::Material m_material = COAL::Material();
@@ -235,4 +254,5 @@ namespace COAL
 
         return color_at(pattern_point);
     }
+
 } // namespace COAL

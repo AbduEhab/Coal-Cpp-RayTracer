@@ -83,7 +83,15 @@
     "random": "cpp",
     "set": "cpp",
     "condition_variable": "cpp",
-    "future": "cpp"
+    "future": "cpp",
+    "any": "cpp",
+    "csignal": "cpp",
+    "numeric": "cpp",
+    "ranges": "cpp",
+    "span": "cpp",
+    "valarray": "cpp",
+    "variant": "cpp",
+    "codecvt": "cpp"
   },
   "cmake.configureSettings": {
     "CMAKE_BUILD_TYPE": "${buildType}"

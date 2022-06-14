@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Shapes/Shape.h"
-#include "Tuples/Point.h"
-#include "Tuples/Vector.h"
+#include "Shapes/Shape.hpp"
+#include "Tuples/Point.hpp"
+#include "Tuples/Vector.hpp"
 
 struct Shape;
 

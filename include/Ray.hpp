@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Tuples/Point.h"
-#include "Tuples/Vector.h"
+#include "Tuples/Point.hpp"
+#include "Tuples/Vector.hpp"
 
 namespace COAL
 {

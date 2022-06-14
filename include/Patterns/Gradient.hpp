@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Shapes/Shape.h"
-#include "Tuples/Color.h"
-#include "Tuples/Point.h"
+#include "Shapes/Shape.hpp"
+#include "Tuples/Color.hpp"
+#include "Tuples/Point.hpp"
 
 namespace COAL
 {
-    struct Gradient : publuc Pattern
+    struct Gradient : public Pattern
     {
         [[nodiscard]] constexpr Gradient() : Pattern() {}
 
@@ -35,10 +35,30 @@ namespace COAL
             return m_first_color + distance * fraction;
         }
 
-        // == operator
-        friend bool operator==(const Pattern &lhs, const Pattern &rhs)
+        // // == operator
+        // friend bool operator==(const Pattern &lhs, const Pattern &rhs)
+        // {
+        //     const auto other_gradient = dynamic_cast<const Gradient *>(&rhs);
+        // }
+
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] std::string to_json() const noexcept
         {
-            const auto other_gradient = dynamic_cast<const Gradient *>(&rhs);
+            nlohmann::json json;
+            json["type"] = "Gradient";
+            json["first_color"] = nlohmann::json::parse(m_first_color.to_json());
+            json["second_color"] = nlohmann::json::parse(m_second_color.to_json());
+            json["transform"] = nlohmann::json::parse(m_transform.to_json());
+            return json.dump();
+        }
+
+        // static deserialize all data from a nlohmann json string object
+        static std::shared_ptr<Pattern> from_json(const nlohmann::json &json)
+        {
+            auto first_color = Color::from_json(json["first_color"]);
+            auto second_color = Color::from_json(json["second_color"]);
+            auto transform = Matrix4::from_json(json["transform"]);
+            return std::make_shared<Gradient>(first_color, second_color, transform);
         }
     };
 } // namespace COAL

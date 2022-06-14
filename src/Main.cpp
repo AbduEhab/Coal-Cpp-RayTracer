@@ -1,4 +1,4 @@
-#include "COAL.h"
+#include "COAL.hpp"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -23,8 +23,8 @@
     auto light = std::make_shared<COAL::PointLight>(COAL::PointLight());                                                                                                      \
     light->set_intensity(COAL::Color((float)255, (float)255, (float)255)).set_position(COAL::Point((float)-10, (float)10, (float)-10));
 
-auto camera = COAL::Camera(800, 600, (float)std::numbers::pi / 3);
-auto world = COAL::World();
+auto scene = COAL::Scene(COAL::Camera(800, 600, (float)std::numbers::pi / 3), COAL::World());
+
 std::shared_ptr<COAL::Color[]> canvas;
 std::thread render_thread;
 
@@ -41,13 +41,26 @@ public:
     virtual void OnUIRender() override
     {
 
-        ImGui::ShowDemoWindow();
+        // ImGui::ShowDemoWindow();
+
         ImGui::Begin("World Outline");
+
+        {
+            if (ImGui::Button("Load Scene"))
+            {
+                scene.load_scene("scene.json");
+            }
+
+            if (ImGui::Button("Save Scene"))
+            {
+                scene.save_scene("scene.json");
+            }
+        }
 
         static size_t selected = 0;
 
-        auto shapes = world.get_shapes();
-        auto lights = world.get_lights();
+        auto shapes = scene.m_world.get_shapes();
+        auto lights = scene.m_world.get_lights();
 
         if (ImGui::TreeNode("Objects"))
         {
@@ -110,9 +123,9 @@ public:
                             ImGui::Separator();
                             ImGui::Text("Rotation");
 
-                            ImGui::SliderFloat("RX", &rotation[0], -180, 180);
-                            ImGui::SliderFloat("RY", &rotation[1], -180, 180);
-                            ImGui::SliderFloat("RZ", &rotation[2], -180, 180);
+                            ImGui::SliderFloat("RX", &rotation[0], (float)-std::numbers::pi, (float)std::numbers::pi);
+                            ImGui::SliderFloat("RY", &rotation[1], (float)-std::numbers::pi, (float)std::numbers::pi);
+                            ImGui::SliderFloat("RZ", &rotation[2], (float)-std::numbers::pi, (float)std::numbers::pi);
 
                             ImGui::Separator();
                             ImGui::Text("Scale");
@@ -200,22 +213,22 @@ public:
             if (ImGui::TreeNode("Render Settings"))
             {
                 {
-                    auto v_size = camera.get_height();
-                    auto h_size = camera.get_width();
+                    auto v_size = scene.m_camera.get_height();
+                    auto h_size = scene.m_camera.get_width();
 
                     float size[2] = {(float)h_size, (float)v_size};
 
                     ImGui::InputFloat2("Render Resolution", (float *)&size);
 
-                    camera.set_width((int)size[0]);
-                    camera.set_height((int)size[1]);
+                    scene.m_camera.set_width((int)size[0]);
+                    scene.m_camera.set_height((int)size[1]);
                 }
 
-                auto render_depth = world.get_max_depth();
+                auto render_depth = scene.m_world.get_max_depth();
 
                 ImGui::SliderInt("Render Depth", &render_depth, 0, 10);
 
-                world.set_max_depth(render_depth);
+                scene.m_world.set_max_depth(render_depth);
 
                 ImGui::TreePop(); // Render Settings
             }
@@ -238,7 +251,7 @@ public:
             {
                 COAL::Timer timer;
 
-                COAL::save_image(canvas, camera.get_width(), camera.get_height(), "render.png");
+                COAL::save_image(canvas, scene.m_camera.get_width(), scene.m_camera.get_height(), "render.png");
 
                 is_file_saved = true;
 
@@ -256,8 +269,8 @@ public:
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::Begin("Editor");
 
-        m_ViewportWidth = camera.get_width();
-        m_ViewportHeight = camera.get_height();
+        m_ViewportWidth = scene.m_camera.get_width();
+        m_ViewportHeight = scene.m_camera.get_height();
 
         if (m_Image)
             ImGui::Image(m_Image->GetDescriptorSet(), {(float)m_Image->GetWidth(), (float)m_Image->GetHeight()});
@@ -268,16 +281,18 @@ public:
 
     void Render()
     {
+        PROFILE_FUNCTION();
+
         COAL::Timer timer;
 
         is_first_render = false;
 
         // auto a2 = std::async([&]()
-        //                      { return camera.classic_render_multi_threaded(world); });
+        //                      { return scene.m_camera.classic_render_multi_threaded(world); });
 
         // canvas = a2.get();
 
-        canvas = camera.classic_render_multi_threaded(world);
+        canvas = scene.m_camera.classic_render_multi_threaded(scene.m_world);
 
         if (!m_Image || m_ViewportWidth != m_Image->GetWidth() || m_ViewportHeight != m_Image->GetHeight())
         {
@@ -286,7 +301,7 @@ public:
             m_ImageData = new uint32_t[m_ViewportWidth * m_ViewportHeight];
         }
 
-        if (camera.is_finished())
+        if (scene.m_camera.is_finished())
         {
             for (uint32_t i = 0; i < m_ViewportWidth * m_ViewportHeight; i++)
             {
@@ -319,17 +334,33 @@ private:
 Walnut::Application *Walnut::CreateApplication(_maybe_unused int argc, _maybe_unused char **argv)
 {
 
-    Instrumentor::Get().beginSession("main");
+    Instrumentor::Get().beginSession("Main thread");
 
-    setup_world();
+    auto floor = std::make_shared<COAL::XZPlane>(COAL::XZPlane());
+    floor->get_material().set_color(COAL::Color(1.0f, 0.9f, 0.9f)).set_specular(0).set_reflectiveness(0.3f);
 
-    world.add_shapes({floor, middle_sphere, right_sphere, left_sphere});
-    world.add_lights({light});
+    auto middle_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());
+    middle_sphere->get_material().set_color(COAL::Color(0.0f, 0.0f, 0.0f)).set_specular(1).set_diffuse(0.1f).set_reflectiveness(0.3f).set_shininess(300).set_transparency(1);
+    middle_sphere->translate(-0.5f, 1.0f, 0.5f);
 
-    camera.transform(COAL::Point(0, 1.5, -5), COAL::Point(0, 1, 0), COAL::Vector(0, 1, 0));
+    auto right_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());
+    right_sphere->get_material().set_color(COAL::Color(0.5f, 1.0f, 0.1f)).set_specular(0.3f).set_diffuse(0.7f).set_reflectiveness(0.3f);
+    right_sphere->translate(1.5f, 0.5f, -0.5f).scale(0.5f, 0.5f, 0.5f);
+
+    auto left_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());
+    left_sphere->get_material().set_color(COAL::Color(1, 0.8f, 0.1f)).set_specular(0.3f).set_diffuse(0.7f).set_reflectiveness(0.3f);
+    left_sphere->translate(-1.5f, 0.33f, -0.75f).scale(0.33f, 0.33f, 0.33f);
+
+    auto light = std::make_shared<COAL::PointLight>(COAL::PointLight());
+    light->set_intensity(COAL::Color((float)255, (float)255, (float)255)).set_position(COAL::Point((float)-10, (float)10, (float)-10));
+
+    scene.m_world.add_shapes({floor, middle_sphere, right_sphere, left_sphere});
+    scene.m_world.add_lights({light});
+
+    scene.m_camera.transform(COAL::Point(0, 1.5, -5), COAL::Point(0, 1, 0), COAL::Vector(0, 1, 0));
 
     Walnut::ApplicationSpecification spec;
-    spec.Name = "Ray Tracing";
+    spec.Name = "COAL Raytracer";
 
     Walnut::Application *app = new Walnut::Application(spec);
     app->PushLayer<MainLayer>();
@@ -357,12 +388,12 @@ int main()
 
     setup_world();
 
-    world.add_shapes({floor, middle_sphere, right_sphere, left_sphere});
-    world.add_lights({light});
+    scene.m_world.add_shapes({floor, middle_sphere, right_sphere, left_sphere});
+    scene.m_world.add_lights({light});
 
-    camera.transform(COAL::Point(0, 1.5, -5), COAL::Point(0, 1, 0), COAL::Vector(0, 1, 0));
+    scene.m_camera.transform(COAL::Point(0, 1.5, -5), COAL::Point(0, 1, 0), COAL::Vector(0, 1, 0));
 
-    canvas = camera.classic_render_multi_threaded(world, 4);
+    canvas = scene.m_camera.classic_render_multi_threaded(world, 4);
 
     Instrumentor::Get().endSession();
 
@@ -372,12 +403,12 @@ int main()
     HDC mydc = GetDC(myconsole);
 
     // Draw pixels
-    for (int16_t i = 0; i < camera.get_width(); i++)
+    for (int16_t i = 0; i < scene.m_camera.get_width(); i++)
     {
 
-        for (int16_t j = 0; j < camera.get_height(); j++)
+        for (int16_t j = 0; j < scene.m_camera.get_height(); j++)
         {
-            COLORREF COLOR = RGB(canvas.get()[j * camera.get_width() + i].r, canvas.get()[j * camera.get_width() + i].g, canvas.get()[j * camera.get_width() + i].b);
+            COLORREF COLOR = RGB(canvas.get()[j * scene.m_camera.get_width() + i].r, canvas.get()[j * scene.m_camera.get_width() + i].g, canvas.get()[j * scene.m_camera.get_width() + i].b);
 
             SetPixel(mydc, i, j, COLOR);
         }

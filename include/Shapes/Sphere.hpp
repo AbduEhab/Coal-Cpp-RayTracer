@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Constants.h>
-#include <Intersection.h>
-#include <Material.h>
-#include <Matrix.h>
-#include <Ray.h>
-#include <Shapes/Shape.h>
-#include <Tuples/Point.h>
-#include <Tuples/Vector.h>
+#include <Constants.hpp>
+#include <Intersection.hpp>
+#include <Material.hpp>
+#include <Matrix.hpp>
+#include <Ray.hpp>
+#include <Shapes/Shape.hpp>
+#include <Tuples/Point.hpp>
+#include <Tuples/Vector.hpp>
 
 struct Intersection;
 
@@ -17,12 +17,6 @@ namespace COAL
     {
 
         _nodiscard Sphere() = default;
-
-        ~Sphere() = default;
-
-        // generate default copy and move constructors
-        Sphere(const Sphere &) = default;
-        Sphere(Sphere &&) = default;
 
         _nodiscard std::vector<Intersection> intersects(const Ray &ray) const
         {
@@ -84,6 +78,36 @@ namespace COAL
         _nodiscard const char *get_name() const override
         {
             return "Sphere ";
+        }
+
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] std::string to_json() const noexcept
+        {
+            nlohmann::json j;
+
+            j["type"] = "Sphere";
+            j["translation"] = nlohmann::json::parse(get_translation().to_json());
+            j["scale"] = nlohmann::json::parse(get_scale().to_json());
+            j["rotation"] = nlohmann::json::parse(get_rotations().to_json());
+            j["material"] = nlohmann::json::parse(get_material().to_json());
+
+            return j.dump();
+        }
+
+        // deserialize all data from a nlohmann json string object
+        void from_json(const nlohmann::json &json) noexcept
+        {
+            Point translation = Point::from_json(json["translation"]);
+            Point scale = Point::from_json(json["scale"]);
+            Point rotation = Point::from_json(json["rotation"]);
+
+            float translationf[3] = {translation.x, translation.y, translation.z};
+            float scalef[3] = {scale.x, scale.y, scale.z};
+            float rotationf[3] = {rotation.x, rotation.y, rotation.z};
+
+            transform(translationf, scalef, rotationf);
+
+            set_material(Material::from_json(json["material"]));
         }
     };
 

@@ -22,11 +22,12 @@
 #include <utility>
 #include <vector>
 #include "stb_image_write.h"
+#include "json.hpp"
 
 #define PROFILING 0
 
-#include "Profiling/Instrumentor.h"
-#include "Profiling/Timer.h"
+#include "Profiling/Instrumentor.hpp"
+#include "Profiling/Timer.hpp"
 
 // DEBUG MACROS
 #ifdef DEBUG
