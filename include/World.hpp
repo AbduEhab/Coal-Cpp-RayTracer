@@ -263,25 +263,25 @@ namespace COAL
         // deserialize all data from a json string object
         void from_json(const std::string &json_string)
         {
-            // nlohmann::json json = nlohmann::json::parse(json_string);
+            nlohmann::json json = nlohmann::json::parse(json_string);
 
-            // MAX_DEPTH = json["max_depth"];
+            MAX_DEPTH = json["max_depth"];
 
-            // for (const auto &light_json : json["lights"])
-            // {
-            //     if (light_json["type"] == "PointLight")
-            //     {
-            //         m_lights.emplace_back(std::make_shared<PointLight>(light_json));
-            //     }
-            // }
+            for (const auto &light_json : json["lights"])
+            {
+                if (light_json["type"] == "PointLight")
+                {
+                    m_lights.emplace_back(std::make_shared<PointLight>(light_json));
+                }
+            }
 
-            // for (const auto &shape_json : json["shapes"])
-            // {
-            //     if (shape_json["type"] == "Sphere")
-            //         m_shapes.emplace_back(std::make_shared<Sphere>(shape_json));
-            //     else if (shape_json["type"] == "XZPlane")
-            //         m_shapes.emplace_back(std::make_shared<XZPlane>(shape_json));
-            // }
+            for (const auto &shape_json : json["shapes"])
+            {
+                if (shape_json["type"] == "Sphere")
+                    m_shapes.emplace_back(std::make_shared<Sphere>(shape_json));
+                else if (shape_json["type"] == "XZPlane")
+                    m_shapes.emplace_back(std::make_shared<XZPlane>(shape_json));
+            }
         }
 
     private:

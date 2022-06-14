@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Constants.h"
-#include "./Tuples/Color.h"
-#include "./Tuples/Vector.h"
+#include "../Constants.hpp"
+#include "./Tuples/Color.hpp"
+#include "./Tuples/Vector.hpp"
 
 namespace COAL
 {
@@ -53,6 +53,9 @@ namespace COAL
         }
 
         _nodiscard virtual const char *get_name() const = 0;
+
+        // serialize all data to a nlohmann json string object
+        [[nodiscard]] virtual std::string to_json() const noexcept = 0;
 
         COAL::Color m_intensity;
         COAL::Point m_position;
