@@ -4,6 +4,11 @@
 #include "Shapes/Shape.hpp"
 #include "Tuples/Color.hpp"
 
+// #include "Patterns/Gradient.hpp"
+// #include "Patterns/Checker.hpp"
+// #include "Patterns/Ring.hpp"
+// #include "Patterns/Stripe.hpp"
+
 namespace COAL
 {
 
@@ -52,7 +57,7 @@ namespace COAL
                 std::cout << "invalid specular recived " << __FUNCTION__ << std::endl;
             }
 
-            if (shininess >= 0 && shininess <= 1)
+            if (shininess >= 0 && shininess <= 200)
             {
                 this->m_shininess = shininess;
             }
@@ -191,7 +196,7 @@ namespace COAL
 
         constexpr Material &set_shininess(const float shininess) noexcept
         {
-            if (shininess >= 0)
+            if (shininess >= 0 && shininess <= 200)
             {
                 this->m_shininess = shininess;
             }
@@ -281,6 +286,7 @@ namespace COAL
         static Material from_json(const std::string &json_str)
         {
             nlohmann::json json_obj = nlohmann::json::parse(json_str);
+
             Color color = Color::from_json(json_obj["color"].dump());
             float ambient = json_obj["ambient"];
             float diffuse = json_obj["diffuse"];
@@ -292,7 +298,25 @@ namespace COAL
             std::shared_ptr<Pattern> pattern;
             if (json_obj["pattern"] != nullptr)
             {
-                // pattern = Pattern::from_json(json_obj["pattern"].dump());
+                // if (json_obj["pattern"] == "Checker")
+                // {
+                //     pattern = Checker::from_json(json_obj["pattern"].dump()));
+                // }
+                // else if (json_obj["pattern"] == "Stripe")
+                // {
+                //     pattern = Stripe::from_json(json_obj["pattern"].dump()));
+                // }
+                // else if (json_obj["pattern"] == "Ring")
+                // {
+                //     pattern = Ring::from_json(json_obj["pattern"].dump()));
+                // }
+                // else if (json_obj["pattern"] == "Gradient")
+                // {
+                //     pattern = Gradient::from_json(json_obj["pattern"].dump()));
+                // }
+            }
+            else
+            {
                 pattern = nullptr;
             }
             return Material(color, ambient, diffuse, specular, shininess, pattern, reflectiveness, transparency,

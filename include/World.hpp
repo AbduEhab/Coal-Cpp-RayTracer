@@ -263,6 +263,10 @@ namespace COAL
         // deserialize all data from a json string object
         void from_json(const std::string &json_string)
         {
+
+            m_shapes.clear();
+            m_lights.clear();
+
             nlohmann::json json = nlohmann::json::parse(json_string);
 
             MAX_DEPTH = json["max_depth"];
@@ -271,16 +275,16 @@ namespace COAL
             {
                 if (light_json["type"] == "PointLight")
                 {
-                    m_lights.emplace_back(std::make_shared<PointLight>(light_json));
+                    m_lights.emplace_back(PointLight::from_json(light_json.dump()));
                 }
             }
 
             for (const auto &shape_json : json["shapes"])
             {
                 if (shape_json["type"] == "Sphere")
-                    m_shapes.emplace_back(std::make_shared<Sphere>(shape_json));
+                    m_shapes.emplace_back(Sphere::from_json(shape_json.dump()));
                 else if (shape_json["type"] == "XZPlane")
-                    m_shapes.emplace_back(std::make_shared<XZPlane>(shape_json));
+                    m_shapes.emplace_back(XZPlane::from_json(shape_json.dump()));
             }
         }
 

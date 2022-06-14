@@ -40,11 +40,13 @@ namespace COAL
         }
 
         // static deserialize all data from a nlohmann json string object
-        static std::shared_ptr<Pattern> from_json(const nlohmann::json &json)
+        static std::shared_ptr<Pattern> from_json(const std::string &json)
         {
-            auto first_color = Color::from_json(json["first_color"]);
-            auto second_color = Color::from_json(json["second_color"]);
-            auto transform = Matrix4::from_json(json["transform"]);
+            nlohmann::json json_object = nlohmann::json::parse(json);
+
+            auto first_color = Color::from_json(json_object["first_color"].dump());
+            auto second_color = Color::from_json(json_object["second_color"].dump());
+            auto transform = Matrix4::from_json(json_object["transform"].dump());
             return std::make_shared<Checker>(first_color, second_color, transform);
         }
     };

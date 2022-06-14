@@ -94,20 +94,26 @@ namespace COAL
             return j.dump();
         }
 
-        // deserialize all data from a nlohmann json string object
-        void from_json(const nlohmann::json &json) noexcept
+        // static deserialize all data from a nlohmann json string object
+        static std::shared_ptr<Sphere> from_json(const std::string &json) noexcept
         {
-            Point translation = Point::from_json(json["translation"]);
-            Point scale = Point::from_json(json["scale"]);
-            Point rotation = Point::from_json(json["rotation"]);
+            nlohmann::json j = nlohmann::json::parse(json);
+
+            auto sphere = std::make_shared<Sphere>();
+
+            Point translation = Point::from_json(j["translation"].dump());
+            Point scale = Point::from_json(j["scale"].dump());
+            Point rotation = Point::from_json(j["rotation"].dump());
 
             float translationf[3] = {translation.x, translation.y, translation.z};
             float scalef[3] = {scale.x, scale.y, scale.z};
             float rotationf[3] = {rotation.x, rotation.y, rotation.z};
 
-            transform(translationf, scalef, rotationf);
+            sphere->transform(translationf, rotationf, scalef);
 
-            set_material(Material::from_json(json["material"]));
+            sphere->set_material(Material::from_json(j["material"].dump()));
+
+            return sphere;
         }
     };
 

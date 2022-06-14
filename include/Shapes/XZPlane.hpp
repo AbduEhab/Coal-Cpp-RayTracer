@@ -72,5 +72,27 @@ namespace COAL
 
             return j.dump(4);
         }
+
+        // static deserialize from a nlohmann json string object
+        static std::shared_ptr<XZPlane> from_json(const std::string &json) noexcept
+        {
+            nlohmann::json j = nlohmann::json::parse(json);
+
+            auto xz_plane = std::make_shared<XZPlane>();
+
+            Point translation = Point::from_json(j["translation"].dump());
+            Point scale = Point::from_json(j["scale"].dump());
+            Point rotation = Point::from_json(j["rotation"].dump());
+
+            float translationf[3] = {translation.x, translation.y, translation.z};
+            float scalef[3] = {scale.x, scale.y, scale.z};
+            float rotationf[3] = {rotation.x, rotation.y, rotation.z};
+
+            xz_plane->transform(translationf, rotationf, scalef);
+
+            xz_plane->set_material(Material::from_json(j["material"].dump()));
+
+            return xz_plane;
+        }
     };
 }; // namespace COAL

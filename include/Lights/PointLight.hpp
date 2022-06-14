@@ -36,11 +36,15 @@ namespace COAL
         }
 
         // static deserialize from a nlohmann json string object
-        static std::shared_ptr<Light> from_json(const nlohmann::json &json)
+        static std::shared_ptr<PointLight> from_json(const std::string &json)
         {
-            auto PointLight = std::make_shared<COAL::Light>(COAL::PointLight());
-            PointLight->set_position(COAL::Point::from_json(json["position"]));
-            PointLight->set_intensity(COAL::Color::from_json(json["intensity"]));
+            nlohmann::json json_object = nlohmann::json::parse(json);
+
+            auto PointLight = std::make_shared<COAL::PointLight>(COAL::PointLight());
+
+            PointLight->set_position(COAL::Point::from_json(json_object["position"].dump()));
+            PointLight->set_intensity(COAL::Color::from_json(json_object["intensity"].dump()));
+
             return PointLight;
         }
     };
