@@ -93,23 +93,21 @@ namespace COAL
             }
         }
 
-        _nodiscard Color **classic_render(World &w) const
+        _nodiscard std::shared_ptr<Color[]> classic_render(const World &w)
         {
             PROFILE_FUNCTION();
+
+            m_is_finished = false;
 
             debug_print("Started Single-Threaded Rendering");
 
             Timer timer;
 
-            Color **image;
-            image = new Color *[m_width];
-            for (int i = 0; i < m_width; i++)
-                image[i] = new Color[m_height];
+            std::shared_ptr<Color[]> image(new Color[m_width * m_height]);
 
             for (int y = 0; y < m_height; y++)
             {
-
-                std::cout << ">> Thread {" + std::to_string(y + 1) + "}: Calculating Row: [" + std::to_string(y + 1) + '/' + std::to_string(m_height) + ']' << std::endl;
+                debug_print(">> Thread {" + std::to_string(y + 1) + "}: Calculating Row: [" + std::to_string(y + 1) + '/' + std::to_string(m_height) + "]");
 
                 for (int x = 0; x < m_width; x++)
                 {
@@ -117,16 +115,18 @@ namespace COAL
 
                     Color c = w.color_at(r);
 
-                    image[y][x] = c;
+                    image.get()[y * m_width + x] = c;
                 }
             }
+
+            m_is_finished = true;
 
             debug_print("Single-Threaded Rendering done in: " + std::to_string(timer.elapsed_millis()) + " ms");
 
             return image;
         }
 
-        _nodiscard std::shared_ptr<Color[]> classic_render_multi_threaded(World &w, const int thread_count = kCORE_COUNT)
+        _nodiscard std::shared_ptr<Color[]> classic_render_multi_threaded(const World &w, const int thread_count = kCORE_COUNT)
         {
             PROFILE_FUNCTION();
 
@@ -207,6 +207,11 @@ namespace COAL
             return m_pixel_size;
         }
 
+        _nodiscard constexpr const Vector &get_translation() const
+        {
+            return m_translation;
+        }
+
         _nodiscard constexpr const Matrix4 &get_transform() const
         {
             return m_transform;
@@ -215,6 +220,27 @@ namespace COAL
         _nodiscard constexpr const Matrix4 &get_inverse_transform() const
         {
             return m_inverse_transform;
+        }
+
+        // get rotations
+        _nodiscard constexpr Vector get_rotations() const
+        {
+            return {m_rotation_x, m_rotation_y, m_rotation_z};
+        }
+
+        _nodiscard constexpr float get_rotation_x() const
+        {
+            return m_rotation_x;
+        }
+
+        _nodiscard constexpr float get_rotation_y() const
+        {
+            return m_rotation_y;
+        }
+
+        _nodiscard constexpr float get_rotation_z() const
+        {
+            return m_rotation_z;
         }
 
         // generate setters
@@ -261,6 +287,32 @@ namespace COAL
             m_inverse_transform = inverse_transform;
         }
 
+        Camera &transform(const float (&translation)[3], const float (&rotation)[3])
+        {
+            m_translation = Vector((float)translation[0], (float)translation[1], (float)translation[2]);
+            m_rotation_x = rotation[0];
+            m_rotation_y = rotation[1];
+            m_rotation_z = rotation[2];
+
+            m_transform = COAL::IDENTITY.translate(translation[0], translation[1], translation[2]).rotate(m_rotation_x, m_rotation_y, m_rotation_z);
+            m_inverse_transform = m_transform.inverse();
+
+            return *this;
+        }
+
+        Camera &transform_deg(const float (&translation)[3], const float (&rotation)[3])
+        {
+            m_translation = Vector((float)translation[0], (float)translation[1], (float)translation[2]);
+            m_rotation_x = rotation[0] * (float)std::numbers::pi / 180.0f;
+            m_rotation_y = rotation[1] * (float)std::numbers::pi / 180.0f;
+            m_rotation_z = rotation[2] * (float)std::numbers::pi / 180.0f;
+
+            m_transform = COAL::IDENTITY.translate(translation[0], translation[1], translation[2]).rotate(m_rotation_x, m_rotation_y, m_rotation_z);
+            m_inverse_transform = m_transform.inverse();
+
+            return *this;
+        }
+
         // serialize all data to a nlohmann json string object
         [[nodiscard]] std::string to_json() const noexcept
         {
@@ -295,6 +347,10 @@ namespace COAL
         int m_height;
         float m_field_of_view;
         float m_pixel_size;
+        Vector m_translation = Vector(0, 0, 0);
+        float m_rotation_x = 0;
+        float m_rotation_y = 0;
+        float m_rotation_z = 0;
         Matrix4 m_transform = COAL::IDENTITY;
         Matrix4 m_inverse_transform = COAL::IDENTITY;
 

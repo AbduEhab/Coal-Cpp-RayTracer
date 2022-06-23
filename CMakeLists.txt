@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.18)
 
 project(Cpp_RayTracer VERSION 0.2.0)
 
@@ -82,6 +82,16 @@ endif(NOT CMAKE_BUILD_TYPE)
 add_subdirectory(
     src
 )
+
+cmake_policy(SET CMP0069 NEW)
+
+# IPO BUILD
+include(CheckIPOSupported)
+
+check_ipo_supported(RESULT result)
+if(result)
+   set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
 
 add_subdirectory(
     external/Walnut/vendor/glm

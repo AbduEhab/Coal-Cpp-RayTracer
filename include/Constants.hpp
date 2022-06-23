@@ -1,10 +1,13 @@
 #pragma once
 
+#include "json.hpp"
+#include "stb_image_write.h"
 #include <algorithm>
 #include <array>
 #include <assert.h>
 #include <chrono>
 #include <deque>
+#include <filesystem>
 #include <fstream>
 #include <future>
 #include <iostream>
@@ -21,8 +24,6 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
-#include "stb_image_write.h"
-#include "json.hpp"
 
 #define PROFILING 0
 
@@ -42,6 +43,7 @@ const int kCORE_COUNT = std::thread::hardware_concurrency();
 #include <windows.h>
 
 const std::string BINARY_DIRECTORY(std::string(_getcwd(NULL, 0)) + '/');
+const std::string TEST_DIRECTORY = std::filesystem::current_path().string();
 
 #else
 

@@ -7,17 +7,13 @@
 #include <Tuples/Point.hpp>
 #include <Tuples/Vector.hpp>
 
-struct Intersection;
-
 namespace COAL
 {
     struct XZPlane : public Shape
     {
         _nodiscard XZPlane() = default;
 
-        ~XZPlane() = default;
-
-        [[nodiscard]] std::vector<Intersection> intersects(const Ray &ray) const
+        [[nodiscard]] Intersection intersects(const Ray &ray) const
         {
 
             PROFILE_FUNCTION();
@@ -26,17 +22,17 @@ namespace COAL
 
             if (std::abs(transformed_ray.m_direction.y) < kEpsilon)
             {
-                return std::vector<Intersection>{};
+                return {};
             }
 
             float t = -(transformed_ray.m_origin.y) / (transformed_ray.m_direction.y);
 
             if (t < 0)
             {
-                return std::vector<Intersection>{};
+                return {};
             }
 
-            return std::vector<Intersection>{Intersection(t, *this)};
+            return Intersection(t, *this);
         }
 
         [[nodiscard]] Vector normal_at([[maybe_unused]] const Point &p) const override

@@ -13,12 +13,10 @@ namespace COAL
 
     struct Intersection;
 
-    struct Checker;
-
     struct Shape
     {
 
-        [[nodiscard]] virtual std::vector<Intersection> intersects(const Ray &ray) const = 0;
+        [[nodiscard]] virtual Intersection intersects(const Ray &ray) const = 0;
 
         [[nodiscard]] virtual Vector normal_at(const Point &p) const = 0;
 

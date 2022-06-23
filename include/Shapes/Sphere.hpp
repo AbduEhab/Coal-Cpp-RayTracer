@@ -9,8 +9,6 @@
 #include <Tuples/Point.hpp>
 #include <Tuples/Vector.hpp>
 
-struct Intersection;
-
 namespace COAL
 {
     struct Sphere : public Shape
@@ -18,7 +16,7 @@ namespace COAL
 
         _nodiscard Sphere() = default;
 
-        _nodiscard std::vector<Intersection> intersects(const Ray &ray) const
+        _nodiscard Intersection intersects(const Ray &ray) const
         {
             PROFILE_FUNCTION();
 
@@ -40,10 +38,10 @@ namespace COAL
             float t1 = (-b - std::sqrt(discriminant)) / (2 * a);
             float t2 = (-b + std::sqrt(discriminant)) / (2 * a);
 
-            if (t1 > t2)
-            {
-                std::swap(t1, t2);
-            }
+            // if (t1 > t2)
+            // {
+            //     std::swap(t1, t2);
+            // }
 
             if (t1 < 0)
             {
@@ -55,7 +53,7 @@ namespace COAL
                 return {};
             }
 
-            return std::vector<Intersection>{Intersection(t1, *this), Intersection(t2, *this)};
+            return Intersection(t1, *this);
         }
 
         _nodiscard Vector normal_at(const Point &p) const override

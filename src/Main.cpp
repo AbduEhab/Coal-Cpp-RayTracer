@@ -1,8 +1,5 @@
 #include "COAL.hpp"
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
 #define setup_world()                                                                                                                                                         \
                                                                                                                                                                               \
     auto floor = std::make_shared<COAL::XZPlane>(COAL::XZPlane());                                                                                                            \
@@ -29,11 +26,17 @@ std::shared_ptr<COAL::Color[]> canvas;
 std::thread render_thread;
 
 #ifdef _WIN32
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 #include "Walnut/Application.h"
 #include "Walnut/EntryPoint.h"
 
 #include "Walnut/Image.h"
 #include "Walnut/Random.h"
+
+#include <L2DFileDialog.h>
 
 class MainLayer : public Walnut::Layer
 {
@@ -41,19 +44,50 @@ public:
     virtual void OnUIRender() override
     {
 
-        // ImGui::ShowDemoWindow();
+        // ImGui::ShowD/emoWindow();
 
         ImGui::Begin("World Outline");
-
         {
-            if (ImGui::Button("Load Scene"))
+            static char *file_dialog_buffer = nullptr;
+            static char path[500] = "";
+
+            ImGui::TextUnformatted("Path: ");
+            ImGui::InputText("##path", path, sizeof(path));
+            ImGui::SameLine();
+
+            if (FileDialog::file_dialog_open)
             {
-                scene.load_scene("scene.json");
+                FileDialog::ShowFileDialog(&FileDialog::file_dialog_open, file_dialog_buffer, sizeof(file_dialog_buffer), FileDialog::file_dialog_open_type);
             }
 
-            if (ImGui::Button("Save Scene"))
+            if (ImGui::Button("Choose file"))
             {
-                scene.save_scene("scene.json");
+
+                file_dialog_buffer = path;
+                FileDialog::file_dialog_open = true;
+                FileDialog::file_dialog_open_type = FileDialog::FileDialogType::OpenFile;
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Load Scene"))
+            {
+                if (strlen(path) > 0)
+                    scene.load_scene(path);
+            }
+
+            { // save scene
+
+                static char name[32] = "Default_Scene";
+                ImGui::InputText("Scene Name", name, sizeof(name), ImGuiInputTextFlags_CharsNoBlank);
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Save Scene"))
+                {
+                    if (strlen(name) > 0)
+                        scene.save_scene(std::string(name) + ".json");
+                }
             }
         }
 
@@ -61,6 +95,37 @@ public:
 
         auto shapes = scene.m_world.get_shapes();
         auto lights = scene.m_world.get_lights();
+
+        {
+            // if (ImGui::TreeNode("Camera"))
+            // {
+            //     auto camera = scene.m_camera;
+
+            //     auto translations = camera.get_translation();
+            //     auto rotations = camera.get_rotations();
+
+            //     float transformation[3] = {translations.x, translations.y, translations.z};
+            //     float rotation[3] = {rotations.x, rotations.y, rotations.z};
+
+            //     // imgui text output
+            //     ImGui::Text("Translation");
+
+            //     ImGui::SliderFloat("X", &transformation[0], -50, 50);
+            //     ImGui::SliderFloat("Y", &transformation[1], -50, 50);
+            //     ImGui::SliderFloat("Z", &transformation[2], -50, 50);
+
+            //     ImGui::Separator();
+            //     ImGui::Text("Rotation");
+
+            //     ImGui::SliderFloat("RX", &rotation[0], (float)-180, (float)180);
+            //     ImGui::SliderFloat("RY", &rotation[1], (float)-180, (float)180);
+            //     ImGui::SliderFloat("RZ", &rotation[2], (float)-180, (float)180);
+
+            //     camera.transform_deg(transformation, rotation);
+            // }
+        }
+
+        ImGui::Separator();
 
         if (ImGui::TreeNode("Objects"))
         {
@@ -116,16 +181,16 @@ public:
                             // imgui text output
                             ImGui::Text("Translation");
 
-                            ImGui::SliderFloat("X", &transformation[0], -5, 5);
-                            ImGui::SliderFloat("Y", &transformation[1], -5, 5);
-                            ImGui::SliderFloat("Z", &transformation[2], -5, 500);
+                            ImGui::SliderFloat("X", &transformation[0], -50, 50);
+                            ImGui::SliderFloat("Y", &transformation[1], -50, 50);
+                            ImGui::SliderFloat("Z", &transformation[2], -50, 50);
 
                             ImGui::Separator();
                             ImGui::Text("Rotation");
 
-                            ImGui::SliderFloat("RX", &rotation[0], (float)-std::numbers::pi, (float)std::numbers::pi);
-                            ImGui::SliderFloat("RY", &rotation[1], (float)-std::numbers::pi, (float)std::numbers::pi);
-                            ImGui::SliderFloat("RZ", &rotation[2], (float)-std::numbers::pi, (float)std::numbers::pi);
+                            ImGui::SliderFloat("RX", &rotation[0], (float)-180, (float)180);
+                            ImGui::SliderFloat("RY", &rotation[1], (float)-180, (float)180);
+                            ImGui::SliderFloat("RZ", &rotation[2], (float)-180, (float)180);
 
                             ImGui::Separator();
                             ImGui::Text("Scale");
@@ -294,6 +359,8 @@ public:
 
         canvas = scene.m_camera.classic_render_multi_threaded(scene.m_world);
 
+        // canvas = scene.m_camera.classic_render(scene.m_world);
+
         if (!m_Image || m_ViewportWidth != m_Image->GetWidth() || m_ViewportHeight != m_Image->GetHeight())
         {
             m_Image = std::make_shared<Walnut::Image>(m_ViewportWidth, m_ViewportHeight, Walnut::ImageFormat::RGBA);
@@ -340,7 +407,7 @@ Walnut::Application *Walnut::CreateApplication(_maybe_unused int argc, _maybe_un
     floor->get_material().set_color(COAL::Color(1.0f, 0.9f, 0.9f)).set_specular(0).set_reflectiveness(0.3f);
 
     auto middle_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());
-    middle_sphere->get_material().set_color(COAL::Color(0.0f, 0.0f, 0.0f)).set_specular(1).set_diffuse(0.1f).set_reflectiveness(0.3f).set_shininess(300).set_transparency(1);
+    middle_sphere->get_material().set_color(COAL::Color(0.0f, 0.0f, 0.0f)).set_specular(1).set_diffuse(0.1f).set_reflectiveness(0.3f).set_shininess(200).set_transparency(1);
     middle_sphere->translate(-0.5f, 1.0f, 0.5f);
 
     auto right_sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());

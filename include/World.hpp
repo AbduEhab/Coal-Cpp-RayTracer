@@ -44,8 +44,9 @@ namespace COAL
 
             for (const auto &shape : m_shapes)
             {
-                std::vector<Intersection> shape_xs = shape->intersects(ray);
-                res.insert(res.end(), shape_xs.begin(), shape_xs.end());
+                Intersection shape_xs = shape->intersects(ray);
+                if (shape_xs.m_t > 0)
+                    res.emplace_back(shape_xs);
             }
 
             // lamda std::vector sort
@@ -233,11 +234,6 @@ namespace COAL
         void set_max_depth(const int max_depth)
         {
             MAX_DEPTH = max_depth;
-        }
-
-        // save scene from file as json
-        void load_scene(const std::string &file_name) const
-        {
         }
 
         // serialize all data to a nlohmann json string object
