@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.13)
 
 project(Cpp_RayTracer VERSION 0.2.0)
 
@@ -83,14 +83,12 @@ add_subdirectory(
     src
 )
 
-cmake_policy(SET CMP0069 NEW)
-
 # IPO BUILD
 include(CheckIPOSupported)
 
 check_ipo_supported(RESULT result)
 if(result)
-   set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+   set_property(TARGET Cpp_RayTracer PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE) # requires actual project name and doesn't work with ${PROJECT_NAME} (atleast with gcc)
 endif()
 
 add_subdirectory(
