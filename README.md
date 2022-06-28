@@ -18,4 +18,4 @@ Visual Studio (not VS Code) will Compile and link perfectly but will fail to cop
 - [stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h)
 
 ### Demo Renders
-- ![Demo 1](https://github.com/AbduEhab/Cpp-RayTracer/blob/main/bin/Main_Test_Scene.png)
+![Demo 1](https://github.com/AbduEhab/Cpp-RayTracer/blob/main/bin/Main_Test_Scene.png)
