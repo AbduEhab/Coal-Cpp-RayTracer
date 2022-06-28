@@ -44,8 +44,10 @@ public:
     virtual void OnUIRender() override
     {
 
-        // ImGui::ShowD/emoWindow();
-
+        if (ImGui::Button("Choose file"))
+        {
+            return;
+        }
         ImGui::Begin("World Outline");
         {
             static char *file_dialog_buffer = nullptr;
@@ -359,8 +361,6 @@ public:
 
         canvas = scene.m_camera.classic_render_multi_threaded(scene.m_world);
 
-        // canvas = scene.m_camera.classic_render(scene.m_world);
-
         if (!m_Image || m_ViewportWidth != m_Image->GetWidth() || m_ViewportHeight != m_Image->GetHeight())
         {
             m_Image = std::make_shared<Walnut::Image>(m_ViewportWidth, m_ViewportHeight, Walnut::ImageFormat::RGBA);
@@ -401,8 +401,6 @@ private:
 Walnut::Application *Walnut::CreateApplication(_maybe_unused int argc, _maybe_unused char **argv)
 {
 
-    Instrumentor::Get().beginSession("Main thread");
-
     auto floor = std::make_shared<COAL::XZPlane>(COAL::XZPlane());
     floor->get_material().set_color(COAL::Color(1.0f, 0.9f, 0.9f)).set_specular(0).set_reflectiveness(0.3f);
 
@@ -441,8 +439,6 @@ Walnut::Application *Walnut::CreateApplication(_maybe_unused int argc, _maybe_un
 			}
 			ImGui::EndMenu();
 		} });
-
-    Instrumentor::Get().endSession();
 
     return app;
 }
