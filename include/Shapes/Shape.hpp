@@ -26,7 +26,7 @@ namespace COAL
             return m_material;
         }
 
-        _nodiscard Material &get_material()
+        [[nodiscard]] Material &get_material()
         {
             return m_material;
         }
@@ -192,36 +192,36 @@ namespace COAL
         }
 
         // get name
-        _nodiscard virtual const char *get_name() const = 0;
+        [[nodiscard]] virtual const char *get_name() const = 0;
 
         // getters
-        _nodiscard constexpr const Vector &get_translation() const
+        [[nodiscard]] constexpr const Vector &get_translation() const
         {
             return m_translation;
         }
 
-        _nodiscard constexpr const Vector &get_scale() const
+        [[nodiscard]] constexpr const Vector &get_scale() const
         {
             return m_scale;
         }
 
         // get rotations
-        _nodiscard constexpr Vector get_rotations() const
+        [[nodiscard]] constexpr Vector get_rotations() const
         {
             return {m_rotation_x, m_rotation_y, m_rotation_z};
         }
 
-        _nodiscard constexpr float get_rotation_x() const
+        [[nodiscard]] constexpr float get_rotation_x() const
         {
             return m_rotation_x;
         }
 
-        _nodiscard constexpr float get_rotation_y() const
+        [[nodiscard]] constexpr float get_rotation_y() const
         {
             return m_rotation_y;
         }
 
-        _nodiscard constexpr float get_rotation_z() const
+        [[nodiscard]] constexpr float get_rotation_z() const
         {
             return m_rotation_z;
         }

@@ -9,9 +9,9 @@
 
 namespace COAL
 {
-    struct XZPlane : public Shape
+    struct XYPlane : public Shape
     {
-        [[nodiscard]] XZPlane() = default;
+        [[nodiscard]] XYPlane() = default;
 
         [[nodiscard]] Intersection intersects(const Ray &ray) const
         {
@@ -20,12 +20,12 @@ namespace COAL
 
             Ray transformed_ray = ray.transform(get_inverse_transform());
 
-            if (std::abs(transformed_ray.m_direction.y) < kEpsilon)
+            if (std::abs(transformed_ray.m_direction.z) < kEpsilon)
             {
                 return {};
             }
 
-            float t = -(transformed_ray.m_origin.y) / (transformed_ray.m_direction.y);
+            float t = -(transformed_ray.m_origin.z) / (transformed_ray.m_direction.z);
 
             if (t < 0)
             {
@@ -39,20 +39,20 @@ namespace COAL
         {
             PROFILE_FUNCTION();
 
-            return Vector(0, 1, 0);
+            return Vector(0, 0, 1);
         }
 
         // implement abstract equality
         [[nodiscard]] bool operator==(const Shape &other) const override
         {
-            const auto other_XZ_plane = dynamic_cast<const XZPlane *>(&other);
-            return other_XZ_plane != nullptr && other_XZ_plane->get_transform() == get_transform();
+            const auto other_XY_plane = dynamic_cast<const XYPlane *>(&other);
+            return other_XY_plane != nullptr && other_XY_plane->get_transform() == get_transform();
         };
 
         // get name
         [[nodiscard]] const char *get_name() const override
         {
-            return "XZPlane ";
+            return "XYPlane ";
         }
 
         // serialize all data to a nlohmann json string object
@@ -60,7 +60,7 @@ namespace COAL
         {
             nlohmann::json j;
 
-            j["type"] = "XZPlane";
+            j["type"] = "XYPlane";
             j["translation"] = nlohmann::json::parse(get_translation().to_json());
             j["scale"] = nlohmann::json::parse(get_scale().to_json());
             j["rotation"] = nlohmann::json::parse(get_rotations().to_json());
@@ -70,11 +70,11 @@ namespace COAL
         }
 
         // static deserialize from a nlohmann json string object
-        static std::shared_ptr<XZPlane> from_json(const std::string &json) noexcept
+        static std::shared_ptr<XYPlane> from_json(const std::string &json) noexcept
         {
             nlohmann::json j = nlohmann::json::parse(json);
 
-            auto XZ_plane = std::make_shared<XZPlane>();
+            auto XY_plane = std::make_shared<XYPlane>();
 
             Point translation = Point::from_json(j["translation"].dump());
             Point scale = Point::from_json(j["scale"].dump());
@@ -84,11 +84,11 @@ namespace COAL
             float scalef[3] = {scale.x, scale.y, scale.z};
             float rotationf[3] = {rotation.x, rotation.y, rotation.z};
 
-            XZ_plane->transform(translationf, rotationf, scalef);
+            XY_plane->transform(translationf, rotationf, scalef);
 
-            XZ_plane->set_material(Material::from_json(j["material"].dump()));
+            XY_plane->set_material(Material::from_json(j["material"].dump()));
 
-            return XZ_plane;
+            return XY_plane;
         }
     };
 }; // namespace COAL

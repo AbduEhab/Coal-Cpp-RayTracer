@@ -75,7 +75,7 @@ namespace COAL
             return Computation(t2, *object, p, eyev, normalv, inside, over_point, reflectv, n1, n2, under_point);
         }
 
-        _nodiscard static Intersection hit(std::vector<Intersection> intersections)
+        [[nodiscard]] static Intersection hit(std::vector<Intersection> intersections)
         {
             PROFILE_FUNCTION();
 

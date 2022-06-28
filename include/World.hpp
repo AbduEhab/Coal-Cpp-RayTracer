@@ -17,9 +17,9 @@ namespace COAL
     struct World
     {
 
-        _nodiscard World() = default;
+        [[nodiscard]] World() = default;
 
-        _nodiscard World(_maybe_unused const int type)
+        [[nodiscard]] World([[maybe_unused]] const int type)
         {
             PROFILE_FUNCTION();
 
@@ -36,7 +36,7 @@ namespace COAL
             m_lights.emplace_back(light);
         }
 
-        _nodiscard std::vector<Intersection> intersects(const Ray &ray) const
+        [[nodiscard]] std::vector<Intersection> intersects(const Ray &ray) const
         {
             PROFILE_FUNCTION();
 
@@ -56,7 +56,7 @@ namespace COAL
             return res;
         }
 
-        _nodiscard bool is_shadowed(const Point &point, const Light &light) const
+        [[nodiscard]] bool is_shadowed(const Point &point, const Light &light) const
         {
             PROFILE_FUNCTION();
 
@@ -75,22 +75,7 @@ namespace COAL
             return false;
         }
 
-        _nodiscard Color color_at(const Ray &ray) const
-        {
-            PROFILE_FUNCTION();
-
-            auto xs = intersects(ray);
-            Intersection hit = Intersection::hit(xs);
-
-            if (hit.m_t < 0)
-                return COAL::BLACK;
-
-            Computation comps = hit.prepare_computation(ray, xs);
-
-            return shade_hit(comps);
-        }
-
-        _nodiscard Color color_at(const Ray &ray, const int recursion_level) const
+        [[nodiscard]] Color color_at(const Ray &ray, const int recursion_level = 0) const
         {
             PROFILE_FUNCTION();
 
@@ -105,48 +90,7 @@ namespace COAL
             return shade_hit(comps, recursion_level);
         }
 
-        _nodiscard Color reflected_color(const Computation &comp, const int recursion_level = 0) const
-        {
-            PROFILE_FUNCTION();
-
-            if (comp.m_s->get_material().get_reflectiveness() > 0 && recursion_level < MAX_DEPTH)
-            {
-                Ray reflected_ray = Ray(comp.m_over_point, comp.m_reflection_vector);
-                Color reflected_color = color_at(reflected_ray, recursion_level + 1);
-                return reflected_color * comp.m_s->get_material().get_reflectiveness();
-            }
-
-            return Color();
-        }
-
-        _nodiscard Color refraction_color(const Computation &comp, const int recursion_level = 0) const
-        {
-            PROFILE_FUNCTION();
-
-            if (comp.m_s->get_material().get_refractive_index() > 0 && recursion_level < MAX_DEPTH)
-            {
-                float n_ratio = comp.m_inside ? comp.m_n1 / comp.m_n2 : comp.m_n2 / comp.m_n1;
-
-                float cos_i = comp.m_eye_vector.dot(comp.m_normal_vector);
-
-                float sin2_t = (n_ratio * n_ratio * (1.0f - cos_i * cos_i));
-
-                if (sin2_t > 1.0)
-                    return Color();
-
-                float cos_t = (float)sqrt(1.0 - sin2_t);
-
-                Vector direction = comp.m_normal_vector * (n_ratio * cos_i - cos_t) - comp.m_eye_vector * n_ratio;
-
-                Ray refracted_ray = Ray(comp.m_under_point, direction);
-
-                return color_at(refracted_ray, recursion_level + 1) * comp.m_s->get_material().get_transparency();
-            }
-
-            return Color();
-        }
-
-        _nodiscard Color shade_hit(const Computation &comp, const int depth = 0) const
+        [[nodiscard]] Color shade_hit(const Computation &comp, const int depth = 0) const
         {
 
             Color res;
@@ -176,6 +120,47 @@ namespace COAL
             return res;
         }
 
+        [[nodiscard]] Color reflected_color(const Computation &comp, const int recursion_level = 0) const
+        {
+            PROFILE_FUNCTION();
+
+            if (comp.m_s->get_material().get_reflectiveness() > 0 && recursion_level < MAX_DEPTH)
+            {
+                Ray reflected_ray = Ray(comp.m_over_point, comp.m_reflection_vector);
+                Color reflected_color = color_at(reflected_ray, recursion_level + 1);
+                return reflected_color * comp.m_s->get_material().get_reflectiveness();
+            }
+
+            return Color();
+        }
+
+        [[nodiscard]] Color refraction_color(const Computation &comp, const int recursion_level = 0) const
+        {
+            PROFILE_FUNCTION();
+
+            if (comp.m_s->get_material().get_refractive_index() > 0 && recursion_level < MAX_DEPTH)
+            {
+                float n_ratio = comp.m_inside ? comp.m_n1 / comp.m_n2 : comp.m_n2 / comp.m_n1;
+
+                float cos_i = comp.m_eye_vector.dot(comp.m_normal_vector);
+
+                float sin2_t = (n_ratio * n_ratio * (1.0f - cos_i * cos_i));
+
+                if (sin2_t > 1.0)
+                    return Color();
+
+                float cos_t = (float)sqrt(1.0 - sin2_t);
+
+                Vector direction = comp.m_normal_vector * (n_ratio * cos_i - cos_t) - comp.m_eye_vector * n_ratio;
+
+                Ray refracted_ray = Ray(comp.m_under_point, direction);
+
+                return color_at(refracted_ray, recursion_level + 1) * comp.m_s->get_material().get_transparency();
+            }
+
+            return Color();
+        }
+
         // add shapes
         void add_shape(const std::shared_ptr<Shape> &shape)
         {
@@ -201,25 +186,51 @@ namespace COAL
         }
 
         // get shapes
-        _nodiscard std::vector<std::shared_ptr<Shape>> &get_shapes()
+        [[nodiscard]] std::vector<std::shared_ptr<Shape>> &get_shapes()
         {
             return m_shapes;
         }
 
         // get lights
-        _nodiscard std::vector<std::shared_ptr<Light>> &get_lights()
+        [[nodiscard]] std::vector<std::shared_ptr<Light>> &get_lights()
         {
             return m_lights;
         }
 
+        void remove_light(const std::shared_ptr<Light> &light)
+        {
+            auto it = std::find(m_lights.begin(), m_lights.end(), light);
+            if (it != m_lights.end())
+                m_lights.erase(it);
+        }
+
+        void remove_light(const int index)
+        {
+            if (index < m_lights.size())
+                m_lights.erase(m_lights.begin() + index);
+        }
+
+        void remove_shape(const std::shared_ptr<Shape> &shape)
+        {
+            auto it = std::find(m_shapes.begin(), m_shapes.end(), shape);
+            if (it != m_shapes.end())
+                m_shapes.erase(it);
+        }
+
+        void remove_shape(const int index)
+        {
+            if (index < m_shapes.size())
+                m_shapes.erase(m_shapes.begin() + index);
+        }
+
         // get shapes
-        _nodiscard const std::vector<std::shared_ptr<Shape>> &get_shapes() const
+        [[nodiscard]] const std::vector<std::shared_ptr<Shape>> &get_shapes() const
         {
             return m_shapes;
         }
 
         // get lights
-        _nodiscard const std::vector<std::shared_ptr<Light>> &get_lights() const
+        [[nodiscard]] const std::vector<std::shared_ptr<Light>> &get_lights() const
         {
             return m_lights;
         }
@@ -281,6 +292,12 @@ namespace COAL
                     m_shapes.emplace_back(Sphere::from_json(shape_json.dump()));
                 else if (shape_json["type"] == "XZPlane")
                     m_shapes.emplace_back(XZPlane::from_json(shape_json.dump()));
+                else if (shape_json["type"] == "YZPlane")
+                    m_shapes.emplace_back(YZPlane::from_json(shape_json.dump()));
+                else if (shape_json["type"] == "XYPlane")
+                    m_shapes.emplace_back(XYPlane::from_json(shape_json.dump()));
+                if (shape_json["type"] == "Cube")
+                    m_shapes.emplace_back(Cube::from_json(shape_json.dump()));
             }
         }
 

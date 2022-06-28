@@ -52,7 +52,7 @@ namespace COAL
             return *this;
         }
 
-        _nodiscard virtual const char *get_name() const = 0;
+        [[nodiscard]] virtual const char *get_name() const = 0;
 
         // serialize all data to a nlohmann json string object
         [[nodiscard]] virtual std::string to_json() const noexcept = 0;

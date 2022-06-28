@@ -11,7 +11,7 @@ namespace COAL
 
         [[nodiscard]] constexpr Matrix4(){};
 
-        [[nodiscard]] constexpr Matrix4(const float *array, _maybe_unused int array_size)
+        [[nodiscard]] constexpr Matrix4(const float *array, [[maybe_unused]] int array_size)
         {
             assert(16 == array_size);
 
@@ -265,7 +265,7 @@ namespace COAL
         }
 
         template <size_t size>
-        _nodiscard constexpr void sub_matrix(const float (&matrix)[size + 1][size + 1], const int row, const int column, float (&sub_matrix)[size][size]) const
+        [[nodiscard]] constexpr void sub_matrix(const float (&matrix)[size + 1][size + 1], const int row, const int column, float (&sub_matrix)[size][size]) const
         {
             bool a_replaced = false;
             bool b_replaced = false;
@@ -345,7 +345,7 @@ namespace COAL
             return this->adjugate() / this->determinant4();
         }
 
-        _nodiscard Matrix4 translate(std::vector<float> const &values) const
+        [[nodiscard]] Matrix4 translate(std::vector<float> const &values) const
         {
             std::vector<std::vector<float>> translation_values = {
                 {1, 0, 0, values[0]},
@@ -357,7 +357,7 @@ namespace COAL
             return *this * translation_values;
         }
 
-        _nodiscard Matrix4 translate(const float x, const float y, const float z) const
+        [[nodiscard]] Matrix4 translate(const float x, const float y, const float z) const
         {
             std::vector<std::vector<float>> translation_values = {
                 {1, 0, 0, x},
@@ -369,7 +369,7 @@ namespace COAL
             return *this * translation_values;
         }
 
-        _nodiscard Matrix4 scale(std::vector<float> const &values) const
+        [[nodiscard]] Matrix4 scale(std::vector<float> const &values) const
         {
             std::vector<std::vector<float>> translation_values = {
                 {values[0], 0, 0, 0},
@@ -381,7 +381,7 @@ namespace COAL
             return *this * translation_values;
         }
 
-        _nodiscard Matrix4 scale(const float x, const float y, const float z) const
+        [[nodiscard]] Matrix4 scale(const float x, const float y, const float z) const
         {
             std::vector<std::vector<float>> translation_values = {
                 {x, 0, 0, 0},
@@ -393,7 +393,7 @@ namespace COAL
             return *this * translation_values;
         }
 
-        _nodiscard Matrix4 rotate_x(const float radians) const
+        [[nodiscard]] Matrix4 rotate_x(const float radians) const
         {
             std::vector<std::vector<float>> rotate_x_values = {
                 {1, 0, 0, 0},
@@ -405,7 +405,7 @@ namespace COAL
             return *this * rotate_x_values;
         }
 
-        _nodiscard Matrix4 rotate_y(const float radians) const
+        [[nodiscard]] Matrix4 rotate_y(const float radians) const
         {
             std::vector<std::vector<float>> rotate_y_values = {
                 {std::cos(radians), 0, std::sin(radians), 0},
@@ -417,7 +417,7 @@ namespace COAL
             return *this * rotate_y_values;
         }
 
-        _nodiscard Matrix4 rotate_z(const float radians) const
+        [[nodiscard]] Matrix4 rotate_z(const float radians) const
         {
             std::vector<std::vector<float>> rotate_z_values = {
                 {std::cos(radians), -std::sin(radians), 0, 0},
@@ -429,12 +429,12 @@ namespace COAL
             return *this * rotate_z_values;
         }
 
-        _nodiscard Matrix4 rotate(const float radians_x, const float radians_y, const float radians_z) const
+        [[nodiscard]] Matrix4 rotate(const float radians_x, const float radians_y, const float radians_z) const
         {
             return this->rotate_x(radians_x).rotate_y(radians_y).rotate_z(radians_z);
         }
 
-        _nodiscard Matrix4 shear(float Xy, float Xz, float Yx, float Yz, float Zx, float Zy) const
+        [[nodiscard]] Matrix4 shear(float Xy, float Xz, float Yx, float Yz, float Zx, float Zy) const
         {
             std::vector<std::vector<float>> shear_values = {
                 {1, Xy, Xz, 0},

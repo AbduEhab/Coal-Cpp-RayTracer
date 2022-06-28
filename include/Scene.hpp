@@ -4,8 +4,8 @@ namespace COAL
 {
     struct Scene
     {
-        _nodiscard Scene() = default;
-        _nodiscard Scene(Camera c, World w = World(0)) : m_world(w), m_camera(c) {}
+        [[nodiscard]] Scene() = default;
+        [[nodiscard]] Scene(Camera c, World w = World(0)) : m_world(w), m_camera(c) {}
 
         // save scene to file as json
         void save_scene(const std::string &file_name) const

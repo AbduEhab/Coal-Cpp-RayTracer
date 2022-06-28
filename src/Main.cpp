@@ -43,11 +43,6 @@ class MainLayer : public Walnut::Layer
 public:
     virtual void OnUIRender() override
     {
-
-        if (ImGui::Button("Choose file"))
-        {
-            return;
-        }
         ImGui::Begin("World Outline");
         {
             static char *file_dialog_buffer = nullptr;
@@ -98,41 +93,70 @@ public:
         auto shapes = scene.m_world.get_shapes();
         auto lights = scene.m_world.get_lights();
 
-        {
-            // if (ImGui::TreeNode("Camera"))
-            // {
-            //     auto camera = scene.m_camera;
-
-            //     auto translations = camera.get_translation();
-            //     auto rotations = camera.get_rotations();
-
-            //     float transformation[3] = {translations.x, translations.y, translations.z};
-            //     float rotation[3] = {rotations.x, rotations.y, rotations.z};
-
-            //     // imgui text output
-            //     ImGui::Text("Translation");
-
-            //     ImGui::SliderFloat("X", &transformation[0], -50, 50);
-            //     ImGui::SliderFloat("Y", &transformation[1], -50, 50);
-            //     ImGui::SliderFloat("Z", &transformation[2], -50, 50);
-
-            //     ImGui::Separator();
-            //     ImGui::Text("Rotation");
-
-            //     ImGui::SliderFloat("RX", &rotation[0], (float)-180, (float)180);
-            //     ImGui::SliderFloat("RY", &rotation[1], (float)-180, (float)180);
-            //     ImGui::SliderFloat("RZ", &rotation[2], (float)-180, (float)180);
-
-            //     camera.transform_deg(transformation, rotation);
-            // }
-        }
-
         ImGui::Separator();
 
+        ImGui::SetNextItemOpen(true, ImGuiCond_Once);
         if (ImGui::TreeNode("Objects"))
         {
+            if (ImGui::Button("Remove"))
+            {
+                if (selected > shapes.size())
+                    scene.m_world.remove_light(lights[selected - shapes.size() - 1]);
+                else
+                    scene.m_world.remove_shape(shapes[selected]);
+            }
+
+            ImGui::SetNextItemOpen(true, ImGuiCond_Once);
             if (ImGui::TreeNode("Shapes"))
             {
+                {
+                    if (ImGui::Button("Add Sphere"))
+                    {
+                        auto sphere = std::make_shared<COAL::Sphere>(COAL::Sphere());
+                        scene.m_world.add_shape(sphere);
+                    }
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Add Cube"))
+                    {
+                        auto cube = std::make_shared<COAL::Cube>(COAL::Cube());
+                        scene.m_world.add_shape(cube);
+                    }
+
+                    // ImGui::SameLine();
+
+                    // if(ImGui::Button("Add Cylinder"))
+                    // {
+                    //     auto cylinder = std::make_shared<COAL::Cylinder>(COAL::Cylinder());
+                    //     scene.m_world.add_shape(cylinder);
+                    // }
+
+                    if (ImGui::Button("Add XZ-Plane"))
+                    {
+                        auto plane = std::make_shared<COAL::XZPlane>(COAL::XZPlane());
+                        scene.m_world.add_shape(plane);
+                    }
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Add YZ-Plane"))
+                    {
+                        auto plane = std::make_shared<COAL::YZPlane>(COAL::YZPlane());
+                        scene.m_world.add_shape(plane);
+                    }
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Add XY-Plane"))
+                    {
+                        auto plane = std::make_shared<COAL::XYPlane>(COAL::XYPlane());
+                        scene.m_world.add_shape(plane);
+                    }
+                }
+
+                ImGui::Separator();
+
                 for (int i = 0; i < shapes.size(); i++)
                 {
                     if (ImGui::Selectable((shapes[i]->get_name() + std::to_string(i)).c_str()))
@@ -142,11 +166,22 @@ public:
                 ImGui::TreePop(); // Shapes
             }
 
+            ImGui::SetNextItemOpen(true, ImGuiCond_Once);
             if (ImGui::TreeNode("Lights"))
             {
+                {
+                    if (ImGui::Button("Add Point-Light"))
+                    {
+                        auto light = std::make_shared<COAL::PointLight>(COAL::PointLight());
+                        scene.m_world.add_light(light);
+                    }
+                }
+
+                ImGui::Separator();
+
                 for (size_t i = shapes.size(), j = 0; i < shapes.size() + lights.size(); i++)
                 {
-                    if (ImGui::Selectable((lights[j]->get_name() + std::to_string(i)).c_str()))
+                    if (ImGui::Selectable((lights[j++]->get_name() + std::to_string(i)).c_str()))
                         selected = i;
                 }
                 ImGui::TreePop(); // Lights
@@ -157,6 +192,7 @@ public:
 
         ImGui::Separator();
 
+        ImGui::SetNextItemOpen(true, ImGuiCond_Once);
         if (ImGui::TreeNode("Details"))
         {
 
@@ -181,25 +217,17 @@ public:
                             float scale[3] = {scales.x, scales.y, scales.z};
 
                             // imgui text output
-                            ImGui::Text("Translation");
+                            ImGui::Text("Translation: (x, y, z):");
+                            ImGui::SliderFloat3("##Translation", transformation, -50, 50);
 
-                            ImGui::SliderFloat("X", &transformation[0], -50, 50);
-                            ImGui::SliderFloat("Y", &transformation[1], -50, 50);
-                            ImGui::SliderFloat("Z", &transformation[2], -50, 50);
+                            ImGui::Spacing();
 
-                            ImGui::Separator();
-                            ImGui::Text("Rotation");
+                            ImGui::Text("Rotation: (x, y, z):");
+                            ImGui::SliderFloat3("##Rotation", rotation, -180, 180);
 
-                            ImGui::SliderFloat("RX", &rotation[0], (float)-180, (float)180);
-                            ImGui::SliderFloat("RY", &rotation[1], (float)-180, (float)180);
-                            ImGui::SliderFloat("RZ", &rotation[2], (float)-180, (float)180);
-
-                            ImGui::Separator();
-                            ImGui::Text("Scale");
-
-                            ImGui::SliderFloat("SX", &scale[0], 0.1f, 5);
-                            ImGui::SliderFloat("SY", &scale[1], 0.1f, 5);
-                            ImGui::SliderFloat("SZ", &scale[2], 0.1f, 5);
+                            ImGui::Spacing();
+                            ImGui::Text("Scale: (x, y, z):");
+                            ImGui::SliderFloat3("##Scale", scale, 0.1f, 10);
 
                             shape->transform_deg(transformation, rotation, scale);
                         }
@@ -277,6 +305,7 @@ public:
         ImGui::Separator();
 
         {
+            ImGui::SetNextItemOpen(true, ImGuiCond_Once);
             if (ImGui::TreeNode("Render Settings"))
             {
                 {
@@ -355,7 +384,7 @@ public:
         is_first_render = false;
 
         // auto a2 = std::async([&]()
-        //                      { return scene.m_camera.classic_render_multi_threaded(world); });
+        //                      { return scene.m_camera.classic_render_multi_threaded(scene.m_world, 3); });
 
         // canvas = a2.get();
 
@@ -398,7 +427,7 @@ private:
     bool is_file_saved = false;
 };
 
-Walnut::Application *Walnut::CreateApplication(_maybe_unused int argc, _maybe_unused char **argv)
+Walnut::Application *Walnut::CreateApplication([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
 
     auto floor = std::make_shared<COAL::XZPlane>(COAL::XZPlane());

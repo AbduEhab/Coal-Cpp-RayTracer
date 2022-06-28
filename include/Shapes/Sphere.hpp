@@ -14,9 +14,9 @@ namespace COAL
     struct Sphere : public Shape
     {
 
-        _nodiscard Sphere() = default;
+        [[nodiscard]] Sphere() = default;
 
-        _nodiscard Intersection intersects(const Ray &ray) const
+        [[nodiscard]] Intersection intersects(const Ray &ray) const
         {
             PROFILE_FUNCTION();
 
@@ -56,7 +56,7 @@ namespace COAL
             return Intersection(t1, *this);
         }
 
-        _nodiscard Vector normal_at(const Point &p) const override
+        [[nodiscard]] Vector normal_at(const Point &p) const override
         {
             PROFILE_FUNCTION();
 
@@ -66,14 +66,14 @@ namespace COAL
         }
 
         // implement abstract equality
-        _nodiscard bool operator==(const Shape &other) const override
+        [[nodiscard]] bool operator==(const Shape &other) const override
         {
             const auto other_sphere = dynamic_cast<const Sphere *>(&other);
             return other_sphere != nullptr && other_sphere->get_transform() == get_transform();
         }
 
         // get name
-        _nodiscard const char *get_name() const override
+        [[nodiscard]] const char *get_name() const override
         {
             return "Sphere ";
         }
@@ -115,7 +115,7 @@ namespace COAL
         }
     };
 
-    _nodiscard _maybe_unused static Sphere glass_sphere()
+    [[nodiscard]] [[maybe_unused]] static Sphere glass_sphere()
     {
         return static_cast<Sphere &>(Sphere().set_material(Material().set_transparency(1.0).set_refractive_index(1.5)));
     }

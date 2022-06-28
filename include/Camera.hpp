@@ -12,13 +12,13 @@ namespace COAL
     struct Camera
     {
 
-        _nodiscard Camera(int width, int height, float fov, Matrix4 transform = COAL::IDENTITY) : m_width(width), m_height(height), m_field_of_view(fov), m_transform(transform)
+        [[nodiscard]] Camera(int width, int height, float fov, Matrix4 transform = COAL::IDENTITY) : m_width(width), m_height(height), m_field_of_view(fov), m_transform(transform)
         {
             set_pixel_size();
             m_transform = m_transform.inverse();
         }
 
-        _nodiscard void set_pixel_size()
+        [[nodiscard]] void set_pixel_size()
         {
             PROFILE_FUNCTION();
 
@@ -39,7 +39,7 @@ namespace COAL
             m_pixel_size = (m_half_width * 2) / m_width;
         }
 
-        _nodiscard void transform(const Point &from, const Point &to, const Vector &up)
+        [[nodiscard]] void transform(const Point &from, const Point &to, const Vector &up)
         {
             Vector forword = (to - from).normalize();
 
@@ -57,7 +57,7 @@ namespace COAL
             m_inverse_transform = m_transform.inverse();
         }
 
-        _nodiscard Ray ray_for_pixel(int x, int y) const
+        [[nodiscard]] Ray ray_for_pixel(int x, int y) const
         {
             PROFILE_FUNCTION();
 
@@ -75,7 +75,7 @@ namespace COAL
         }
 
         template <size_t width, size_t hight>
-        _nodiscard void classic_render(World &w, Color (&canvas)[width][hight]) const
+        [[nodiscard]] void classic_render(World &w, Color (&canvas)[width][hight]) const
         {
             PROFILE_FUNCTION();
 
@@ -93,7 +93,7 @@ namespace COAL
             }
         }
 
-        _nodiscard std::shared_ptr<Color[]> classic_render(const World &w)
+        [[nodiscard]] std::shared_ptr<Color[]> classic_render(const World &w)
         {
             PROFILE_FUNCTION();
 
@@ -126,7 +126,7 @@ namespace COAL
             return image;
         }
 
-        _nodiscard std::shared_ptr<Color[]> classic_render_multi_threaded(const World &w, const int thread_count = kCORE_COUNT)
+        [[nodiscard]] std::shared_ptr<Color[]> classic_render_multi_threaded(const World &w, const int thread_count = kCORE_COUNT)
         {
             PROFILE_FUNCTION();
 
@@ -172,73 +172,73 @@ namespace COAL
         }
 
         // generate getters
-        _nodiscard constexpr int is_finished() const
+        [[nodiscard]] constexpr int is_finished() const
         {
             return m_is_finished;
         }
 
-        _nodiscard constexpr int get_width() const
+        [[nodiscard]] constexpr int get_width() const
         {
             return m_width;
         }
 
-        _nodiscard constexpr int get_height() const
+        [[nodiscard]] constexpr int get_height() const
         {
             return m_height;
         }
 
-        _nodiscard constexpr float get_field_of_view() const
+        [[nodiscard]] constexpr float get_field_of_view() const
         {
             return m_field_of_view;
         }
 
-        _nodiscard constexpr float get_half_height() const
+        [[nodiscard]] constexpr float get_half_height() const
         {
             return m_half_height;
         }
 
-        _nodiscard constexpr float get_half_width() const
+        [[nodiscard]] constexpr float get_half_width() const
         {
             return m_half_width;
         }
 
-        _nodiscard constexpr float get_pixel_size() const
+        [[nodiscard]] constexpr float get_pixel_size() const
         {
             return m_pixel_size;
         }
 
-        _nodiscard constexpr const Vector &get_translation() const
+        [[nodiscard]] constexpr const Vector &get_translation() const
         {
             return m_translation;
         }
 
-        _nodiscard constexpr const Matrix4 &get_transform() const
+        [[nodiscard]] constexpr const Matrix4 &get_transform() const
         {
             return m_transform;
         }
 
-        _nodiscard constexpr const Matrix4 &get_inverse_transform() const
+        [[nodiscard]] constexpr const Matrix4 &get_inverse_transform() const
         {
             return m_inverse_transform;
         }
 
         // get rotations
-        _nodiscard constexpr Vector get_rotations() const
+        [[nodiscard]] constexpr Vector get_rotations() const
         {
             return {m_rotation_x, m_rotation_y, m_rotation_z};
         }
 
-        _nodiscard constexpr float get_rotation_x() const
+        [[nodiscard]] constexpr float get_rotation_x() const
         {
             return m_rotation_x;
         }
 
-        _nodiscard constexpr float get_rotation_y() const
+        [[nodiscard]] constexpr float get_rotation_y() const
         {
             return m_rotation_y;
         }
 
-        _nodiscard constexpr float get_rotation_z() const
+        [[nodiscard]] constexpr float get_rotation_z() const
         {
             return m_rotation_z;
         }

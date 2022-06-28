@@ -45,7 +45,7 @@ class Instrumentor
     Instrumentor() {}
 
 public:
-    static Instrumentor &Get()
+    [[nodiscard]] static Instrumentor &Get()
     {
         static Instrumentor instance;
         return instance;
@@ -122,7 +122,7 @@ class InstrumentationTimer
     bool m_stopped;
 
 public:
-    InstrumentationTimer(const std::string &name)
+    [[nodiscard]] InstrumentationTimer(const std::string &name)
         : m_result({name, 0, 0, 0}), m_stopped(false)
     {
         m_startTimepoint = std::chrono::high_resolution_clock::now();

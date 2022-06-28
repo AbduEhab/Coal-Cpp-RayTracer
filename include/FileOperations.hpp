@@ -6,7 +6,7 @@
 namespace COAL
 {
 
-    _nodiscard std::string read_file(const std::string &filepath)
+    [[nodiscard]] std::string read_file(const std::string &filepath)
     {
         PROFILE_FUNCTION();
 
@@ -71,7 +71,7 @@ namespace COAL
         return 1;
     }
 
-    _nodiscard std::string get_file_extension(const std::string &filepath)
+    [[nodiscard]] std::string get_file_extension(const std::string &filepath)
     {
         PROFILE_FUNCTION();
 

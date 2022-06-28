@@ -15,9 +15,12 @@
 
 #include "Intersection.hpp"
 
+#include "Shapes/Cube.hpp"
 #include "Shapes/Shape.hpp"
 #include "Shapes/Sphere.hpp"
 #include "Shapes/XZPlane.hpp"
+#include "Shapes/YZPlane.hpp"
+#include "Shapes/XYPlane.hpp"
 
 #include "Patterns/Pattern.hpp"
 

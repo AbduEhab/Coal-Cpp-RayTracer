@@ -11,6 +11,7 @@
 #include <fstream>
 #include <future>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <math.h>
 #include <memory>
@@ -39,6 +40,7 @@ const int kCORE_COUNT = std::thread::hardware_concurrency();
 
 #ifdef _WIN32
 
+#define NOMINMAX
 #include <direct.h>
 #include <windows.h>
 
@@ -55,18 +57,6 @@ const std::string BINARY_DIRECTORY_TEST(std::string(get_current_dir_name()) + "/
 
 #endif
 
-#define _unlikely [[unlikely]]
-
-#define _likely [[likely]]
-
-#define _maybe_unused [[maybe_unused]]
-
-#define _deprecated [[deprecated]]
-
-#define _nodiscard [[nodiscard]]
-
-#define _optimize_for_synchronized [[optimize_for_synchronized]]
-
 #define kEpsilon 0.000001
 
 void debug_print()
@@ -75,7 +65,7 @@ void debug_print()
 }
 
 template <typename First, typename... Strings>
-_maybe_unused void debug_print(_maybe_unused First arg, _maybe_unused const Strings &...rest)
+[[nodiscard]] void debug_print([[maybe_unused]] First arg, [[maybe_unused]] const Strings &...rest)
 {
 
 #ifdef DEBUG
