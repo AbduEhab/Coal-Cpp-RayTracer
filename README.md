@@ -4,7 +4,7 @@ This is a Ray-Tracer which is extremly similar to the one I wrote in Java. Just 
 
 Fully supports Windows (full UI and stuff) - Linux works in `Legacy mode` which would output the rendered image onto the terminal, macOS was not tested.
 
-## Requirements
+## Requirements (for compiling)
 - [CMake](https://cmake.org/)
 - [Vulkan SDK](https://vulkan.lunarg.com/sdk/home#windows)
 - x64 Compiler (DOES NOT WORK WITH x86 COMPILERS!!!)
