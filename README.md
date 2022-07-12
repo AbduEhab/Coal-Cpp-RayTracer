@@ -16,6 +16,7 @@ Visual Studio (not VS Code) will Compile and link perfectly but will fail to cop
 ### 3rd party libaries
 - [Walnut](https://github.com/TheCherno/Walnut)
 - [stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h)
+- [L2DFileDialog](https://github.com/Limeoats/L2DFileDialog)
 
 ### Demo Renders
 ![Demo 1](https://github.com/AbduEhab/Cpp-RayTracer/blob/main/bin/Main_Test_Scene.png)
