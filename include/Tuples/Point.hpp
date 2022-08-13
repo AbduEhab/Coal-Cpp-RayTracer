@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector.hpp"
+#include "json.hpp"
 
 namespace COAL
 {

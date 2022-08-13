@@ -1,4 +1,4 @@
-#include "COAL.hpp"
+#include <COAL.hpp>
 
 #define setup_world()                                                                                                                                                         \
                                                                                                                                                                               \
@@ -26,9 +26,6 @@ std::shared_ptr<COAL::Color[]> canvas;
 std::thread render_thread;
 
 #ifdef _WIN32
-
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
 
 #include "Walnut/Application.h"
 #include "Walnut/EntryPoint.h"

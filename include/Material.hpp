@@ -3,6 +3,7 @@
 #include "Patterns/Pattern.hpp"
 #include "Shapes/Shape.hpp"
 #include "Tuples/Color.hpp"
+#include "json.hpp"
 
 // #include "Patterns/Gradient.hpp"
 // #include "Patterns/Checker.hpp"

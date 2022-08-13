@@ -1,7 +1,5 @@
 #pragma once
 
-#include "json.hpp"
-#include "stb_image_write.h"
 #include <algorithm>
 #include <array>
 #include <assert.h>
@@ -36,7 +34,7 @@
 
 #endif
 
-const int kCORE_COUNT = std::thread::hardware_concurrency();
+inline const int kCORE_COUNT = std::thread::hardware_concurrency();
 
 #ifdef _WIN32
 

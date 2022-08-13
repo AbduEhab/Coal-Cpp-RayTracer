@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Constants.hpp"
+#include "json.hpp"
 
 namespace COAL
 {

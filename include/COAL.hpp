@@ -2,6 +2,7 @@
 
 #include "Constants.hpp"
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "FileOperations.hpp"
 
 #include "Matrix.hpp"
@@ -18,9 +19,9 @@
 #include "Shapes/Cube.hpp"
 #include "Shapes/Shape.hpp"
 #include "Shapes/Sphere.hpp"
+#include "Shapes/XYPlane.hpp"
 #include "Shapes/XZPlane.hpp"
 #include "Shapes/YZPlane.hpp"
-#include "Shapes/XYPlane.hpp"
 
 #include "Patterns/Pattern.hpp"
 

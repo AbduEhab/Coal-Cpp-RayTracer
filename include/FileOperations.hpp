@@ -2,6 +2,8 @@
 
 #include "Constants.hpp"
 #include "Tuples/Color.hpp"
+#include "json.hpp"
+#include "stb_image_write.h"
 
 namespace COAL
 {

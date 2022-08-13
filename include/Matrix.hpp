@@ -3,6 +3,7 @@
 #include "Constants.hpp"
 #include "Tuples/Point.hpp"
 #include "Tuples/Vector.hpp"
+#include "json.hpp"
 
 namespace COAL
 {
