@@ -47,7 +47,7 @@ project_options(
 # ----------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------------------------
-# Part till line 75 is very very similar to that of @codetechandtutorials
+# Part till line 76 is very very similar to that of @codetechandtutorials
 
 # DOWNLOAD ALL THE SUBMODULES
 find_package(Git QUIET)
@@ -58,6 +58,7 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 
     if(GIT_SUBMODULE)
         message(STATUS "Submodule update")
+
         if(1)
             execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
