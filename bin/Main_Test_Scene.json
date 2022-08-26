@@ -1,7 +1,7 @@
 {
     "camera": {
         "field_of_view": 1.0471975803375244,
-        "height": 1080,
+        "height": 600,
         "inverse_transform": [
             [
                 -1.0,
@@ -54,7 +54,7 @@
                 1.0
             ]
         ],
-        "width": 1920
+        "width": 800
     },
     "world": {
         "lights": [
@@ -84,13 +84,13 @@
                         "g": 1.0,
                         "r": 1.0
                     },
-                    "diffuse": 0.35600000619888306,
+                    "diffuse": 0.2840000092983246,
                     "pattern": null,
                     "reflectiveness": 0.0,
                     "refractive index": 1.0,
                     "shininess": 100.0,
                     "specular": 0.0,
-                    "transparency": 0.49900001287460327
+                    "transparency": 0.0
                 },
                 "rotation": {
                     "x": 0.0,
@@ -118,11 +118,11 @@
                         "g": 0.24199271202087402,
                         "r": 0.0
                     },
-                    "diffuse": 0.8999999761581421,
+                    "diffuse": 0.5009999871253967,
                     "pattern": null,
                     "reflectiveness": 0.0,
                     "refractive index": 1.0,
-                    "shininess": 200.0,
+                    "shininess": 0.0,
                     "specular": 0.0,
                     "transparency": 0.0
                 },
@@ -152,7 +152,7 @@
                         "g": 0.0,
                         "r": 1.0
                     },
-                    "diffuse": 0.8999999761581421,
+                    "diffuse": 0.5009999871253967,
                     "pattern": null,
                     "reflectiveness": 0.0,
                     "refractive index": 1.0,
@@ -186,7 +186,7 @@
                         "g": 1.0,
                         "r": 1.0
                     },
-                    "diffuse": 1.0,
+                    "diffuse": 0.03099999949336052,
                     "pattern": null,
                     "reflectiveness": 0.0,
                     "refractive index": 1.0,
@@ -213,19 +213,19 @@
             },
             {
                 "material": {
-                    "ambient": 0.49900001287460327,
+                    "ambient": 0.0,
                     "color": {
                         "a": 255,
                         "b": 1.0,
-                        "g": 1.0,
-                        "r": 1.0
+                        "g": 0.0,
+                        "r": 0.9750885963439941
                     },
-                    "diffuse": 0.8999999761581421,
+                    "diffuse": 1.0,
                     "pattern": null,
                     "reflectiveness": 0.0,
                     "refractive index": 1.0,
                     "shininess": 200.0,
-                    "specular": 0.8999999761581421,
+                    "specular": 0.3569999933242798,
                     "transparency": 0.0
                 },
                 "rotation": {
@@ -234,14 +234,14 @@
                     "z": 0.0
                 },
                 "scale": {
-                    "x": 1.0390000343322754,
-                    "y": 1.0390000343322754,
-                    "z": 1.0260000228881836
+                    "x": 0.7480000257492065,
+                    "y": 0.7480000257492065,
+                    "z": 0.7360000014305115
                 },
                 "translation": {
                     "x": 1.8250000476837158,
-                    "y": 1.0950000286102295,
-                    "z": 2.5179998874664307
+                    "y": 2.3359999656677246,
+                    "z": 0.45899999141693115
                 },
                 "type": "Sphere"
             },
@@ -250,17 +250,17 @@
                     "ambient": 0.10000000149011612,
                     "color": {
                         "a": 255,
-                        "b": 0.0,
-                        "g": 0.11387902498245239,
-                        "r": 0.016210539266467094
+                        "b": 0.8576512336730957,
+                        "g": 0.4942619800567627,
+                        "r": 0.027469279244542122
                     },
                     "diffuse": 0.10000000149011612,
                     "pattern": null,
                     "reflectiveness": 0.3009999990463257,
-                    "refractive index": 1.0,
+                    "refractive index": 1.0750000476837158,
                     "shininess": 100.0,
                     "specular": 1.0,
-                    "transparency": 1.0
+                    "transparency": 0.5149999856948853
                 },
                 "rotation": {
                     "x": 0.0,
@@ -275,7 +275,7 @@
                 "translation": {
                     "x": 0.0,
                     "y": 1.0950000286102295,
-                    "z": 0.0
+                    "z": 2.2939999103546143
                 },
                 "type": "Sphere"
             },
