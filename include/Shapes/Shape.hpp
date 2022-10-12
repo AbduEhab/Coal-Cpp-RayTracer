@@ -18,6 +18,8 @@ namespace COAL
 
         [[nodiscard]] virtual Intersection intersects(const Ray &ray) const = 0;
 
+        virtual ~Shape() = default;
+
         [[nodiscard]] virtual Vector normal_at(const Point &p) const = 0;
 
         // setters and getters
