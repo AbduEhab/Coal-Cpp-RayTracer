@@ -66,7 +66,7 @@ inline const std::string BINARY_DIRECTORY = std::filesystem::current_path().stri
 
 /**
  * @brief A random number generator
- * 
+ *
  * @tparam T The type of the random number
  *
  * @param min The minimum value of the random number
@@ -83,14 +83,14 @@ inline T random(T min = 0.0, T max = 1.0)
 
 /**
  * @brief Map a value from one range to another
- * 
+ *
  * @tparam T The type of the value
  * @param value The value to map
  * @param min The minimum value of the range
  * @param max The maximum value of the range
  * @param new_min The minimum value of the new range
  * @param new_max The maximum value of the new range
- * @return constexpr T 
+ * @return constexpr T
  */
 template <typename T>
 inline constexpr T map_to_range(T value, T min, T max, T new_min, T new_max)
@@ -98,6 +98,14 @@ inline constexpr T map_to_range(T value, T min, T max, T new_min, T new_max)
     return (T)(((value - min) / (max - min)) * (new_max - new_min) + new_min);
 }
 
+/**
+ * @brief Prints the variables given to the console
+ *
+ * @tparam First stringstream-able type
+ * @tparam Strings restof the stringstream-able types
+ * @param arg
+ * @param rest
+ */
 /**
  * @brief Prints the variables given to the console
  *
@@ -128,13 +136,15 @@ template <typename First, typename... Strings>
 void async_print_by_force(const First arg, const Strings &...rest)
 {
     std::thread t([&]()
-                  { print_by_force(arg, rest...); });
+                  { print_by_force(arg, rest...); std::cout << std::endl; });
     t.detach();
 }
 
 #ifdef DEBUG
 
-#define debug_print(x, y) print_by_force(x, y)
+#define debug_print(x, y) \
+    print_by_force(x, y); \
+    std::cout << std::endl;
 #define debug_async_print(x, y) async_print_by_force(x, y)
 #else
 #define debug_print(x, y)
