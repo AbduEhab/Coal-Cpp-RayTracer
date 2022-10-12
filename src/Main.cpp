@@ -426,6 +426,7 @@ private:
 
 Walnut::Application *Walnut::CreateApplication([[maybe_unused]] int argc, [[maybe_unused]] char **argv)
 {
+    COAL::Instrumentor::Get().beginSession("Main func"); // Start profiling session
 
     auto floor = std::make_shared<COAL::XZPlane>(COAL::XZPlane());
     floor->get_material().set_color(COAL::Color(1.0f, 0.9f, 0.9f)).set_specular(0).set_reflectiveness(0.3f);
