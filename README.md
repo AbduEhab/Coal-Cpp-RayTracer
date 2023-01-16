@@ -19,4 +19,4 @@ Once you've cloned the repo, setup cmake with `cmake -S . -B build`. The binarie
 - [L2DFileDialog](https://github.com/Limeoats/L2DFileDialog)
 
 ### Demo Renders
-![Demo 1](https://github.com/AbduEhab/Coal-RayTracer/blob/main/bin/SampleRender.png)
+![Demo 1](https://github.com/AbduEhab/Coal-RayTracer/blob/main/Renders/Ch12_RefractiveScene.jpg)
